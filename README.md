@@ -1,4 +1,4 @@
-# Tree_Controller_BepInEx
+# Tree Controller
 
 Tools and systems for changing ages, types, colors, growth and seasonal behaviors for trees and wild bushes.
 
@@ -18,7 +18,7 @@ Includes a tree controller tool that lets you change the age or types of existin
 * Radius
 * Whole Map
 
-Please note that changing types of trees for networks is not peristant and reverts as soon as anything touches the network. 
+Please note that changing types of trees for networks is not persistant and revert as soon as anything touches the network. 
 You cannot change types of trees using 'Single Tree' nor 'Whole Building or Net'. Eventually I may remove the ability to alter types of trees with 'Radius' and 'Whole Map'.
 
 For plopping trees this mod adds choice of age(s) and the option to enable random rotation.
