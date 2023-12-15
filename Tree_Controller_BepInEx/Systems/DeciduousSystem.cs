@@ -199,6 +199,7 @@ namespace Tree_Controller.Systems
                         {
                             currentTreeData.m_State = currentDeciduousTreeData.m_PreviousTreeState;
                             buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
+                            buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
                         }
 
                         buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
