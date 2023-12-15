@@ -7,10 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tree_Controller_BepInEx", "
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		BepInEx|Any CPU = BepInEx|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8BED8C70-8373-4215-ACD3-8EA2A6E7FDD4}.BepInEx|Any CPU.ActiveCfg = BepInEx|Any CPU
+		{8BED8C70-8373-4215-ACD3-8EA2A6E7FDD4}.BepInEx|Any CPU.Build.0 = BepInEx|Any CPU
 		{8BED8C70-8373-4215-ACD3-8EA2A6E7FDD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8BED8C70-8373-4215-ACD3-8EA2A6E7FDD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BED8C70-8373-4215-ACD3-8EA2A6E7FDD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
