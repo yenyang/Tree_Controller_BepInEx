@@ -165,6 +165,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="BepInEx\manifest.json" />
     <None Include="i18n\i18n.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
