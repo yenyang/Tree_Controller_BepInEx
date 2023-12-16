@@ -697,20 +697,19 @@ namespace Tree_Controller.Tools
         /// <param name="jobHandle">So input deps can be passed along.</param>
         private void ProcessBufferForTrees(Entity e, RaycastHit hit, ref JobHandle jobHandle)
         {
-            // in Future Check if not to apply prefab.
             if (EntityManager.TryGetBuffer(e, isReadOnly: true, out DynamicBuffer<Game.Objects.SubObject> buffer))
             {
-                if (m_AtLeastOneAgeSelected)
+                for (int i = 0; i < buffer.Length; i++)
                 {
-                    for (int i = 0; i < buffer.Length; i++)
+                    Entity subObject = buffer[i].m_SubObject;
+                    if (EntityManager.HasComponent<Tree>(subObject) && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
                     {
-                        Entity subObject = buffer[i].m_SubObject;
-                        if (EntityManager.HasComponent<Tree>(subObject) && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
+                        Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
+                        if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 2f) || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
                         {
-                            Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
-                            if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 2f) || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
+                            if (m_AtLeastOneAgeSelected)
                             {
-                                ChangeTreeStateJob changeTreeStateJob = new ()
+                                ChangeTreeStateJob changeTreeStateJob = new()
                                 {
                                     m_Entity = subObject,
                                     m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
@@ -720,31 +719,31 @@ namespace Tree_Controller.Tools
                                 };
                                 jobHandle = changeTreeStateJob.Schedule(JobHandle.CombineDependencies(jobHandle, treePrefabJobHandle));
                                 m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
+                            }
 
-                                bool doNotApplyTreePrefab = false;
-                                if (EntityManager.TryGetComponent<PrefabRef>(e, out PrefabRef prefabRef))
+                            bool doNotApplyTreePrefab = false;
+                            if (EntityManager.TryGetComponent<PrefabRef>(e, out PrefabRef prefabRef))
+                            {
+                                if (m_PrefabSystem.TryGetPrefab(prefabRef, out PrefabBase prefabBase))
                                 {
-                                    if (m_PrefabSystem.TryGetPrefab(prefabRef, out PrefabBase prefabBase))
+                                    if (prefabBase.GetType() == typeof(RoadPrefab))
                                     {
-                                        if (prefabBase.GetType() == typeof(RoadPrefab))
-                                        {
-                                            doNotApplyTreePrefab = true;
-                                        }
+                                        doNotApplyTreePrefab = true;
                                     }
                                 }
+                            }
 
-                                if (!m_SelectedTreePrefabEntities.IsEmpty && !doNotApplyTreePrefab)
+                            if (!m_SelectedTreePrefabEntities.IsEmpty && !doNotApplyTreePrefab)
+                            {
+                                ChangePrefabRefJob changePrefabRefJob = new()
                                 {
-                                    ChangePrefabRefJob changePrefabRefJob = new ()
-                                    {
-                                        m_Entity = subObject,
-                                        m_SelectedPrefabEntities = m_SelectedTreePrefabEntities,
-                                        m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
-                                        buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
-                                    };
-                                    jobHandle = changePrefabRefJob.Schedule(JobHandle.CombineDependencies(jobHandle, treePrefabJobHandle));
-                                    m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
-                                }
+                                    m_Entity = subObject,
+                                    m_SelectedPrefabEntities = m_SelectedTreePrefabEntities,
+                                    m_Random = new((uint)UnityEngine.Random.Range(1, 100000)),
+                                    buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
+                                };
+                                jobHandle = changePrefabRefJob.Schedule(JobHandle.CombineDependencies(jobHandle, treePrefabJobHandle));
+                                m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
                             }
                         }
                     }
