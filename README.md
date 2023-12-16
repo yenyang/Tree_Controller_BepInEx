@@ -4,12 +4,12 @@ Tools and systems for changing ages, types, colors, growth and seasonal behavior
 
 Improvements to plopping and brushing trees and wild bushes including: age choices (Plop fully grown trees), random rotation, and forest brushes.
 
-YouTube Demo available at: https://www.youtube.com/watch?v=YoyMliyWJQU
+Video Demo available on [YouTube](https://www.youtube.com/watch?v=YoyMliyWJQU)
 
 ## Dependencies
-Unified Icon Library - https://thunderstore.io/c/cities-skylines-ii/p/algernon/Unified_Icon_Library/ 
+[Unified Icon Library](https://thunderstore.io/c/cities-skylines-ii/p/algernon/Unified_Icon_Library/)
 
-BepInExPack - https://thunderstore.io/c/cities-skylines-ii/p/BepInEx/BepInExPack/
+[BepInExPack](https://thunderstore.io/c/cities-skylines-ii/p/BepInEx/BepInExPack/)
 
 ## Detailed Description:
 For the context of this description 'tree' includes both trees and wild bushes.
@@ -49,8 +49,11 @@ Algernon and I have collaborated to allow for age selction using the line tool m
 
 Cultivated city bushes do not contain the tree component and are not included in any aspect of the mod.
 
+## Support
+I will respond on the code modding channels on [**Cities: Skylines modding Discord**](https://discord.gg/ZaH2zjtk).
+
 ## Credits 
 * yenyang - Mod Author
-* Chamëleon TBN - Testing, Feedback, Icons, and Logo
+* Chameleon TBN - Testing, Feedback, Icons, and Logo
 * Algernon - Help with UI, Cooperative Development and Code Sharing, Collaboration regarding line tool.
 * T.D.W., Klyte45, krzychu124, and Quboid - Cooperative Development and Code Sharing
