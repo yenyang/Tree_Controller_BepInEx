@@ -1,5 +1,5 @@
 {
-  "name": "Tree Controller",
+  "name": "Tree_Controller",
   "description": "Tools and systems for controlling trees.",
   "version_number": "1.0.0",
   "dependencies": [
