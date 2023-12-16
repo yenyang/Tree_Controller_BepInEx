@@ -626,40 +626,38 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem)
+            Entity prefabEntity = m_PrefabSystem.GetEntity(m_ObjectToolSystem.prefab);
+            if (!EntityManager.HasComponent<TreeData>(prefabEntity) || EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
-                Entity prefabEntity = m_PrefabSystem.GetEntity(m_ObjectToolSystem.prefab);
-                if (!EntityManager.HasComponent<TreeData>(prefabEntity) || EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+                if (m_ObjectToolPlacingTree == true)
                 {
-                    if (m_ObjectToolPlacingTree == true)
-                    {
-                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} calling UnShowObjectToolPanelItems");
-                        UnshowObjectToolPanelItems();
-                    }
-
-                    if (m_ToolIsActive == true)
-                    {
-                        UnshowTreeControllerToolPanel();
-                        UnshowObjectToolPanelItems();
-                        UIFileUtils.ExecuteScript(m_UiView, $"{DestroyElementByID("YYTC-tool-mode-item")} {DestroyElementByID("YYTC-selection-mode-item")} {DestroyElementByID("YYTC-radius-row")}");
-                    }
-
-                    Enabled = false;
-                    return;
+                    m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} calling UnShowObjectToolPanelItems");
+                    UnshowObjectToolPanelItems();
                 }
 
-                m_SelectedPrefabSet = string.Empty;
-                m_TreeControllerTool.ClearSelectedTreePrefabs();
-                UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.selectedPrefabSet = \"\";");
-                foreach (KeyValuePair<string, List<PrefabID>> keyValuePair in m_PrefabSetsLookup)
+                if (m_ToolIsActive == true)
                 {
-                    // This script removes selected from any previously selected prefab sets if they are found.
-                    UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.element = document.getElementById(\"{keyValuePair.Key}\"); if (yyTreeController.element != null) {{  yyTreeController.element.classList.remove(\"selected\"); }}");
+                    UnshowTreeControllerToolPanel();
+                    UnshowObjectToolPanelItems();
+                    UIFileUtils.ExecuteScript(m_UiView, $"{DestroyElementByID("YYTC-tool-mode-item")} {DestroyElementByID("YYTC-selection-mode-item")} {DestroyElementByID("YYTC-radius-row")}");
                 }
 
-                Enabled = true;
-                m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
+                Enabled = false;
+                return;
             }
+
+            m_SelectedPrefabSet = string.Empty;
+            m_TreeControllerTool.ClearSelectedTreePrefabs();
+            UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.selectedPrefabSet = \"\";");
+            foreach (KeyValuePair<string, List<PrefabID>> keyValuePair in m_PrefabSetsLookup)
+            {
+                // This script removes selected from any previously selected prefab sets if they are found.
+                UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.element = document.getElementById(\"{keyValuePair.Key}\"); if (yyTreeController.element != null) {{  yyTreeController.element.classList.remove(\"selected\"); }}");
+            }
+
+            Enabled = true;
+            m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
+
         }
     }
 }

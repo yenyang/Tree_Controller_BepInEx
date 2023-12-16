@@ -831,6 +831,7 @@ namespace Tree_Controller.Tools
                             buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentPrefabRef);
                             buffer.RemoveComponent<Evergreen>(unfilteredChunkIndex, currentEntity);
                             buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
+                            buffer.AddComponent<RecentlyChanged>(unfilteredChunkIndex, currentEntity);
                             buffer.AddComponent<Updated>(unfilteredChunkIndex, currentEntity);
                             addBatchesUpdated = true;
                         }
