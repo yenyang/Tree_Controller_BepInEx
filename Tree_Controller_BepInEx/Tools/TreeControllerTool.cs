@@ -12,7 +12,6 @@ namespace Tree_Controller.Tools
     using Colossal.Logging;
     using Colossal.Serialization.Entities;
     using Game;
-    using Game.Areas;
     using Game.Common;
     using Game.Input;
     using Game.Net;
@@ -61,6 +60,7 @@ namespace Tree_Controller.Tools
         private bool m_AtLeastOneAgeSelected = true;
         private ILog m_Log;
         private TypeHandle __TypeHandle;
+        private TreeControllerUISystem m_TreeControllerUISystem;
 
         /// <summary>
         /// An enum for the tool mod selection.
@@ -251,6 +251,7 @@ namespace Tree_Controller.Tools
             if (EntityManager.HasComponent<TreeData>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
                 ClearSelectedTreePrefabs(); // When custom sets becomes a thing there will need to be a way to add multiple prefabs.
+                m_TreeControllerUISystem.ResetPrefabSets();
                 SelectTreePrefab(prefab);
                 return true;
             }
@@ -363,6 +364,7 @@ namespace Tree_Controller.Tools
             m_Log.Info($"[{nameof(TreeControllerTool)}] {nameof(OnCreate)}");
             m_ToolOutputBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolOutputBarrier>();
             m_OverlayRenderSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<OverlayRenderSystem>();
+            m_TreeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
             m_SelectedTreeStates = new NativeList<TreeState>(1, Allocator.Persistent)
             {
                 TreeState.Adult,

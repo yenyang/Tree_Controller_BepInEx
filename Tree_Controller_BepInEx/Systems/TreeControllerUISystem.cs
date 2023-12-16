@@ -87,6 +87,17 @@ namespace Tree_Controller.Tools
         private string m_SelectedPrefabSet = string.Empty;
         private bool m_PreviousPanelsCleared = false;
 
+        public void ResetPrefabSets()
+        {
+            m_SelectedPrefabSet = string.Empty;
+            UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.selectedPrefabSet = \"\";");
+            foreach (KeyValuePair<string, List<PrefabID>> keyValuePair in m_PrefabSetsLookup)
+            {
+                // This script removes selected from any previously selected prefab sets if they are found.
+                UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.element = document.getElementById(\"{keyValuePair.Key}\"); if (yyTreeController.element != null) {{  yyTreeController.element.classList.remove(\"selected\"); }}");
+            }
+        }
+
         /// <inheritdoc/>
         protected override void OnCreate()
         {
@@ -452,6 +463,7 @@ namespace Tree_Controller.Tools
         {
             m_Log.Debug("Enable Tool please.");
             m_SelectedPrefabSet = string.Empty;
+            UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.selectedPrefabSet = \"\";");
             m_TreeControllerTool.ClearSelectedTreePrefabs();
             m_ToolIsActive = false;
             m_ToolSystem.selected = Entity.Null;
@@ -646,18 +658,11 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            m_SelectedPrefabSet = string.Empty;
             m_TreeControllerTool.ClearSelectedTreePrefabs();
-            UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.selectedPrefabSet = \"\";");
-            foreach (KeyValuePair<string, List<PrefabID>> keyValuePair in m_PrefabSetsLookup)
-            {
-                // This script removes selected from any previously selected prefab sets if they are found.
-                UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.element = document.getElementById(\"{keyValuePair.Key}\"); if (yyTreeController.element != null) {{  yyTreeController.element.classList.remove(\"selected\"); }}");
-            }
+            ResetPrefabSets();
 
             Enabled = true;
             m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
-
         }
     }
 }
