@@ -4,6 +4,8 @@ Tools and systems for changing ages, types, colors, growth and seasonal behavior
 
 Improvements to plopping and brushing trees and wild bushes including: age choices (Plop fully grown trees), random rotation, and forest brushes.
 
+YouTube Demo available at: https://www.youtube.com/watch?v=YoyMliyWJQU
+
 ## Dependencies
 Unified Icon Library - https://thunderstore.io/c/cities-skylines-ii/p/algernon/Unified_Icon_Library/ 
 
