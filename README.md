@@ -51,6 +51,6 @@ Cultivated city bushes do not contain the tree component and are not included in
 
 ## Credits 
 * yenyang - Mod Author
-* Chamëleon TBN - Testing, Feedback, Icons, & Logo
-* Algernon - Help with UI, Cooperative Development & Code Sharing, Collaboration regarding line tool.
-* T.D.W., Klyte45, krzychu124, & Quboid - Cooperative Development & Code Sharing
+* Chamëleon TBN - Testing, Feedback, Icons, and Logo
+* Algernon - Help with UI, Cooperative Development and Code Sharing, Collaboration regarding line tool.
+* T.D.W., Klyte45, krzychu124, and Quboid - Cooperative Development and Code Sharing
