@@ -35,7 +35,7 @@ if (typeof yyTreeController.buildTreeAgeItem !== 'function') {
         changeAgeButtonsPanel.id = "YYTC-change-age-buttons-panel";
 
         buildClearAgesButton(changeAgeButtonsPanel);
-        buildChangeAgeButton("YYTC-child", "coui://uil/Standard/TreeSapling.svg", changeAgeButtonsPanel,);
+        buildChangeAgeButton("YYTC-child", "coui://uil/Standard/TreeSapling.svg", changeAgeButtonsPanel);
         buildChangeAgeButton("YYTC-teen", "coui://uil/Standard/TreeTeen.svg", changeAgeButtonsPanel);
         buildChangeAgeButton("YYTC-adult", "coui://uil/Standard/TreeAdult.svg", changeAgeButtonsPanel);
         buildChangeAgeButton("YYTC-elderly", "coui://uil/Standard/TreeElderly.svg", changeAgeButtonsPanel);
@@ -109,7 +109,7 @@ if (typeof yyTreeController.setupSelectionModeButton !== 'function')
 }
 
 if (typeof yyTreeController.buildChangeAgeButton !== 'function') {
-    buildChangeAgeButton = function(id, src, buttonsPanel, localeKey) {
+    buildChangeAgeButton = function(id, src, buttonsPanel) {
         const button = document.createElement("button");
         button.id = id;
         button.className = "button_KVN";
@@ -146,7 +146,6 @@ if (typeof yyTreeController.buildChangeAgeButton !== 'function') {
             }
         }
         buttonsPanel.appendChild(button);
-        yyTreeController.setTooltip(id, localeKey);
     }
 }
 
@@ -326,9 +325,9 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         prefabSetsButtonsPanel.id = "YYTC-prefab-sets-buttons-panel";
 
 
-        yyTreeController.buildPrefabSetButton("YYTC-wild-deciduous-trees", "coui://uil/Standard/TreesDeciduous.svg", prefabSetsButtonsPanel, "wild-deciduous-trees");
-        yyTreeController.buildPrefabSetButton("YYTC-evergreen-trees", "coui://uil/Standard/TreesNeedle.svg", prefabSetsButtonsPanel, "evergreen-trees");
-        yyTreeController.buildPrefabSetButton("YYTC-wild-bushes", "coui://uil/Standard/Bushes.svg", prefabSetsButtonsPanel, "wild-bushes");
+        yyTreeController.buildPrefabSetButton("YYTC-wild-deciduous-trees", "coui://uil/Standard/TreesDeciduous.svg", prefabSetsButtonsPanel);
+        yyTreeController.buildPrefabSetButton("YYTC-evergreen-trees", "coui://uil/Standard/TreesNeedle.svg", prefabSetsButtonsPanel);
+        yyTreeController.buildPrefabSetButton("YYTC-wild-bushes", "coui://uil/Standard/Bushes.svg", prefabSetsButtonsPanel);
 
         prefabSetsItemContent.appendChild(prefabSetsRowLabel);
         prefabSetsItemContent.appendChild(prefabSetsButtonsPanel);
@@ -342,6 +341,9 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
             selectedPrefabSetButton.classList.add("selected");
         }
         yyTreeController.applyLocalization(prefabSetsRow);
+        yyTreeController.setTooltip("YYTC-wild-deciduous-trees", "wild-deciduous-trees");
+        yyTreeController.setTooltip("YYTC-evergreen-trees", "evergreen-trees");
+        yyTreeController.setTooltip("YYTC-wild-bushes", "wild-bushes");
     }
 }
 
@@ -380,7 +382,6 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
             engine.trigger('YYTC-Prefab-Set-Changed', yyTreeController.selectedPrefabSet);
         }
         buttonsPanel.appendChild(button);
-        yyTreeController.setTooltip(id, localeKey);
     }
 }
 
