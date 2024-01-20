@@ -209,7 +209,7 @@ if (typeof yyTreeController.buildRadiusChanger !== 'function') {
         var radiusRowLabel = document.createElement("div");
         radiusRowLabel.id = "YYTC-radius-row-label";
         radiusRowLabel.className = "label_RZX";
-        radiusRowLabel.localeKey = "YY_TREE_CONTROLLER.Radius";
+        radiusRowLabel.innerHTML = engine.translate("YY_TREE_CONTROLLER.Radius");
         const radiusButtonsPanel = document.createElement("div");
         radiusButtonsPanel.className = "content_ZIz";
         radiusButtonsPanel.id = "YYTC-radius-buttons-panel";
@@ -323,7 +323,7 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         var prefabSetsRowLabel = document.createElement("div");
         prefabSetsRowLabel.id = "YYTC-prefab-label";
         prefabSetsRowLabel.className = "label_RZX";
-        prefabSetsRowLabel.localeKey = "YY_TREE_CONTROLLER.Sets";
+        prefabSetsRowLabel.innerHTML = engine.translate("YY_TREE_CONTROLLER.Sets");
         const prefabSetsButtonsPanel = document.createElement("div");
         prefabSetsButtonsPanel.className = "content_ZIz";
         prefabSetsButtonsPanel.id = "YYTC-prefab-sets-buttons-panel";
@@ -392,16 +392,16 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
 if (typeof yyTreeController.buildRotationRow !== 'function') {
     yyTreeController.buildRotationRow = function (panelNode, position) {
         if (document.getElementById("YYTC-rotation-row") != null) return;
-        const rotationRow = document.createElement("div");
+        var rotationRow = document.createElement("div");
         rotationRow.id = "YYTC-rotation-row";
         rotationRow.className = "item_bZY";
-        const rotationItemContent = document.createElement("div");
+        var rotationItemContent = document.createElement("div");
         rotationItemContent.className = "item-content_nNz";
 
         var rotationRowLabel = document.createElement("div");
         rotationRowLabel.id = "YYTC-rotation-label";
         rotationRowLabel.className = "label_RZX";
-        rotationRowLabel.localeKey = "YY_TREE_CONTROLLER.Rotation";
+        rotationRowLabel.innerHTML = engine.translate("YY_TREE_CONTROLLER.Rotation");
         const rotationButtonsPanel = document.createElement("div");
         rotationButtonsPanel.className = "content_ZIz";
         rotationButtonsPanel.id = "YYTC-rotation-buttons-panel";
@@ -440,7 +440,7 @@ if (typeof yyTreeController.buildRotationRow !== 'function') {
         }
 
         yyTreeController.setTooltip(button.id, "random-rotation");
-        yyTreeController.applyLocalization(document.getElementById("YYTC-rotation-row"));
+        
     }
 }
 
