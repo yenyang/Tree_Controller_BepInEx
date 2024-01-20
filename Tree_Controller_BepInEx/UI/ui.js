@@ -469,7 +469,7 @@ if (typeof yyTreeController.applyLocalization !== 'function') {
             return;
         }
 
-        target.innerHTML = engine.translate(currentValue.getAttribute("localeKey"));
+        target.innerHTML = engine.translate(target.getAttribute("localeKey"));
     }
 }
 
