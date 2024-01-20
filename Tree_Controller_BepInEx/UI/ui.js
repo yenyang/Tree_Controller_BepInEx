@@ -209,7 +209,7 @@ if (typeof yyTreeController.buildRadiusChanger !== 'function') {
         const radiusRowLabel = document.createElement("div");
         radiusRowLabel.id = "YYTC-radius-row-label";
         radiusRowLabel.className = "label_RZX";
-        radiusRowLabel.localeKey = "Radius";
+        radiusRowLabel.localeKey = "YY_TREE_CONTROLLER.Radius";
         const radiusButtonsPanel = document.createElement("div");
         radiusButtonsPanel.className = "content_ZIz";
         radiusButtonsPanel.id = "YYTC-radius-buttons-panel";
@@ -323,7 +323,7 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         const prefabSetsRowLabel = document.createElement("div");
         prefabSetsRowLabel.id = "YYTC-prefab-label";
         prefabSetsRowLabel.className = "label_RZX";
-        prefabSetsRowLabel.localeKey = "Sets";
+        prefabSetsRowLabel.localeKey = "YY_TREE_CONTROLLER.Sets";
         const prefabSetsButtonsPanel = document.createElement("div");
         prefabSetsButtonsPanel.className = "content_ZIz";
         prefabSetsButtonsPanel.id = "YYTC-prefab-sets-buttons-panel";
