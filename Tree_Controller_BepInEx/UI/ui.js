@@ -14,9 +14,9 @@ if (typeof yyTreeController.setupYYTCSelectionModeItem !== 'function')
         if (selectedMode != null) {
             selectedMode.classList.add("selected");
         }
-        yyTreeController.selectionModeItem = document.getElementById("YYTC-selection-mode-label");
+        yyTreeController.selectionModeItem = document.getElementById("YYTC-selection-mode-item");
         if (yyTreeController.selectionModeItem) {
-            yyTreeController.applyLocalization();
+            yyTreeController.applyLocalization(yyTreeController.selectionModeItem);
         }
     }
 }
@@ -251,7 +251,7 @@ if (typeof yyTreeController.buildRadiusChanger !== 'function') {
         if (treeControllerToolModeRow != null) {
             treeControllerToolModeRow.insertAdjacentElement("afterend", radiusRow);
         }
-        yyTreeController.applyLocalization(radiusRowLabel);
+        yyTreeController.applyLocalization(document.getElementById("YYTC-radius-row"));
         yyTreeController.setTooltip(upButton.id, "radius-up-arrow");
         yyTreeController.setTooltip(downButton.id, "radius-down-arrow");
     }
@@ -344,7 +344,7 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         if (selectedPrefabSetButton != null) {
             selectedPrefabSetButton.classList.add("selected");
         }
-        yyTreeController.applyLocalization(prefabSetsRowLabel);
+        yyTreeController.applyLocalization(document.getElementById("YYTC-prefab-sets-row"));
         yyTreeController.setTooltip("YYTC-wild-deciduous-trees", "wild-deciduous-trees");
         yyTreeController.setTooltip("YYTC-evergreen-trees", "evergreen-trees");
         yyTreeController.setTooltip("YYTC-wild-bushes", "wild-bushes");
@@ -440,7 +440,7 @@ if (typeof yyTreeController.buildRotationRow !== 'function') {
         }
 
         yyTreeController.setTooltip(button.id, "random-rotation");
-        yyTreeController.applyLocalization(rotationRow);
+        yyTreeController.applyLocalization(document.getElementById("YYTC-rotation-row"));
     }
 }
 
@@ -455,9 +455,9 @@ if (typeof yyTreeController.setupToolModeButtons !== 'function') {
                 }
             }
         }
-        yyTreeController.toolModeLabel = document.getElementById("YYTC-tool-mode-label");
-        if (yyTreeController.toolModeLabel) {
-            yyTreeController.applyLocalization(yyTreeController.toolModeLabel);
+        yyTreeController.toolModeItem = document.getElementById("YYTC-tool-mode-item");
+        if (yyTreeController.toolModeItem) {
+            yyTreeController.applyLocalization(yyTreeController.toolModeItem);
         }
     }
 }
