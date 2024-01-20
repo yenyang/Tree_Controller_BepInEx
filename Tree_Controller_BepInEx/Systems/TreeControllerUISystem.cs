@@ -10,12 +10,10 @@ namespace Tree_Controller.Tools
     using System.IO;
     using cohtml.Net;
     using Colossal.Logging;
-    using Game.Objects;
     using Game.Prefabs;
     using Game.SceneFlow;
     using Game.Tools;
     using Game.UI;
-    using Game.Vehicles;
     using Tree_Controller.Systems;
     using Tree_Controller.Utils;
     using Unity.Entities;
@@ -26,7 +24,7 @@ namespace Tree_Controller.Tools
     /// </summary>
     public partial class TreeControllerUISystem : UISystemBase
     {
-        private readonly List<PrefabID> m_VanillaDeciduousPrefabIDs = new()
+        private readonly List<PrefabID> m_VanillaDeciduousPrefabIDs = new ()
         {
             { new PrefabID("StaticObjectPrefab", "EU_AlderTree01") },
             { new PrefabID("StaticObjectPrefab", "BirchTree01") },
@@ -37,13 +35,13 @@ namespace Tree_Controller.Tools
             { new PrefabID("StaticObjectPrefab", "OakTree01") },
         };
 
-        private readonly List<PrefabID> m_VanillaEvergreenPrefabIDs = new()
+        private readonly List<PrefabID> m_VanillaEvergreenPrefabIDs = new ()
         {
             { new PrefabID("StaticObjectPrefab", "PineTree01") },
             { new PrefabID("StaticObjectPrefab", "SpruceTree01") },
         };
 
-        private readonly List<PrefabID> m_VanillaWildBushPrefabs = new()
+        private readonly List<PrefabID> m_VanillaWildBushPrefabs = new ()
         {
             { new PrefabID("StaticObjectPrefab", "GreenBushWild01") },
             { new PrefabID("StaticObjectPrefab", "GreenBushWild02") },
@@ -51,7 +49,7 @@ namespace Tree_Controller.Tools
             { new PrefabID("StaticObjectPrefab", "FlowerBushWild02") },
         };
 
-        private readonly Dictionary<string, TCSelectionMode> ToolModeLookup = new()
+        private readonly Dictionary<string, TCSelectionMode> ToolModeLookup = new ()
         {
             { "YYTC-single-tree", TCSelectionMode.SingleTree },
             { "YYTC-building-or-net", TCSelectionMode.WholeBuildingOrNet },
@@ -86,7 +84,11 @@ namespace Tree_Controller.Tools
         private bool m_ObjectToolPlacingTree = false;
         private string m_SelectedPrefabSet = string.Empty;
         private bool m_PreviousPanelsCleared = false;
+        private bool m_FirstTimeInjectingJS = true;
 
+        /// <summary>
+        /// Resets the selected prefab set.
+        /// </summary>
         public void ResetPrefabSets()
         {
             m_SelectedPrefabSet = string.Empty;
@@ -123,10 +125,10 @@ namespace Tree_Controller.Tools
             if (m_UiView != null)
             {
                 m_InjectedJS = UIFileUtils.ReadJS(Path.Combine(UIFileUtils.AssemblyPath, "ui.js"));
-                m_TreeControllerPanelScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-selection-mode-item.html"), "if (document.getElementById(\"tree-controller-panel\") == null) { yyTreeController.div.className = \"tool-options-panel_Se6\"; yyTreeController.div.id = \"tree-controller-panel\"; yyTreeController.ToolColumns = document.getElementsByClassName(\"tool-side-column_l9i\"); if (yyTreeController.ToolColumns[0] != null) yyTreeController.ToolColumns[0].appendChild(yyTreeController.div); yyTreeController.setupYYTCSelectionModeItem(); }");
-                m_SelectionRowItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-selection-mode-content.html"), "if (document.getElementById(\"YYTC-selection-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id = \"YYTC-selection-mode-item\"; yyTreeController.AgesElement = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.AgesElement != null) yyTreeController.AgesElement.insertAdjacentElement('afterend', yyTreeController.div); yyTreeController.setupYYTCSelectionModeItem(); }");
-                m_ToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.OptionsPanels = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.OptionsPanels[0] != null) { yyTreeController.OptionsPanels[0].appendChild(yyTreeController.div); yyTreeController.setupToolModeButtons(); } }");
-                m_AgeChangingToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.panel = document.getElementById(\"tree-controller-panel\"); if (yyTreeController.panel != null) { yyTreeController.panel.appendChild(yyTreeController.div); yyTreeController.setupToolModeButtons(); } }");
+                m_TreeControllerPanelScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-selection-mode-item.html"), "if (document.getElementById(\"tree-controller-panel\") == null) { yyTreeController.div.className = \"tool-options-panel_Se6\"; yyTreeController.div.id = \"tree-controller-panel\"; yyTreeController.ToolColumns = document.getElementsByClassName(\"tool-side-column_l9i\"); if (yyTreeController.ToolColumns[0] != null) yyTreeController.ToolColumns[0].appendChild(yyTreeController.div); if (typeof yyTreeController.setupYYTCSelectionModeItem == 'function') yyTreeController.setupYYTCSelectionModeItem(); }");
+                m_SelectionRowItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-selection-mode-content.html"), "if (document.getElementById(\"YYTC-selection-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id = \"YYTC-selection-mode-item\"; yyTreeController.AgesElement = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.AgesElement != null) yyTreeController.AgesElement.insertAdjacentElement('afterend', yyTreeController.div);if (typeof yyTreeController.setupYYTCSelectionModeItem == 'function') yyTreeController.setupYYTCSelectionModeItem(); }");
+                m_ToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.OptionsPanels = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.OptionsPanels[0] != null) { yyTreeController.OptionsPanels[0].appendChild(yyTreeController.div); if (typeof yyTreeController.setupToolModeButtons == 'function') yyTreeController.setupToolModeButtons(); } }");
+                m_AgeChangingToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.panel = document.getElementById(\"tree-controller-panel\"); if (yyTreeController.panel != null) { yyTreeController.panel.appendChild(yyTreeController.div); if (typeof yyTreeController.setupToolModeButtons == 'function') yyTreeController.setupToolModeButtons(); } }");
             }
             else
             {
@@ -142,20 +144,6 @@ namespace Tree_Controller.Tools
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_ToolSystem.activeTool.toolID != null)
-            {
-                if (m_ToolSystem.activeTool.toolID == "Line Tool")
-                {
-                    Random random = new ();
-                    if (random.Next(10) >= 9)
-                    {
-                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} Line tool active");
-                    }
-
-                    return;
-                }
-            }
-
             if (m_ToolSystem.activeTool == m_TreeControllerTool && m_UiView != null)
             {
                 // This script creates the Tree Controller object if it doesn't exist.
@@ -216,10 +204,17 @@ namespace Tree_Controller.Tools
                 // This script injects all the JS functions if they do not exist.
                 UIFileUtils.ExecuteScript(m_UiView, m_InjectedJS);
 
+                // If this is the first time injecting the JS, wait a frame to ensure it has time to setup the functions.
+                if (m_FirstTimeInjectingJS)
+                {
+                    m_FirstTimeInjectingJS = false;
+                    return;
+                }
+
                 if (m_TreeControllerTool.GetPrefab() == null) // Tree age changing only.
                 {
                     // This script builds the Tool mode item row, tree age item row. And checks if radius row needs to be added.
-                    UIFileUtils.ExecuteScript(m_UiView, $"{m_TreeControllerPanelScript} yyTreeController.selectionModeItem = document.getElementById(\"YYTC-selection-mode-item\"); if (yyTreeController.selectionModeItem != null)  yyTreeController.buildTreeAgeItem(yyTreeController.selectionModeItem,'afterend'); yyTreeController.checkIfNeedToBuildRadius();");
+                    UIFileUtils.ExecuteScript(m_UiView, $"{m_TreeControllerPanelScript} yyTreeController.selectionModeItem = document.getElementById(\"YYTC-selection-mode-item\"); if (yyTreeController.selectionModeItem != null && typeof yyTreeController.buildTreeAgeItem == 'function')  yyTreeController.buildTreeAgeItem(yyTreeController.selectionModeItem,'afterend'); if (typeof yyTreeController.checkIfNeedToBuildRadius == 'function') yyTreeController.checkIfNeedToBuildRadius();");
 
                     // This script builds and sets up the Tool Mode item row.
                     UIFileUtils.ExecuteScript(m_UiView, $"{m_AgeChangingToolModeItemScript} yyTreeController.selectedToolMode = document.getElementById(\"YYTC-ActivateAgeChange\"); if (yyTreeController.selectedToolMode != null) yyTreeController.selectedToolMode.classList.add(\"selected\"); ");
@@ -233,13 +228,13 @@ namespace Tree_Controller.Tools
                     m_ObjectToolPlacingTree = false;
 
                     // This script builds Tree Age item.
-                    UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null) { yyTreeController.buildTreeAgeItem(yyTreeController.entities[0].firstChild, 'beforebegin'); } }");
+                    UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildTreeAgeItem == 'function') { yyTreeController.buildTreeAgeItem(yyTreeController.entities[0].firstChild, 'beforebegin'); } }");
 
                     // This script builds the Tool mode item row, tree age item row. And checks if radius row needs to be added.
                     UIFileUtils.ExecuteScript(m_UiView, $"{m_SelectionRowItemScript} yyTreeController.checkIfNeedToBuildRadius();");
 
                     // This scripts builds the prefab sets row.
-                    UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.ageItem = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageItem != null) yyTreeController.buildPrefabSetsRow(yyTreeController.ageItem,'afterend');");
+                    UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.ageItem = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageItem != null && typeof yyTreeController.buildPrefabSetsRow == 'function') yyTreeController.buildPrefabSetsRow(yyTreeController.ageItem,'afterend');");
 
                     // Register event callbacks from UI JavaScript.
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-Prefab-Set-Changed", (Action<string>)ChangePrefabSet));
@@ -288,7 +283,7 @@ namespace Tree_Controller.Tools
             UIFileUtils.ExecuteScript(m_UiView, "if (yyTreeController == null) var yyTreeController = {};");
 
             // This script looks for any img srcs that use brush and then adds new Change tool buttons to the grandparent element.
-            UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-ActivateAgeChange\") == null) {{ yyTreeController.tagElements = document.getElementsByTagName(\"img\");  for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{  if (yyTreeController.tagElements[yyTreeController.i].src == \"Media/Tools/Object%20Tool/Brush.svg\") {{  yyTreeController.buildActivateToolButton(\"YYTC-ActivateAgeChange\", \"coui://uil/Standard/ReplaceTreeAge.svg\", yyTreeController.tagElements[yyTreeController.i].parentNode.parentNode);    yyTreeController.buildActivateToolButton(\"YYTC-ActivatePrefabChange\", \"coui://uil/Standard/Replace.svg\", yyTreeController.tagElements[yyTreeController.i].parentNode.parentNode);  }} }} }}");
+            UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-ActivateAgeChange\") == null) {{ yyTreeController.tagElements = document.getElementsByTagName(\"img\");  for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{  if (yyTreeController.tagElements[yyTreeController.i].src == \"Media/Tools/Object%20Tool/Brush.svg\" && typeof yyTreeController.buildActivateToolButton == 'function') {{  yyTreeController.buildActivateToolButton(\"YYTC-ActivateAgeChange\", \"coui://uil/Standard/ReplaceTreeAge.svg\", yyTreeController.tagElements[yyTreeController.i].parentNode.parentNode, \"change-age-tool\");    yyTreeController.buildActivateToolButton(\"YYTC-ActivatePrefabChange\", \"coui://uil/Standard/Replace.svg\", yyTreeController.tagElements[yyTreeController.i].parentNode.parentNode, \"change-prefab-tool\");  }} }} }}");
 
             if (m_ObjectToolPlacingTree == false)
             {
@@ -307,7 +302,7 @@ namespace Tree_Controller.Tools
                 UIFileUtils.ExecuteScript(m_UiView, m_InjectedJS);
 
                 // This script builds Tree Age item used for brushing trees.
-                UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null) { yyTreeController.buildTreeAgeItem(yyTreeController.entities[0].firstChild, 'beforebegin'); } }");
+                UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildTreeAgeItem == 'function') { yyTreeController.buildTreeAgeItem(yyTreeController.entities[0].firstChild, 'beforebegin'); } }");
 
                 // This unregisters the events.
                 foreach (BoundEventHandle boundEvent in m_BoundEvents)
@@ -335,7 +330,7 @@ namespace Tree_Controller.Tools
 
                 // This script buils the prefab Sets row for brushing sets of trees.
                 // Need a new anchor.
-                UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null) { yyTreeController.buildPrefabSetsRow(yyTreeController.ageRow, 'afterend'); }");
+                UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.ageRow, 'afterend'); }");
             }
             else
             {
@@ -344,7 +339,7 @@ namespace Tree_Controller.Tools
 
                 // This script builds the rotation row icon.
                 // Need a new anchor.
-                UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null) { yyTreeController.buildRotationRow(yyTreeController.ageRow, 'afterend'); }");
+                UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null && typeof yyTreeController.buildRotationRow == 'function') { yyTreeController.buildRotationRow(yyTreeController.ageRow, 'afterend'); }");
             }
 
             base.OnUpdate();

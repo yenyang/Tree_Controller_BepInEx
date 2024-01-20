@@ -166,10 +166,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BepInEx\manifest.json" />
-    <None Include="i18n\i18n.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="i18n\i18n.xlsm" />
     <AdditionalFiles Include="StyleCop\stylecop.json" />
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,11 @@ VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tree_Controller_BepInEx", "Tree_Controller_BepInEx\Tree_Controller_BepInEx.csproj", "{8BED8C70-8373-4215-ACD3-8EA2A6E7FDD4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B1F628E0-C86A-474A-AB52-9A2EEDB42D57}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		BepInEx|Any CPU = BepInEx|Any CPU

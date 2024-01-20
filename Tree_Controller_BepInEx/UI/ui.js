@@ -1,11 +1,13 @@
-// Function to set the given element's visibility.
+if (typeof yyTreeController != 'object') var yyTreeController = {};
+
+// Function to set yp the selection mode for tree controller tool.
 if (typeof yyTreeController.setupYYTCSelectionModeItem !== 'function')
 {
     yyTreeController.setupYYTCSelectionModeItem = function() {
-        yyTreeController.setupSelectionModeButton("YYTC-single-tree");
-        yyTreeController.setupSelectionModeButton("YYTC-building-or-net");
-        yyTreeController.setupSelectionModeButton("YYTC-radius");
-        yyTreeController.setupSelectionModeButton("YYTC-whole-map");
+        yyTreeController.setupSelectionModeButton("YYTC-single-tree", "single-tree");
+        yyTreeController.setupSelectionModeButton("YYTC-building-or-net", "building-or-net");
+        yyTreeController.setupSelectionModeButton("YYTC-radius", "radius");
+        yyTreeController.setupSelectionModeButton("YYTC-whole-map", "whole-map");
 
         let selectedMode = document.getElementById(yyTreeController.selectionMode);
 
@@ -33,7 +35,7 @@ if (typeof yyTreeController.buildTreeAgeItem !== 'function') {
         changeAgeButtonsPanel.id = "YYTC-change-age-buttons-panel";
 
         buildClearAgesButton(changeAgeButtonsPanel);
-        buildChangeAgeButton("YYTC-child", "coui://uil/Standard/TreeSapling.svg", changeAgeButtonsPanel);
+        buildChangeAgeButton("YYTC-child", "coui://uil/Standard/TreeSapling.svg", changeAgeButtonsPanel,);
         buildChangeAgeButton("YYTC-teen", "coui://uil/Standard/TreeTeen.svg", changeAgeButtonsPanel);
         buildChangeAgeButton("YYTC-adult", "coui://uil/Standard/TreeAdult.svg", changeAgeButtonsPanel);
         buildChangeAgeButton("YYTC-elderly", "coui://uil/Standard/TreeElderly.svg", changeAgeButtonsPanel);
@@ -57,6 +59,14 @@ if (typeof yyTreeController.buildTreeAgeItem !== 'function') {
         } else if (enabled == 5) {
             document.getElementById("YYTC-clear-ages").classList.add("selected");
         }
+
+
+        yyTreeController.setTooltip("YYTC-clear-ages", "clear-ages");
+        yyTreeController.setTooltip("YYTC-child", "child");
+        yyTreeController.setTooltip("YYTC-teen", "teen");
+        yyTreeController.setTooltip("YYTC-adult", "adult");
+        yyTreeController.setTooltip("YYTC-elderly", "elderly");
+        yyTreeController.setTooltip("YYTC-dead", "dead")
     }
 }
 
@@ -71,7 +81,7 @@ if (typeof yyTreeController.destroyTreeAgeItem != 'function') {
 
 if (typeof yyTreeController.setupSelectionModeButton !== 'function')
 {
-    yyTreeController.setupSelectionModeButton = function (id)
+    yyTreeController.setupSelectionModeButton = function (id, localeKey)
     {
         const button = document.getElementById(id);
         if (button == null) {
@@ -94,11 +104,12 @@ if (typeof yyTreeController.setupSelectionModeButton !== 'function')
                 yyTreeController.destroyElementByID("YYTC-radius-row");
             }
         }
+        yyTreeController.setTooltip(id, localeKey);
     }
 }
 
 if (typeof yyTreeController.buildChangeAgeButton !== 'function') {
-    buildChangeAgeButton = function(id, src, buttonsPanel) {
+    buildChangeAgeButton = function(id, src, buttonsPanel, localeKey) {
         const button = document.createElement("button");
         button.id = id;
         button.className = "button_KVN";
@@ -135,6 +146,7 @@ if (typeof yyTreeController.buildChangeAgeButton !== 'function') {
             }
         }
         buttonsPanel.appendChild(button);
+        yyTreeController.setTooltip(id, localeKey);
     }
 }
 
@@ -194,7 +206,7 @@ if (typeof yyTreeController.buildRadiusChanger !== 'function') {
         const radiusRowLabel = document.createElement("div");
         radiusRowLabel.id = "YYTC-radius-row-label";
         radiusRowLabel.className = "label_RZX";
-        radiusRowLabel.innerHTML = "Radius";
+        radiusRowLabel.localeKey = "Radius";
         const radiusButtonsPanel = document.createElement("div");
         radiusButtonsPanel.className = "content_ZIz";
         radiusButtonsPanel.id = "YYTC-radius-buttons-panel";
@@ -236,6 +248,9 @@ if (typeof yyTreeController.buildRadiusChanger !== 'function') {
         if (treeControllerToolModeRow != null) {
             treeControllerToolModeRow.insertAdjacentElement("afterend", radiusRow);
         }
+        yyTreeController.applyLocalization(radiusRow);
+        yyTreeController.setTooltip(upButton.id, "radius-up-arrow");
+        yyTreeController.setTooltip(downButton.id, "radius-down-arrow");
     }
 }
 
@@ -277,7 +292,7 @@ if (typeof yyTreeController.decreaseRadius !== 'function') {
     }
 }
 if (typeof yyTreeController.buildActivateToolButton !== 'function') {
-    yyTreeController.buildActivateToolButton = function (id, src, buttonsPanel) {
+    yyTreeController.buildActivateToolButton = function (id, src, buttonsPanel, localeKey) {
         const button = document.createElement("button");
         button.id = id;
         button.className = "button_KVN";
@@ -289,6 +304,7 @@ if (typeof yyTreeController.buildActivateToolButton !== 'function') {
             engine.trigger(this.id);
         }
         buttonsPanel.appendChild(button);
+        yyTreeController.setTooltip(id, localeKey);
     }
 }
 
@@ -304,15 +320,15 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         const prefabSetsRowLabel = document.createElement("div");
         prefabSetsRowLabel.id = "YYTC-prefab-label";
         prefabSetsRowLabel.className = "label_RZX";
-        prefabSetsRowLabel.innerHTML = "Sets";
+        prefabSetsRowLabel.localeKey = "Sets";
         const prefabSetsButtonsPanel = document.createElement("div");
         prefabSetsButtonsPanel.className = "content_ZIz";
         prefabSetsButtonsPanel.id = "YYTC-prefab-sets-buttons-panel";
 
 
-        yyTreeController.buildPrefabSetButton("YYTC-wild-deciduous-trees", "coui://uil/Standard/TreesDeciduous.svg", prefabSetsButtonsPanel);
-        yyTreeController.buildPrefabSetButton("YYTC-evergreen-trees", "coui://uil/Standard/TreesNeedle.svg", prefabSetsButtonsPanel);
-        yyTreeController.buildPrefabSetButton("YYTC-wild-bushes", "coui://uil/Standard/Bushes.svg", prefabSetsButtonsPanel);
+        yyTreeController.buildPrefabSetButton("YYTC-wild-deciduous-trees", "coui://uil/Standard/TreesDeciduous.svg", prefabSetsButtonsPanel, "wild-deciduous-trees");
+        yyTreeController.buildPrefabSetButton("YYTC-evergreen-trees", "coui://uil/Standard/TreesNeedle.svg", prefabSetsButtonsPanel, "evergreen-trees");
+        yyTreeController.buildPrefabSetButton("YYTC-wild-bushes", "coui://uil/Standard/Bushes.svg", prefabSetsButtonsPanel, "wild-bushes");
 
         prefabSetsItemContent.appendChild(prefabSetsRowLabel);
         prefabSetsItemContent.appendChild(prefabSetsButtonsPanel);
@@ -325,6 +341,7 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         if (selectedPrefabSetButton != null) {
             selectedPrefabSetButton.classList.add("selected");
         }
+        yyTreeController.applyLocalization(prefabSetsRow);
     }
 }
 
@@ -340,7 +357,7 @@ if (typeof yyTreeController.destroyElementByID !== 'function') {
 }
 
 if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
-    yyTreeController.buildPrefabSetButton = function (id, src, buttonsPanel) {
+    yyTreeController.buildPrefabSetButton = function (id, src, buttonsPanel, localeKey) {
         const button = document.createElement("button");
         button.id = id;
         button.className = "button_KVN";
@@ -363,6 +380,7 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
             engine.trigger('YYTC-Prefab-Set-Changed', yyTreeController.selectedPrefabSet);
         }
         buttonsPanel.appendChild(button);
+        yyTreeController.setTooltip(id, localeKey);
     }
 }
 
@@ -378,7 +396,7 @@ if (typeof yyTreeController.buildRotationRow !== 'function') {
         const rotationRowLabel = document.createElement("div");
         rotationRowLabel.id = "YYTC-rotation-label";
         rotationRowLabel.className = "label_RZX";
-        rotationRowLabel.innerHTML = "Rotation";
+        rotationRowLabel.localeKey = "YY_TREE_CONTROLLER.Rotation";
         const rotationButtonsPanel = document.createElement("div");
         rotationButtonsPanel.className = "content_ZIz";
         rotationButtonsPanel.id = "YYTC-rotation-buttons-panel";
@@ -415,6 +433,9 @@ if (typeof yyTreeController.buildRotationRow !== 'function') {
         } else if (selectedPrefabSetButton != null && !yyTreeController.randomRotation) {
             selectedPrefabSetButton.classList.remove("selected");
         }
+
+        yyTreeController.setTooltip(button.id, "random-rotation");
+        yyTreeController.applyLocalization(rotationRow);
     }
 }
 
@@ -431,3 +452,117 @@ if (typeof yyTreeController.setupToolModeButtons !== 'function') {
         }
     }
 }
+
+// Function to apply translation strings.
+if (typeof yyTreeController.applyLocalization !== 'function') {
+    yyTreeController.applyLocalization = function (target) {
+        if (!target) {
+            return;
+        }
+
+        let targets = target.querySelectorAll('[localeKey]');
+        targets.forEach(function (currentValue) {
+            currentValue.innerHTML = engine.translate(currentValue.getAttribute("localeKey"));
+        });
+    }
+}
+
+// Function to setup tooltip.
+if (typeof yyTreeController.setTooltip !== 'function') {
+    yyTreeController.setTooltip = function (id, toolTipKey) {
+        let target = document.getElementById(id);
+        target.onmouseenter = () => yyTreeController.showTooltip(document.getElementById(id), toolTipKey);
+        target.onmouseleave = yyTreeController.hideTooltip;
+    }
+}
+
+// Function to show a tooltip, creating if necessary.
+if (typeof yyTreeController.showTooltip !== 'function') {
+    yyTreeController.showTooltip = function (parent, tooltipKey) {
+
+        if (!document.getElementById("yytc-tooltip")) {
+            yyTreeController.tooltip = document.createElement("div");
+            yyTreeController.tooltip.id = "yytc-tooltip";
+            yyTreeController.tooltip.style.visibility = "hidden";
+            yyTreeController.tooltip.classList.add("balloon_qJY", "balloon_H23", "up_ehW", "center_hug", "anchored-balloon_AYp", "up_el0");
+            let boundsDiv = document.createElement("div");
+            boundsDiv.classList.add("bounds__AO");
+            let containerDiv = document.createElement("div");
+            containerDiv.classList.add("container_zgM", "container_jfe");
+            let contentDiv = document.createElement("div");
+            contentDiv.classList.add("content_A82", "content_JQV");
+            let arrowDiv = document.createElement("div");
+            arrowDiv.classList.add("arrow_SVb", "arrow_Xfn");
+            let broadDiv = document.createElement("div");
+            yyTreeController.tooltipTitle = document.createElement("div");
+            yyTreeController.tooltipTitle.classList.add("title_lCJ");
+            let paraDiv = document.createElement("div");
+            paraDiv.classList.add("paragraphs_nbD", "description_dNa");
+            yyTreeController.tooltipPara = document.createElement("p");
+            yyTreeController.tooltipPara.setAttribute("cohinline", "cohinline");
+
+            paraDiv.appendChild(yyTreeController.tooltipPara);
+            broadDiv.appendChild(yyTreeController.tooltipTitle);
+            broadDiv.appendChild(paraDiv);
+            containerDiv.appendChild(arrowDiv);
+            contentDiv.appendChild(broadDiv);
+            boundsDiv.appendChild(containerDiv);
+            boundsDiv.appendChild(contentDiv);
+            yyTreeController.tooltip.appendChild(boundsDiv);
+
+            // Append tooltip to screen element.
+            let screenParent = document.getElementsByClassName("game-main-screen_TRK");
+            if (screenParent.length == 0) {
+                screenParent = document.getElementsByClassName("editor-main-screen_m89");
+            }
+            if (screenParent.length > 0) {
+                screenParent[0].appendChild(yyTreeController.tooltip);
+            }
+        }
+
+        // Set text and position.
+        yyTreeController.tooltipTitle.innerHTML = engine.translate("YY_TREE_CONTROLLER." + tooltipKey);
+        yyTreeController.tooltipPara.innerHTML = engine.translate("YY_TREE_CONTROLLER_DESCRIPTION." + tooltipKey);
+
+        // Set visibility tracking to prevent race conditions with popup delay.
+        yyTreeController.tooltipVisibility = "visible";
+
+        // Slightly delay popup by three frames to prevent premature activation and to ensure layout is ready.
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+                window.requestAnimationFrame(() => {
+                    yyTreeController.setTooltipPos(parent);
+                });
+
+            });
+        });
+    }
+}
+
+// Function to adjust the position of a tooltip and make visible.
+if (typeof yyTreeController.setTooltipPos !== 'function') {
+    yyTreeController.setTooltipPos = function (parent) {
+        if (!yyTreeController.tooltip) {
+            return;
+        }
+
+        let tooltipRect = yyTreeController.tooltip.getBoundingClientRect();
+        let parentRect = parent.getBoundingClientRect();
+        let xPos = parentRect.left + ((parentRect.width - tooltipRect.width) / 2);
+        let yPos = parentRect.top - tooltipRect.height;
+        yyTreeController.tooltip.setAttribute("style", "left:" + xPos + "px; top: " + yPos + "px; --posY: " + yPos + "px; --posX:" + xPos + "px");
+
+        yyTreeController.tooltip.style.visibility = yyTreeController.tooltipVisibility;
+    }
+}
+
+// Function to hide the tooltip.
+if (typeof yyTreeController.hideTooltip !== 'function') {
+    yyTreeController.hideTooltip = function () {
+        if (yyTreeController.tooltip) {
+            yyTreeController.tooltipVisibility = "hidden";
+            yyTreeController.tooltip.style.visibility = "hidden";
+        }
+    }
+}
+
