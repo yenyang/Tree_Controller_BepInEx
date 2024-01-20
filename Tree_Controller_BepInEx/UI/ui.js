@@ -206,7 +206,7 @@ if (typeof yyTreeController.buildRadiusChanger !== 'function') {
         const radiusItemContent = document.createElement("div");
         radiusItemContent.className = "item-content_nNz";
 
-        const radiusRowLabel = document.createElement("div");
+        var radiusRowLabel = document.createElement("div");
         radiusRowLabel.id = "YYTC-radius-row-label";
         radiusRowLabel.className = "label_RZX";
         radiusRowLabel.localeKey = "YY_TREE_CONTROLLER.Radius";
@@ -320,7 +320,7 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         const prefabSetsItemContent = document.createElement("div");
         prefabSetsItemContent.className = "item-content_nNz";
 
-        const prefabSetsRowLabel = document.createElement("div");
+        var prefabSetsRowLabel = document.createElement("div");
         prefabSetsRowLabel.id = "YYTC-prefab-label";
         prefabSetsRowLabel.className = "label_RZX";
         prefabSetsRowLabel.localeKey = "YY_TREE_CONTROLLER.Sets";
@@ -398,7 +398,7 @@ if (typeof yyTreeController.buildRotationRow !== 'function') {
         const rotationItemContent = document.createElement("div");
         rotationItemContent.className = "item-content_nNz";
 
-        const rotationRowLabel = document.createElement("div");
+        var rotationRowLabel = document.createElement("div");
         rotationRowLabel.id = "YYTC-rotation-label";
         rotationRowLabel.className = "label_RZX";
         rotationRowLabel.localeKey = "YY_TREE_CONTROLLER.Rotation";
