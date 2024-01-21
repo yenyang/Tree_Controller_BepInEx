@@ -133,7 +133,9 @@ namespace Tree_Controller.Settings
         {
             set
             {
+                bool rotation = RandomRotation;
                 SetDefaults();
+                RandomRotation = rotation;
                 Contra = false;
                 ApplyAndSave();
             }
@@ -143,6 +145,7 @@ namespace Tree_Controller.Settings
         public override void SetDefaults()
         {
             Contra = true;
+            RandomRotation = true;
             DisableTreeGrowth = false;
             ColorVariationSet = ColorVariationSetYYTC.Vanilla;
             UseDeadModelDuringWinter = false;
