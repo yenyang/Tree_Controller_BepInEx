@@ -86,6 +86,12 @@ namespace Tree_Controller.Settings
         public ColorVariationSetYYTC ColorVariationSet { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to use random rotation while plopping trees.
+        /// </summary>
+        [SettingsUIHidden]
+        public bool RandomRotation { get; set; }
+
+        /// <summary>
         /// Sets a value indicating whether . A button for triggering csv reload.
         /// </summary>
         [SettingsUIButton]

@@ -8,6 +8,7 @@ namespace Tree_Controller.Systems
     using System.Collections.Generic;
     using Colossal.Entities;
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Objects;
@@ -39,7 +40,6 @@ namespace Tree_Controller.Systems
         private EntityQuery m_ObjectDefinitionQuery;
         private EntityQuery m_TreePrefabQuery;
         private TreeControllerTool m_TreeControllerTool;
-        private bool m_RandomRotation = true;
         private ILog m_Log;
 
         /// <summary>
@@ -47,15 +47,6 @@ namespace Tree_Controller.Systems
         /// </summary>
         public TreeObjectDefinitionSystem()
         {
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the random is enabled.
-        /// </summary>
-        public bool RandomRotation
-        {
-            get { return m_RandomRotation; }
-            set { m_RandomRotation = value; }
         }
 
         /// <inheritdoc/>
@@ -128,7 +119,7 @@ namespace Tree_Controller.Systems
                 }
 
                 Unity.Mathematics.Random random = new ((uint)(Mathf.Abs(currentObjectDefinition.m_Position.x) + Mathf.Abs(currentObjectDefinition.m_Position.z)) * 1000);
-                if (m_RandomRotation && !m_ObjectToolSystem.brushing)
+                if (TreeControllerMod.Settings.RandomRotation && !m_ObjectToolSystem.brushing)
                 {
                     currentObjectDefinition.m_Rotation = Unity.Mathematics.quaternion.RotateY(random.NextFloat(2f * (float)Math.PI));
                 }
