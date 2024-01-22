@@ -705,8 +705,13 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            m_TreeControllerTool.ClearSelectedTreePrefabs();
-            ResetPrefabSets();
+            if (!Keyboard.current[Key.LeftCtrl].isPressed)
+            {
+                m_TreeControllerTool.ClearSelectedTreePrefabs();
+                ResetPrefabSets();
+            }
+
+            SelectPrefab(prefab);
 
             Enabled = true;
             m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;

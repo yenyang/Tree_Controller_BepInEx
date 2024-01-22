@@ -175,11 +175,6 @@ namespace Tree_Controller.Tools
                     m_OriginallySelectedPrefab = prefab;
                 }
 
-                if (m_SelectedTreePrefabEntities.Length > 1)
-                {
-                    m_TreeControllerUISystem.SelectPrefab(prefab);
-                }
-
                 m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(SelectTreePrefab)} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
             }
         }
@@ -261,6 +256,7 @@ namespace Tree_Controller.Tools
                     m_TreeControllerUISystem.ResetPrefabSets();
                 }
 
+                m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
                 SelectTreePrefab(prefab);
                 return true;
             }
