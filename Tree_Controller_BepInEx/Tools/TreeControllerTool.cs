@@ -232,7 +232,7 @@ namespace Tree_Controller.Tools
         /// Gets a list of the PrefabBases of the prefabs that have been selected.
         /// </summary>
         /// <returns>List of PrefabBases.</returns>
-        public List<PrefabBase> GetSelectedPrefabNames()
+        public List<PrefabBase> GetSelectedPrefabs()
         {
             List<PrefabBase> names = new List<PrefabBase>();
             foreach (Entity entity in m_SelectedTreePrefabEntities)
