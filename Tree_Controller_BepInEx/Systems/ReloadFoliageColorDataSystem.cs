@@ -10,6 +10,7 @@ namespace Tree_Controller.Systems
     using System.IO;
     using Colossal.Entities;
     using Colossal.Logging;
+    using Colossal.PSI.Environment;
     using Game;
     using Game.Areas;
     using Game.Common;
@@ -62,6 +63,7 @@ namespace Tree_Controller.Systems
         private ClimateSystem m_ClimateSystem;
         private FoliageUtils.Season m_Season = FoliageUtils.Season.Spring;
         private ILog m_Log;
+        private string m_ContentFolder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReloadFoliageColorDataSystem"/> class.
@@ -87,6 +89,8 @@ namespace Tree_Controller.Systems
             m_Log.Info($"{typeof(ReloadFoliageColorDataSystem)}.{nameof(OnCreate)}");
             m_ColorVariationSet = TreeControllerMod.Settings.ColorVariationSet;
             m_VanillaColorSets = new ();
+
+            m_ContentFolder = Path.Combine(EnvPath.kUserDataPath, "ModsData", "Mods_Yenyang_Tree_Controller");
             m_TreePrefabQuery = GetEntityQuery(new EntityQueryDesc[]
             {
                 new EntityQueryDesc
@@ -224,9 +228,9 @@ namespace Tree_Controller.Systems
         /// <param name="currentColorVariation">ColorVariation for tree Prefab and season.</param>
         private void ExportDefaultColorSet(TreeSeasonIdentifier treeSeasonIdentifier, ColorVariation currentColorVariation)
         {
-            if (TreeControllerMod.ModInstallFolder != null)
+            if (m_ContentFolder != null)
             {
-                string foliageColorDataFolderPath = Path.Combine(TreeControllerMod.ModInstallFolder, $"FoliageColorData/");
+                string foliageColorDataFolderPath = Path.Combine(m_ContentFolder, $"FoliageColorData/");
                 System.IO.Directory.CreateDirectory(foliageColorDataFolderPath);
                 string foliageColorDataFilePath = Path.Combine(foliageColorDataFolderPath, $"{treeSeasonIdentifier.m_PrefabID.GetName()}-{(int)treeSeasonIdentifier.m_Season}{treeSeasonIdentifier.m_Season}.csv");
 #if VERBOSE
@@ -259,9 +263,9 @@ namespace Tree_Controller.Systems
         /// <returns>True is successfully imported colorset. False if unsuccessful.</returns>
         private bool TryImportCustomColorSet(TreeSeasonIdentifier treeSeasonIdentifier, ref ColorSet colorSet)
         {
-            if (TreeControllerMod.ModInstallFolder != null)
+            if (m_ContentFolder != null)
             {
-                string foliageColorDataFolderPath = Path.Combine(TreeControllerMod.ModInstallFolder, $"FoliageColorData/");
+                string foliageColorDataFolderPath = Path.Combine(m_ContentFolder, $"FoliageColorData/");
                 System.IO.Directory.CreateDirectory(foliageColorDataFolderPath);
                 string foliageColorDataFilePath = Path.Combine(foliageColorDataFolderPath, $"{treeSeasonIdentifier.m_PrefabID.GetName()}-{(int)treeSeasonIdentifier.m_Season}{treeSeasonIdentifier.m_Season}.csv");
                 if (File.Exists(foliageColorDataFilePath))

@@ -348,6 +348,11 @@ namespace Tree_Controller.Tools
         {
             if (m_SelectedTreePrefabEntities.Length > 0)
             {
+                for (int i = 0; i < random.NextInt(5); i++)
+                {
+                    random.NextInt();
+                }
+
                 return m_SelectedTreePrefabEntities[random.NextInt(m_SelectedTreePrefabEntities.Length)];
             }
 

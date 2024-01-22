@@ -85,6 +85,7 @@ namespace Tree_Controller.Tools
         private string m_SelectedPrefabSet = string.Empty;
         private bool m_PreviousPanelsCleared = false;
         private bool m_FirstTimeInjectingJS = true;
+        private EntityQuery m_TreePrefabQuery;
 
         /// <summary>
         /// Resets the selected prefab set.
@@ -127,14 +128,27 @@ namespace Tree_Controller.Tools
             m_SelectionRowItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-selection-mode-content.html"), "if (document.getElementById(\"YYTC-selection-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id = \"YYTC-selection-mode-item\"; yyTreeController.AgesElement = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.AgesElement != null) yyTreeController.AgesElement.insertAdjacentElement('afterend', yyTreeController.div);if (typeof yyTreeController.setupYYTCSelectionModeItem == 'function') yyTreeController.setupYYTCSelectionModeItem(); }");
             m_ToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.OptionsPanels = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.OptionsPanels[0] != null) { yyTreeController.OptionsPanels[0].appendChild(yyTreeController.div); if (typeof yyTreeController.setupToolModeButtons == 'function') yyTreeController.setupToolModeButtons(); } }");
             m_AgeChangingToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.panel = document.getElementById(\"tree-controller-panel\"); if (yyTreeController.panel != null) { yyTreeController.panel.appendChild(yyTreeController.div); if (typeof yyTreeController.setupToolModeButtons == 'function') yyTreeController.setupToolModeButtons(); } }");
-
+            m_TreePrefabQuery = GetEntityQuery(new EntityQueryDesc[]
+            {
+                new EntityQueryDesc
+                {
+                    All = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<TreeData>(),
+                    },
+                    None = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<PlaceholderObjectElement>(),
+                    },
+                },
+            });
             if (m_UiView == null)
             {
                 m_Log.Info($"{nameof(TreeControllerUISystem)}.{nameof(OnCreate)} m_UiView == null");
             }
 
             m_Log.Info($"{nameof(TreeControllerUISystem)}.{nameof(OnCreate)}");
-
+            RequireForUpdate(m_TreePrefabQuery);
             Enabled = false;
             base.OnCreate();
         }
