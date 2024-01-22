@@ -102,6 +102,24 @@ namespace Tree_Controller.Tools
             }
         }
 
+        /// <summary>
+        /// Adds selected to the selected prefab.
+        /// </summary>
+        /// <param name="prefab">The selected prefab.</param>
+        public void SelectPrefab(PrefabBase prefab)
+        {
+            if (prefab == null)
+            {
+                return;
+            }
+
+            // This script creates the Tree Controller object if it doesn't exist.
+            UIFileUtils.ExecuteScript(m_UiView, "if (yyTreeController == null) var yyTreeController = {};");
+
+            // This script searches through all img and adds selected if the src of that image contains the name of the prefab.
+            UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{prefab.name}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.add(\"selected\");  }} }} ");
+        }
+
         /// <inheritdoc/>
         protected override void OnCreate()
         {
@@ -257,8 +275,6 @@ namespace Tree_Controller.Tools
 
                     // This script builds the Tool mode item row, tree age item row. And checks if radius row needs to be added.
                     UIFileUtils.ExecuteScript(m_UiView, $"{m_SelectionRowItemScript} if (typeof yyTreeController.checkIfNeedToBuildRadius == 'function') yyTreeController.checkIfNeedToBuildRadius();");
-
-                    UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"StaticObjectPrefab\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.add(\"selected\");  }} }} ");
 
                     // This scripts builds the prefab sets row.
                     UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.ageItem = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageItem != null && typeof yyTreeController.buildPrefabSetsRow == 'function') yyTreeController.buildPrefabSetsRow(yyTreeController.ageItem,'afterend');");
@@ -687,11 +703,6 @@ namespace Tree_Controller.Tools
 
                 Enabled = false;
                 return;
-            }
-
-            if (Keyboard.current[Key.LeftCtrl].isPressed)
-            {
-                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} Control is pressed.");
             }
 
             m_TreeControllerTool.ClearSelectedTreePrefabs();

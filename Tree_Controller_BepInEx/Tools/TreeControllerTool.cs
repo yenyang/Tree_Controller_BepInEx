@@ -175,6 +175,11 @@ namespace Tree_Controller.Tools
                     m_OriginallySelectedPrefab = prefab;
                 }
 
+                if (m_SelectedTreePrefabEntities.Length > 1)
+                {
+                    m_TreeControllerUISystem.SelectPrefab(prefab);
+                }
+
                 m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(SelectTreePrefab)} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
             }
         }
@@ -250,8 +255,12 @@ namespace Tree_Controller.Tools
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
             if (EntityManager.HasComponent<TreeData>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
-                ClearSelectedTreePrefabs(); // When custom sets becomes a thing there will need to be a way to add multiple prefabs.
-                m_TreeControllerUISystem.ResetPrefabSets();
+                if (!Keyboard.current[Key.LeftCtrl].isPressed)
+                {
+                    ClearSelectedTreePrefabs();
+                    m_TreeControllerUISystem.ResetPrefabSets();
+                }
+
                 SelectTreePrefab(prefab);
                 return true;
             }
