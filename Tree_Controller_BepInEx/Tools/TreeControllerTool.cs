@@ -228,6 +228,24 @@ namespace Tree_Controller.Tools
             return ages;
         }
 
+        /// <summary>
+        /// Gets a list of the PrefabBases of the prefabs that have been selected.
+        /// </summary>
+        /// <returns>List of PrefabBases.</returns>
+        public List<PrefabBase> GetSelectedPrefabNames()
+        {
+            List<PrefabBase> names = new List<PrefabBase>();
+            foreach (Entity entity in m_SelectedTreePrefabEntities)
+            {
+                if (m_PrefabSystem.TryGetPrefab(entity, out PrefabBase prefab))
+                {
+                    names.Add(prefab);
+                }
+            }
+
+            return names;
+        }
+
         /// <inheritdoc/>
         public override PrefabBase GetPrefab()
         {
