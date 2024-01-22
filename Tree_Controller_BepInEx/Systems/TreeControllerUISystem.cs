@@ -233,6 +233,8 @@ namespace Tree_Controller.Tools
                     return;
                 }
 
+                m_BoundEvents.Add(m_UiView.RegisterForEvent("TClog", (Action<string>)LogFromJS));
+
                 if (m_TreeControllerTool.GetPrefab() == null) // Tree age changing only.
                 {
                     // This script builds the Tool mode item row, tree age item row. And checks if radius row needs to be added.
@@ -253,7 +255,9 @@ namespace Tree_Controller.Tools
                     UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildTreeAgeItem == 'function') { yyTreeController.buildTreeAgeItem(yyTreeController.entities[0].firstChild, 'beforebegin'); } }");
 
                     // This script builds the Tool mode item row, tree age item row. And checks if radius row needs to be added.
-                    UIFileUtils.ExecuteScript(m_UiView, $"{m_SelectionRowItemScript} yyTreeController.checkIfNeedToBuildRadius();");
+                    UIFileUtils.ExecuteScript(m_UiView, $"{m_SelectionRowItemScript} if (typeof yyTreeController.checkIfNeedToBuildRadius == 'function') yyTreeController.checkIfNeedToBuildRadius();");
+
+                    UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"StaticObjectPrefab\") {{ engine.trigger('TClog', yyTreeController.tagElements[yyTreeController.i].src); }} }} ");
 
                     // This scripts builds the prefab sets row.
                     UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.ageItem = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageItem != null && typeof yyTreeController.buildPrefabSetsRow == 'function') yyTreeController.buildPrefabSetsRow(yyTreeController.ageItem,'afterend');");
@@ -271,7 +275,6 @@ namespace Tree_Controller.Tools
                 // Register event callbacks from UI JavaScript.
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ChangeSelectedAges", (Action<bool[]>)ChangeSelectedAges));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ToolModeChanged", (Action<string>)ChangeToolMode));
-                m_BoundEvents.Add(m_UiView.RegisterForEvent("TClog", (Action<string>)LogFromJS));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-AdjustRadius", (Action<int>)ChangeRadius));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-brush-trees", (Action)ActivateBrushTrees));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-plop-tree", (Action)ActivatePlopTrees));
