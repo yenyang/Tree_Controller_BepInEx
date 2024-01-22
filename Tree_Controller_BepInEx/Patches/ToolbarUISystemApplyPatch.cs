@@ -33,13 +33,8 @@ namespace Tree_Controller.Patches
             {
                 return;
             }
-
-            List<PrefabBase> selectedPrefabs = treeControllerTool.GetSelectedPrefabNames();
             TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
-            foreach (PrefabBase prefab in selectedPrefabs)
-            {
-                treeControllerUISystem.SelectPrefab(prefab);
-            }
+            treeControllerUISystem.UpdateSelectionSet = true;
         }
     }
 }

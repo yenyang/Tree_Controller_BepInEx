@@ -89,7 +89,7 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER.change-prefab-tool", "Change Tree Type Tool" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION.change-prefab-tool", "A custom tool for changing the type and/or age of existing trees." },
                 { "YY_TREE_CONTROLLER.wild-deciduous-trees", "Wild Deciduous" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION.wild-deciduous-trees", "Alder, Birch, Longdon Plane, Linden, Hickory, Chestnut, and Oak. Does not include Apple and Poplar." },
+                { "YY_TREE_CONTROLLER_DESCRIPTION.wild-deciduous-trees", "Alder, Birch, London Plane, Linden, Hickory, Chestnut, and Oak. Does not include Apple and Poplar." },
                 { "YY_TREE_CONTROLLER.evergreen-trees", "Evergreen" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION.evergreen-trees", "Pine and spruce trees." },
                 { "YY_TREE_CONTROLLER.wild-bushes", "Wild Bushes" },

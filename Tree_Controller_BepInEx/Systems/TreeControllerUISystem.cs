@@ -14,6 +14,7 @@ namespace Tree_Controller.Tools
     using Game.SceneFlow;
     using Game.Tools;
     using Game.UI;
+    using Tree_Controller.Patches;
     using Tree_Controller.Systems;
     using Tree_Controller.Utils;
     using Unity.Entities;
@@ -87,6 +88,16 @@ namespace Tree_Controller.Tools
         private bool m_PreviousPanelsCleared = false;
         private bool m_FirstTimeInjectingJS = true;
         private EntityQuery m_TreePrefabQuery;
+        private bool m_UpdateSelectionSet = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
+        /// </summary>
+        public bool UpdateSelectionSet
+        {
+            get => m_UpdateSelectionSet; 
+            set => m_UpdateSelectionSet = value;
+        }
 
         /// <summary>
         /// Resets the selected prefab set.
@@ -189,6 +200,16 @@ namespace Tree_Controller.Tools
                     else
                     {
                         UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-selection-mode-item\") == null) engine.trigger('YYTC-selection-mode-item-missing');");
+
+                        if (m_UpdateSelectionSet)
+                        {
+                            List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabNames();
+                            foreach (PrefabBase prefab in selectedPrefabs)
+                            {
+                                SelectPrefab(prefab);
+                                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} {prefab.name}");
+                            }
+                        }
                     }
 
                     return;
