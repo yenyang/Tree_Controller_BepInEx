@@ -574,4 +574,3 @@ if (typeof yyTreeController.hideTooltip !== 'function') {
         }
     }
 }
-

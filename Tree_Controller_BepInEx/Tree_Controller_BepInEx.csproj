@@ -79,6 +79,7 @@
     </Reference>
     <Reference Include="Colossal.PSI.Common">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.PSI.Common.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Colossal.UI">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.UI.dll</HintPath>
@@ -102,9 +103,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="Unity.Burst">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.Burst.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Burst.Unsafe">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.Burst.Unsafe.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Collections">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.Collections.dll</HintPath>

@@ -257,7 +257,7 @@ namespace Tree_Controller.Tools
                     // This script builds the Tool mode item row, tree age item row. And checks if radius row needs to be added.
                     UIFileUtils.ExecuteScript(m_UiView, $"{m_SelectionRowItemScript} if (typeof yyTreeController.checkIfNeedToBuildRadius == 'function') yyTreeController.checkIfNeedToBuildRadius();");
 
-                    UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"StaticObjectPrefab\") {{ engine.trigger('TClog', yyTreeController.tagElements[yyTreeController.i].src); }} }} ");
+                    UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"StaticObjectPrefab\") && typeof yyTreeController.onPrefabClick == 'function') {{ yyTreeController.tagElements[yyTreeController.i].parentNode.addEventListener(\"click\", function (ev) {{ if (ev.ctrlKey) {{  engine.trigger('PrefabClickedWithControl'); }} }});  }} }} ");
 
                     // This scripts builds the prefab sets row.
                     UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.ageItem = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageItem != null && typeof yyTreeController.buildPrefabSetsRow == 'function') yyTreeController.buildPrefabSetsRow(yyTreeController.ageItem,'afterend');");
@@ -266,6 +266,7 @@ namespace Tree_Controller.Tools
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-Prefab-Set-Changed", (Action<string>)ChangePrefabSet));
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ActivateAgeChange", (Action)ActivateTreeControllerTool));
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-selection-mode-item-missing", (Action)ResetPanel));
+                    m_BoundEvents.Add(m_UiView.RegisterForEvent("PrefabClickedWithControl", (Action)ResetPanel));
 
                     // This script builds and sets up the Tool Mode item row.
                     UIFileUtils.ExecuteScript(m_UiView, $"{m_ToolModeItemScript} yyTreeController.selectedToolMode = document.getElementById(\"YYTC-ActivatePrefabChange\"); if (yyTreeController.selectedToolMode != null) yyTreeController.selectedToolMode.classList.add(\"selected\");");
@@ -514,6 +515,14 @@ namespace Tree_Controller.Tools
             m_ToolSystem.activeTool = m_ObjectToolSystem;
         }
 
+
+        /// <summary>
+        /// activates tree controller tool.
+        /// </summary>
+        private void PrefabClickedWithControl()
+        {
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(PrefabClickedWithControl)}");
+        }
 
 
         /// <summary>
