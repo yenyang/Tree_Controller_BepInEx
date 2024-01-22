@@ -270,8 +270,8 @@ namespace Tree_Controller.Tools
             {
                 if (!Keyboard.current[Key.LeftCtrl].isPressed)
                 {
-                    ClearSelectedTreePrefabs();
                     m_TreeControllerUISystem.ResetPrefabSets();
+                    ClearSelectedTreePrefabs();
                 }
 
                 m_ToolSystem.EventPrefabChanged?.Invoke(prefab);

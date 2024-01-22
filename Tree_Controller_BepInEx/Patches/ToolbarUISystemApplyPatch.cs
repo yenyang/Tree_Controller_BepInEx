@@ -4,8 +4,6 @@
 
 namespace Tree_Controller.Patches
 {
-    using System.Collections.Generic;
-    using Game.Prefabs;
     using Game.Tools;
     using Game.UI.InGame;
     using HarmonyLib;
@@ -33,6 +31,7 @@ namespace Tree_Controller.Patches
             {
                 return;
             }
+
             TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
             treeControllerUISystem.UpdateSelectionSet = true;
         }
