@@ -89,6 +89,7 @@ namespace Tree_Controller.Tools
         private EntityQuery m_TreePrefabQuery;
         private bool m_UpdateSelectionSet = false;
         private int m_FrameCount = 0;
+        private bool m_MultiplePrefabsSelected = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
@@ -202,12 +203,22 @@ namespace Tree_Controller.Tools
                     {
                         UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-selection-mode-item\") == null) engine.trigger('YYTC-selection-mode-item-missing');");
 
-                        if (m_UpdateSelectionSet && m_FrameCount > 0)
+                        if (m_MultiplePrefabsSelected == false && m_TreeControllerTool.GetSelectedPrefabs().Count > 1)
+                        {
+                            m_UpdateSelectionSet = true;
+                        }
+
+                        if (m_UpdateSelectionSet && m_FrameCount > 1)
                         {
                             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
                             foreach (PrefabBase prefab in selectedPrefabs)
                             {
                                 SelectPrefab(prefab);
+                            }
+
+                            if (selectedPrefabs.Count > 1)
+                            {
+                                m_MultiplePrefabsSelected = true;
                             }
 
                             m_UpdateSelectionSet = false;
@@ -402,17 +413,38 @@ namespace Tree_Controller.Tools
                 // Need a new anchor.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.ageRow, 'afterend'); }");
 
-                if (m_UpdateSelectionSet && m_FrameCount > 0)
+                List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+
+                if (m_MultiplePrefabsSelected == false && selectedPrefabs.Count > 1)
                 {
-                    List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+                    m_UpdateSelectionSet = true;
+                }
+
+                if (m_MultiplePrefabsSelected && m_ObjectToolSystem.prefab != m_LastObjectToolPrefab && !selectedPrefabs.Contains(m_ObjectToolSystem.prefab))
+                {
+                    UnselectPrefabs();
+                    m_TreeControllerTool.ClearSelectedTreePrefabs();
+                    m_MultiplePrefabsSelected = false;
+                    ResetPrefabSets();
+                    m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} selectionSet Reset due to prefab changing without toggling OnPrefabChanged");
+                }
+
+                if (m_UpdateSelectionSet && m_FrameCount > 1)
+                {
                     foreach (PrefabBase prefab in selectedPrefabs)
                     {
                         SelectPrefab(prefab);
                     }
 
+                    if (selectedPrefabs.Count > 1)
+                    {
+                        m_MultiplePrefabsSelected = true;
+                    }
+
                     m_UpdateSelectionSet = false;
                     m_FrameCount = 0;
-                } else if (m_UpdateSelectionSet)
+                }
+                else if (m_UpdateSelectionSet)
                 {
                     m_FrameCount++;
                 }
@@ -425,6 +457,11 @@ namespace Tree_Controller.Tools
                 // This script builds the rotation row icon.
                 // Need a new anchor.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null && typeof yyTreeController.buildRotationRow == 'function') { yyTreeController.buildRotationRow(yyTreeController.ageRow, 'afterend'); }");
+
+                if (m_MultiplePrefabsSelected)
+                {
+                    UnselectPrefabs();
+                }
             }
 
             base.OnUpdate();
@@ -546,6 +583,8 @@ namespace Tree_Controller.Tools
             m_Log.Debug("Enable Tool please.");
             m_SelectedPrefabSet = string.Empty;
             UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.selectedPrefabSet = \"\";");
+            UnselectPrefabs();
+            m_MultiplePrefabsSelected = false;
             m_TreeControllerTool.ClearSelectedTreePrefabs();
             m_ToolIsActive = false;
             m_ToolSystem.selected = Entity.Null;
@@ -592,6 +631,12 @@ namespace Tree_Controller.Tools
                 return;
             }
 
+            if (!m_PrefabSetsLookup[prefabSetID].Contains(m_ObjectToolSystem.prefab.GetPrefabID()))
+            {
+                // This script searches through all img and adds removes selected if the src of that image contains the name of the prefab and is the active prefab.
+                UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{m_ObjectToolSystem.prefab.name}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.remove(\"selected\");  }} }} ");
+            }
+
             m_SelectedPrefabSet = prefabSetID;
             foreach (PrefabID id in m_PrefabSetsLookup[prefabSetID])
             {
@@ -599,6 +644,7 @@ namespace Tree_Controller.Tools
                 {
                     m_TreeControllerTool.SelectTreePrefab(prefab);
                     SelectPrefab(prefab);
+                    m_MultiplePrefabsSelected = true;
                 }
             }
         }
@@ -617,6 +663,7 @@ namespace Tree_Controller.Tools
                 }
             }
 
+            m_MultiplePrefabsSelected = false;
             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(UnselectPrefabs)}");
         }
 
@@ -708,6 +755,8 @@ namespace Tree_Controller.Tools
                     return;
                 }
 
+                m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
+                m_TreeControllerTool.SelectTreePrefab(m_ObjectToolSystem.prefab);
                 Enabled = true;
             }
             else
@@ -764,10 +813,10 @@ namespace Tree_Controller.Tools
 
             if (!Keyboard.current[Key.LeftCtrl].isPressed)
             {
-                ResetPrefabSets();
                 m_TreeControllerTool.ClearSelectedTreePrefabs();
             }
 
+            ResetPrefabSets();
             m_TreeControllerTool.SelectTreePrefab(prefab);
 
             Enabled = true;
