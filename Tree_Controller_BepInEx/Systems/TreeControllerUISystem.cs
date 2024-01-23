@@ -88,6 +88,7 @@ namespace Tree_Controller.Tools
         private bool m_FirstTimeInjectingJS = true;
         private EntityQuery m_TreePrefabQuery;
         private bool m_UpdateSelectionSet = false;
+        private int m_FrameCount = 0;
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
@@ -201,7 +202,7 @@ namespace Tree_Controller.Tools
                     {
                         UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-selection-mode-item\") == null) engine.trigger('YYTC-selection-mode-item-missing');");
 
-                        if (m_UpdateSelectionSet)
+                        if (m_UpdateSelectionSet && m_FrameCount > 0)
                         {
                             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
                             foreach (PrefabBase prefab in selectedPrefabs)
@@ -210,6 +211,11 @@ namespace Tree_Controller.Tools
                             }
 
                             m_UpdateSelectionSet = false;
+                            m_FrameCount = 0;
+                        }
+                        else if (m_UpdateSelectionSet)
+                        {
+                            m_FrameCount++;
                         }
                     }
 
@@ -305,7 +311,6 @@ namespace Tree_Controller.Tools
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-Prefab-Set-Changed", (Action<string>)ChangePrefabSet));
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ActivateAgeChange", (Action)ActivateTreeControllerTool));
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-selection-mode-item-missing", (Action)ResetPanel));
-                    m_BoundEvents.Add(m_UiView.RegisterForEvent("PrefabClickedWithControl", (Action)PrefabClickedWithControl));
 
                     // This script builds and sets up the Tool Mode item row.
                     UIFileUtils.ExecuteScript(m_UiView, $"{m_ToolModeItemScript} yyTreeController.selectedToolMode = document.getElementById(\"YYTC-ActivatePrefabChange\"); if (yyTreeController.selectedToolMode != null) yyTreeController.selectedToolMode.classList.add(\"selected\");");
@@ -397,7 +402,7 @@ namespace Tree_Controller.Tools
                 // Need a new anchor.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.ageRow, 'afterend'); }");
 
-                if (m_UpdateSelectionSet)
+                if (m_UpdateSelectionSet && m_FrameCount > 0)
                 {
                     List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
                     foreach (PrefabBase prefab in selectedPrefabs)
@@ -406,6 +411,10 @@ namespace Tree_Controller.Tools
                     }
 
                     m_UpdateSelectionSet = false;
+                    m_FrameCount = 0;
+                } else if (m_UpdateSelectionSet)
+                {
+                    m_FrameCount++;
                 }
             }
             else
@@ -504,8 +513,9 @@ namespace Tree_Controller.Tools
             m_Log.Debug("Enable Tool with Prefab Change please.");
             m_ToolSystem.selected = Entity.Null;
 
-            if (m_SelectedPrefabSet == string.Empty && m_ObjectToolSystem.prefab != null)
+            if (m_SelectedPrefabSet == string.Empty && m_ObjectToolSystem.prefab != null && m_TreeControllerTool.GetSelectedPrefabs().Count <= 1)
             {
+                UnselectPrefabs();
                 m_TreeControllerTool.ClearSelectedTreePrefabs();
                 m_TreeControllerTool.SelectTreePrefab(m_ObjectToolSystem.prefab);
             }
@@ -565,16 +575,6 @@ namespace Tree_Controller.Tools
             m_ToolSystem.activeTool = m_ObjectToolSystem;
         }
 
-
-        /// <summary>
-        /// activates tree controller tool.
-        /// </summary>
-        private void PrefabClickedWithControl()
-        {
-            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(PrefabClickedWithControl)}");
-        }
-
-
         /// <summary>
         /// Lots a string from JS.
         /// </summary>
@@ -598,6 +598,7 @@ namespace Tree_Controller.Tools
                 if (m_PrefabSystem.TryGetPrefab(id, out PrefabBase prefab))
                 {
                     m_TreeControllerTool.SelectTreePrefab(prefab);
+                    SelectPrefab(prefab);
                 }
             }
         }
@@ -662,6 +663,8 @@ namespace Tree_Controller.Tools
 
             if (tool.toolID != "Object Tool" && tool.toolID != "Tree Controller Tool")
             {
+                UnselectPrefabs();
+
                 if (m_ObjectToolPlacingTree == true)
                 {
                     UnshowObjectToolPanelItems();
@@ -739,10 +742,13 @@ namespace Tree_Controller.Tools
             Entity prefabEntity = m_PrefabSystem.GetEntity(m_ObjectToolSystem.prefab);
             if (!EntityManager.HasComponent<TreeData>(prefabEntity) || EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
+                UnselectPrefabs();
+
                 if (m_ObjectToolPlacingTree == true)
                 {
                     m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} calling UnShowObjectToolPanelItems");
                     UnshowObjectToolPanelItems();
+                    m_TreeControllerTool.ClearSelectedTreePrefabs();
                 }
 
                 if (m_ToolIsActive == true)
