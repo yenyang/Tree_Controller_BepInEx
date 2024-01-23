@@ -207,8 +207,9 @@ namespace Tree_Controller.Tools
                             foreach (PrefabBase prefab in selectedPrefabs)
                             {
                                 SelectPrefab(prefab);
-                                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} {prefab.name}");
                             }
+
+                            m_UpdateSelectionSet = false;
                         }
                     }
 
@@ -395,6 +396,17 @@ namespace Tree_Controller.Tools
                 // This script buils the prefab Sets row for brushing sets of trees.
                 // Need a new anchor.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.ageRow, 'afterend'); }");
+
+                if (m_UpdateSelectionSet)
+                {
+                    List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+                    foreach (PrefabBase prefab in selectedPrefabs)
+                    {
+                        SelectPrefab(prefab);
+                    }
+
+                    m_UpdateSelectionSet = false;
+                }
             }
             else
             {
@@ -746,11 +758,11 @@ namespace Tree_Controller.Tools
 
             if (!Keyboard.current[Key.LeftCtrl].isPressed)
             {
-                m_TreeControllerTool.ClearSelectedTreePrefabs();
                 ResetPrefabSets();
+                m_TreeControllerTool.ClearSelectedTreePrefabs();
             }
 
-            SelectPrefab(prefab);
+            m_TreeControllerTool.SelectTreePrefab(prefab);
 
             Enabled = true;
             m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;

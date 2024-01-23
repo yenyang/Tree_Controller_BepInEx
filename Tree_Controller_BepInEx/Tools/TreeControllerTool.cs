@@ -167,7 +167,7 @@ namespace Tree_Controller.Tools
         public void SelectTreePrefab(PrefabBase prefab)
         {
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
-            if (EntityManager.HasComponent<TreeData>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+            if (EntityManager.HasComponent<TreeData>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity) && !m_SelectedTreePrefabEntities.Contains(prefabEntity))
             {
                 m_SelectedTreePrefabEntities.Add(prefabEntity);
                 if (m_OriginallySelectedPrefab == null)
