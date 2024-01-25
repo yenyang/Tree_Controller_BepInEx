@@ -16,6 +16,7 @@ namespace Tree_Controller.Tools
     using Game.UI;
     using Tree_Controller.Systems;
     using Tree_Controller.Utils;
+    using Unity.Collections;
     using Unity.Entities;
     using UnityEngine.InputSystem;
     using static Tree_Controller.Tools.TreeControllerTool;
@@ -105,7 +106,6 @@ namespace Tree_Controller.Tools
         /// </summary>
         public void ResetPrefabSets()
         {
-            UnselectPrefabs();
             m_SelectedPrefabSet = string.Empty;
             UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.selectedPrefabSet = \"\";");
             foreach (KeyValuePair<string, List<PrefabID>> keyValuePair in m_PrefabSetsLookup)
@@ -208,8 +208,10 @@ namespace Tree_Controller.Tools
                             m_UpdateSelectionSet = true;
                         }
 
-                        if (m_UpdateSelectionSet && m_FrameCount > 1)
+                        if (m_UpdateSelectionSet && m_FrameCount > 2)
                         {
+                            UnselectPrefabs();
+
                             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
                             foreach (PrefabBase prefab in selectedPrefabs)
                             {
@@ -219,6 +221,10 @@ namespace Tree_Controller.Tools
                             if (selectedPrefabs.Count > 1)
                             {
                                 m_MultiplePrefabsSelected = true;
+                            }
+                            else
+                            {
+                                m_MultiplePrefabsSelected = false;
                             }
 
                             m_UpdateSelectionSet = false;
@@ -429,8 +435,10 @@ namespace Tree_Controller.Tools
                     m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} selectionSet Reset due to prefab changing without toggling OnPrefabChanged");
                 }
 
-                if (m_UpdateSelectionSet && m_FrameCount > 1)
+                if (m_UpdateSelectionSet && m_FrameCount > 2)
                 {
+                    UnselectPrefabs();
+
                     foreach (PrefabBase prefab in selectedPrefabs)
                     {
                         SelectPrefab(prefab);
@@ -439,6 +447,10 @@ namespace Tree_Controller.Tools
                     if (selectedPrefabs.Count > 1)
                     {
                         m_MultiplePrefabsSelected = true;
+                    }
+                    else
+                    {
+                        m_MultiplePrefabsSelected = false;
                     }
 
                     m_UpdateSelectionSet = false;
@@ -653,13 +665,16 @@ namespace Tree_Controller.Tools
         {
             // This script creates the Tree Controller object if it doesn't exist.
             UIFileUtils.ExecuteScript(m_UiView, "if (yyTreeController == null) var yyTreeController = {};");
-            List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
-            foreach (PrefabBase prefab in selectedPrefabs)
+            NativeArray<Entity> treePrefabEntities = m_TreePrefabQuery.ToEntityArray(Allocator.Temp);
+            foreach (Entity e in treePrefabEntities)
             {
-                if (prefab != m_ToolSystem.activePrefab)
+                if (m_PrefabSystem.TryGetPrefab(e, out PrefabBase prefab))
                 {
-                    // This script searches through all img and adds removes selected if the src of that image contains the name of the prefab and is not the active prefab.
-                    UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{prefab.name}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.remove(\"selected\");  }} }} ");
+                    if (prefab != m_ToolSystem.activePrefab)
+                    {
+                        // This script searches through all img and adds removes selected if the src of that image contains the name of the prefab and is not the active prefab.
+                        UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{prefab.name}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.remove(\"selected\");  }} }} ");
+                    }
                 }
             }
 
@@ -756,7 +771,11 @@ namespace Tree_Controller.Tools
                 }
 
                 m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
-                m_TreeControllerTool.SelectTreePrefab(m_ObjectToolSystem.prefab);
+                if (m_ObjectToolSystem.brushing)
+                {
+                    m_TreeControllerTool.SelectTreePrefab(m_ObjectToolSystem.prefab);
+                }
+
                 Enabled = true;
             }
             else
@@ -811,15 +830,38 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            if (!Keyboard.current[Key.LeftCtrl].isPressed)
+            Enabled = true;
+            ResetPrefabSets();
+            List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+            if (m_ToolSystem.activeTool == m_TreeControllerTool || m_ObjectToolSystem.brushing)
+            {
+                if (!Keyboard.current[Key.LeftCtrl].isPressed)
+                {
+                    UnselectPrefabs();
+                    m_TreeControllerTool.ClearSelectedTreePrefabs();
+                }
+                else if (selectedPrefabs.Contains(prefab) && selectedPrefabs.Count > 1)
+                {
+                    m_TreeControllerTool.UnselectTreePrefab(prefab);
+                    selectedPrefabs.Remove(prefab);
+
+                    // This script searches through all img and adds removes selected if the src of that image contains the name of the prefab.
+                    UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{prefab.name}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.remove(\"selected\");  }} }} ");
+
+                    m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} Unselected {prefab.name}.");
+
+                    m_UpdateSelectionSet = true;
+
+                    m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
+                    return;
+                }
+            }
+            else
             {
                 m_TreeControllerTool.ClearSelectedTreePrefabs();
             }
 
-            ResetPrefabSets();
             m_TreeControllerTool.SelectTreePrefab(prefab);
-
-            Enabled = true;
             m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
         }
     }

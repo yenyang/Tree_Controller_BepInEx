@@ -175,9 +175,29 @@ namespace Tree_Controller.Tools
                     m_OriginallySelectedPrefab = prefab;
                 }
 
-                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(SelectTreePrefab)} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(SelectTreePrefab)} selected {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
             }
         }
+
+        /// <summary>
+        /// Removes the selected Prefab from the list by prefab entity.
+        /// </summary>
+        /// <param name="prefab">PrefabBase from object tool.</param>
+        public void UnselectTreePrefab(PrefabBase prefab)
+        {
+            Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
+            if (m_SelectedTreePrefabEntities.Contains(prefabEntity))
+            {
+                m_SelectedTreePrefabEntities.RemoveAt(m_SelectedTreePrefabEntities.IndexOf(prefabEntity));
+                if (m_SelectedTreePrefabEntities.Length == 0)
+                {
+                    m_OriginallySelectedPrefab = null;
+                }
+
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(UnselectTreePrefab)} removed {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
+            }
+        }
+
 
         /// <summary>
         /// Resets the selected Tree Prefabs.
