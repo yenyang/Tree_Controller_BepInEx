@@ -297,6 +297,17 @@ namespace Tree_Controller.Tools
                 else if (m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_SelectedTreePrefabEntities.Length > 1)
                 {
                     UnselectTreePrefab(prefab);
+                    if (m_OriginallySelectedPrefab == prefab)
+                    {
+                        foreach (Entity e in m_SelectedTreePrefabEntities)
+                        {
+                            if (m_PrefabSystem.TryGetPrefab(e, out PrefabBase nextPrefab))
+                            {
+                                m_OriginallySelectedPrefab = nextPrefab;
+                                break;
+                            }
+                        }
+                    }
                 }
                 else
                 {
