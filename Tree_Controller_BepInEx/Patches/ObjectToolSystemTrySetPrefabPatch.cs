@@ -70,6 +70,10 @@ namespace Tree_Controller.Patches
                         log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Selecting {prefab.name}.");
                         return true;
                     }
+                    else
+                    {
+                        return true;
+                    }
                 }
 
                 log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Bypassing ObjectTool");
