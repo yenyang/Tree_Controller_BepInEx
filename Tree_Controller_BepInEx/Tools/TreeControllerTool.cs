@@ -293,9 +293,16 @@ namespace Tree_Controller.Tools
                     m_TreeControllerUISystem.ResetPrefabSets();
                     ClearSelectedTreePrefabs();
                 }
+                else if (m_SelectedTreePrefabEntities.Contains(prefabEntity))
+                {
+                    UnselectTreePrefab(prefab);
+                }
+                else
+                {
+                    SelectTreePrefab(prefab);
+                }
 
                 m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
-                SelectTreePrefab(prefab);
                 return true;
             }
 

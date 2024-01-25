@@ -20,8 +20,12 @@ namespace Tree_Controller.Patches
     public class ObjectToolSystemTrySetPrefabPatch
     {
         /// <summary>
-        /// Patches ObjectToolSystem.TrySetPrefab. If not using tree controller tool, original methods acts as normal. Will skip it and return false if Tree Controller tool is active tool and an appropriate prefab is selected.
-        /// <param name="prefab">The parameter from method call.</param>
+        /// Patches ObjectToolSystem.TrySetPrefab.
+        /// If not using tree controller tool or selecting multiple prefabs while brushing, original methods acts as normal.
+        /// Will skip it and return false if Tree Controller tool is active tool and an appropriate prefab is selected.
+        /// Will select or unselect prefabs if selecting multiple prefabs while brushing.
+        /// </summary>
+        /// <param name="prefab">The prefab that is trying to be set.</param>
         /// <param name="__result">The result for the original method.</param>
         /// <returns>True if not skipping method. False if skipping method.</returns>
         public static bool Prefix(ref PrefabBase prefab, ref bool __result)
@@ -31,9 +35,7 @@ namespace Tree_Controller.Patches
             TreeControllerTool treeControllerTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
             ToolSystem toolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             ObjectToolSystem objectToolSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>();
-            if ((toolSystem.activeTool != treeControllerTool && toolSystem.activeTool != objectToolSystem)
-                || (toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
-                || (toolSystem.activeTool == objectToolSystem && !Keyboard.current[Key.LeftCtrl].isPressed))
+            if (toolSystem.activeTool != treeControllerTool && toolSystem.activeTool != objectToolSystem)
             {
                 return true;
             }
@@ -42,6 +44,14 @@ namespace Tree_Controller.Patches
             Entity prefabEntity = prefabSystem.GetEntity(prefab);
             if (prefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity) && !prefabSystem.EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
+                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
+                || (toolSystem.activeTool == objectToolSystem && !Keyboard.current[Key.LeftCtrl].isPressed))
+                {
+                    treeControllerTool.ClearSelectedTreePrefabs();
+                    treeControllerTool.SelectTreePrefab(prefab);
+                    return true;
+                }
+
                 if (toolSystem.activeTool == objectToolSystem)
                 {
                     TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();

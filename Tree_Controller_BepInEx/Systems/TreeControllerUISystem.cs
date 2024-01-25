@@ -838,15 +838,9 @@ namespace Tree_Controller.Tools
                 if (!Keyboard.current[Key.LeftCtrl].isPressed)
                 {
                     UnselectPrefabs();
-                    m_TreeControllerTool.ClearSelectedTreePrefabs();
                 }
             }
-            else
-            {
-                m_TreeControllerTool.ClearSelectedTreePrefabs();
-            }
 
-            m_TreeControllerTool.SelectTreePrefab(prefab);
             m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
         }
     }
