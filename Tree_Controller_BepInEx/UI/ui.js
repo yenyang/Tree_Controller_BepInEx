@@ -379,7 +379,7 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
             div.innerHTML = number;
             button.appendChild(div);
 
-            button.onmouseover = function (ev) {
+            button.onmouseenter = function (ev) {
                 if (ev.ctrlKey) {
                     const img = document.createElement("img");
                     img.id = this.id + "_img";
