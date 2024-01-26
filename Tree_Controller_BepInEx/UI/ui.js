@@ -379,29 +379,6 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
             div.className = "yy_tc_centered";
             div.innerHTML = number;
             button.appendChild(div);
-        } else {
-            const img = document.createElement("img");
-            img.className = "icon_Ysc";
-            img.src = src;
-            button.appendChild(img);
-        }
-        button.onclick = function () {
-            const oldSelectedButton = document.getElementById(yyTreeController.selectedPrefabSet);
-            if (oldSelectedButton != null) {
-                oldSelectedButton.classList.remove("selected");
-            }
-            if (yyTreeController.selectedPrefabSet != this.id) {
-                yyTreeController.selectedPrefabSet = this.id;
-                const thisButton = document.getElementById(this.id);
-                thisButton.classList.add("selected");
-            } else {
-                yyTreeController.selectedPrefabSet = "";
-            }
-            engine.trigger('YYTC-Prefab-Set-Changed', yyTreeController.selectedPrefabSet);
-        }
-        buttonsPanel.appendChild(button);
-        button = document.getElementById(id);
-        if (number && button) {
             button.onmouseenter = function (ev) {
                 if (ev.ctrlKey) {
                     const img = document.createElement("img");
@@ -429,7 +406,27 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
                 }
                 yyTreeController.hideTooltip();
             }
+        } else {
+            const img = document.createElement("img");
+            img.className = "icon_Ysc";
+            img.src = src;
+            button.appendChild(img);
         }
+        button.onclick = function () {
+            const oldSelectedButton = document.getElementById(yyTreeController.selectedPrefabSet);
+            if (oldSelectedButton != null) {
+                oldSelectedButton.classList.remove("selected");
+            }
+            if (yyTreeController.selectedPrefabSet != this.id) {
+                yyTreeController.selectedPrefabSet = this.id;
+                const thisButton = document.getElementById(this.id);
+                thisButton.classList.add("selected");
+            } else {
+                yyTreeController.selectedPrefabSet = "";
+            }
+            engine.trigger('YYTC-Prefab-Set-Changed', yyTreeController.selectedPrefabSet);
+        }
+        buttonsPanel.appendChild(button);
     }
 }
 
