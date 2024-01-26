@@ -679,8 +679,15 @@ namespace Tree_Controller.Tools
 
             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
             bool cntrPressed = Keyboard.current[Key.LeftCtrl].isPressed || Keyboard.current[Key.RightCtrl].isPressed;
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} prefabSetID = {prefabSetID}");
+
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} prefabSetID.Contains(custom) = {prefabSetID.Contains("custom")}");
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} selectedPrefabs.Count = {selectedPrefabs.Count}");
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} cntrPressed = {cntrPressed}");
+
             if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && cntrPressed)
             {
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
                 foreach (PrefabBase prefab in selectedPrefabs)
                 {
                     m_PrefabSetsLookup[prefabSetID].Add(prefab.GetPrefabID());
