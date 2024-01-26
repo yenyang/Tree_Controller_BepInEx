@@ -691,7 +691,7 @@ namespace Tree_Controller.Tools
             {
                 m_SelectedPrefabSet = string.Empty;
                 m_TreeControllerTool.SelectTreePrefab(originallySelectedPrefab);
-                UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.prefabSet = document.getElementById({prefabSetID}); if (yyTreeController.prefabSet) yyTreeController.prefabSet.classList.remove(\"selected\");");
+                UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.prefabSet = document.getElementById(\"{prefabSetID}\"); if (yyTreeController.prefabSet) yyTreeController.prefabSet.classList.remove(\"selected\");");
                 m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} could not select empty set");
                 return;
             }
