@@ -354,11 +354,6 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         yyTreeController.setTooltip("YYTC-wild-deciduous-trees", "wild-deciduous-trees");
         yyTreeController.setTooltip("YYTC-evergreen-trees", "evergreen-trees");
         yyTreeController.setTooltip("YYTC-wild-bushes", "wild-bushes");
-        yyTreeController.setTooltip("YYTC-custom-set-1", "custom-set-1");
-        yyTreeController.setTooltip("YYTC-custom-set-2", "custom-set-2");
-        yyTreeController.setTooltip("YYTC-custom-set-3", "custom-set-3");
-        yyTreeController.setTooltip("YYTC-custom-set-4", "custom-set-4");
-        yyTreeController.setTooltip("YYTC-custom-set-5", "custom-set-5");
     }
 }
 
@@ -384,32 +379,6 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
             div.className = "yy_tc_centered";
             div.innerHTML = number;
             button.appendChild(div);
-
-            button.onmouseenter = function (ev) {
-                if (ev.ctrlKey) {
-                    const img = document.createElement("img");
-                    img.id = this.id + "_img";
-                    img.className = "icon_Ysc";
-                    img.src = "coui://uil/Standard/DiskSave.svg";
-                    this.appendChild(img);
-
-                    const div = document.getElementById(this.id + "_number");
-                    if (div) {
-                        div.style.visibility = "hidden";
-                    }
-                }
-            }
-            button.onmouseleave = function () {
-                const img = document.getElementById(this.id + "_img")
-                if (img) {
-                    this.removeChild(img);
-                }
-
-                const div = document.getElementById(this.id + "_number");
-                if (div) {
-                    div.style.visibility = "visible";
-                }
-            }
         } else {
             const img = document.createElement("img");
             img.className = "icon_Ysc";
@@ -431,6 +400,36 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
             engine.trigger('YYTC-Prefab-Set-Changed', yyTreeController.selectedPrefabSet);
         }
         buttonsPanel.appendChild(button);
+        const button = document.getElementById(id);
+        if (number && button) {
+            button.onmouseenter = function (ev) {
+                if (ev.ctrlKey) {
+                    const img = document.createElement("img");
+                    img.id = this.id + "_img";
+                    img.className = "icon_Ysc";
+                    img.src = "coui://uil/Standard/DiskSave.svg";
+                    this.appendChild(img);
+
+                    const div = document.getElementById(this.id + "_number");
+                    if (div) {
+                        div.style.visibility = "hidden";
+                    }
+                }
+                yyTreeController.showTooltip(this, this.id.replace('YYTC-', ''));
+            }
+            button.onmouseleave = function () {
+                const img = document.getElementById(this.id + "_img")
+                if (img) {
+                    this.removeChild(img);
+                }
+
+                const div = document.getElementById(this.id + "_number");
+                if (div) {
+                    div.style.visibility = "visible";
+                }
+                yyTreeController.hideTooltip();
+            }
+        }
     }
 }
 
