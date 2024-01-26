@@ -375,6 +375,7 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
         button.className = "button_KVN";
         if (number) {
             const div = document.createElement("div");
+            div.id = id + "_number";
             div.className = "yy_tc_centered";
             div.innerHTML = number;
             button.appendChild(div);
@@ -386,12 +387,22 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
                     img.className = "icon_Ysc";
                     img.src = "coui://uil/Standard/DiskSave.svg";
                     this.appendChild(img);
+
+                    const div = document.getElementById(this.id + "_number");
+                    if (div) {
+                        div.style.visibility = "hidden";
+                    }
                 }
             }
             button.onmouseleave = function () {
                 const img = document.getElementById(this.id + "_img")
                 if (img) {
                     this.removeChild(img);
+                }
+
+                const div = document.getElementById(this.id + "_number");
+                if (div) {
+                    div.style.visibility = "visible";
                 }
             }
         } else {
