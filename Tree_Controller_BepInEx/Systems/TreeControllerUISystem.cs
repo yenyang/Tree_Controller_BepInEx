@@ -667,11 +667,11 @@ namespace Tree_Controller.Tools
         private void ChangePrefabSet(string prefabSetID)
         {
             PrefabBase originallySelectedPrefab = m_TreeControllerTool.GetPrefab();
-            UnselectPrefabs();
-            m_TreeControllerTool.ClearSelectedTreePrefabs();
 
             if (!m_PrefabSetsLookup.ContainsKey(prefabSetID))
             {
+                UnselectPrefabs();
+                m_TreeControllerTool.ClearSelectedTreePrefabs();
                 m_SelectedPrefabSet = string.Empty;
                 m_TreeControllerTool.SelectTreePrefab(originallySelectedPrefab);
                 return;
@@ -709,6 +709,8 @@ namespace Tree_Controller.Tools
                 UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{m_ObjectToolSystem.prefab.name}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.remove(\"selected\");  }} }} ");
             }
 
+            UnselectPrefabs();
+            m_TreeControllerTool.ClearSelectedTreePrefabs();
             m_SelectedPrefabSet = prefabSetID;
             foreach (PrefabID id in m_PrefabSetsLookup[prefabSetID])
             {
