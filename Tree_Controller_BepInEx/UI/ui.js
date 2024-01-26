@@ -379,7 +379,7 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
             div.innerHTML = number;
             button.appendChild(div);
 
-            button.onmouseover(ev) = function () {
+            button.onmouseover = function (ev) {
                 if (ev.ctrlKey) {
                     const img = document.createElement("img");
                     img.id = this.id + "_img";
@@ -388,7 +388,7 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
                     this.appendChild(img);
                 }
             }
-            button.onmouseleave(ev) = function () {
+            button.onmouseleave = function () {
                 const img = document.getElementById(this.id + "_img")
                 if (img) {
                     this.removeChild(img);
