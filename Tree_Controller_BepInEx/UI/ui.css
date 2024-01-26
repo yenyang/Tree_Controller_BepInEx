@@ -1,0 +1,8 @@
+﻿.yy_tc_centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: var(--fontSizeS);
+    coh-font-fit-mode: shrink
+}

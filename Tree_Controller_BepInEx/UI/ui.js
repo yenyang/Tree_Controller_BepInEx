@@ -332,6 +332,7 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         yyTreeController.buildPrefabSetButton("YYTC-wild-deciduous-trees", "coui://uil/Standard/TreesDeciduous.svg", prefabSetsButtonsPanel);
         yyTreeController.buildPrefabSetButton("YYTC-evergreen-trees", "coui://uil/Standard/TreesNeedle.svg", prefabSetsButtonsPanel);
         yyTreeController.buildPrefabSetButton("YYTC-wild-bushes", "coui://uil/Standard/Bushes.svg", prefabSetsButtonsPanel);
+        yyTreeController.buildPrefabSetButton("YYTC-custom-set-1", "coui://uil/Standard/TreesCustom.svg", prefabSetsButtonsPanel, "1");
 
         prefabSetsItemContent.appendChild(prefabSetsRowLabel);
         prefabSetsItemContent.appendChild(prefabSetsButtonsPanel);
@@ -363,7 +364,7 @@ if (typeof yyTreeController.destroyElementByID !== 'function') {
 }
 
 if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
-    yyTreeController.buildPrefabSetButton = function (id, src, buttonsPanel, localeKey) {
+    yyTreeController.buildPrefabSetButton = function (id, src, buttonsPanel, number) {
         const button = document.createElement("button");
         button.id = id;
         button.className = "button_KVN";
@@ -371,6 +372,12 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
         img.className = "icon_Ysc";
         img.src = src;
         button.appendChild(img);
+        if (number) {
+            const div = document.createElement("div");
+            div.className = "yy_tc_centered";
+            div.innerHTML = number;
+            button.appendChild(div);
+        }
         button.onclick = function () {
             const oldSelectedButton = document.getElementById(yyTreeController.selectedPrefabSet);
             if (oldSelectedButton != null) {

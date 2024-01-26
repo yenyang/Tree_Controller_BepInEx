@@ -179,6 +179,9 @@
     <AdditionalFiles Include="StyleCop\stylecop.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="UI\ui.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="UI\ui.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

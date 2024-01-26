@@ -82,6 +82,7 @@ namespace Tree_Controller.Tools
         private string m_SelectionRowItemScript = string.Empty;
         private string m_ToolModeItemScript = string.Empty;
         private string m_AgeChangingToolModeItemScript = string.Empty;
+        private string m_InjectedCSS = string.Empty;
         private bool m_ToolIsActive;
         private bool m_ObjectToolPlacingTree = false;
         private string m_SelectedPrefabSet = string.Empty;
@@ -160,6 +161,8 @@ namespace Tree_Controller.Tools
             m_SelectionRowItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-selection-mode-content.html"), "if (document.getElementById(\"YYTC-selection-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id = \"YYTC-selection-mode-item\"; yyTreeController.AgesElement = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.AgesElement != null) yyTreeController.AgesElement.insertAdjacentElement('afterend', yyTreeController.div);if (typeof yyTreeController.setupYYTCSelectionModeItem == 'function') yyTreeController.setupYYTCSelectionModeItem(); }");
             m_ToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.OptionsPanels = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.OptionsPanels[0] != null) { yyTreeController.OptionsPanels[0].appendChild(yyTreeController.div); if (typeof yyTreeController.setupToolModeButtons == 'function') yyTreeController.setupToolModeButtons(); } }");
             m_AgeChangingToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.panel = document.getElementById(\"tree-controller-panel\"); if (yyTreeController.panel != null) { yyTreeController.panel.appendChild(yyTreeController.div); if (typeof yyTreeController.setupToolModeButtons == 'function') yyTreeController.setupToolModeButtons(); } }");
+            m_InjectedCSS = UIFileUtils.ReadCSS(Path.Combine(UIFileUtils.AssemblyPath, "ui.css"));
+
             m_TreePrefabQuery = GetEntityQuery(new EntityQueryDesc[]
             {
                 new EntityQueryDesc
@@ -271,9 +274,13 @@ namespace Tree_Controller.Tools
                     m_SelectionRowItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-selection-mode-content.html"), "if (document.getElementById(\"YYTC-selection-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id = \"YYTC-selection-mode-item\"; yyTreeController.AgesElement = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.AgesElement != null) yyTreeController.AgesElement.insertAdjacentElement('afterend', yyTreeController.div);if (typeof yyTreeController.setupYYTCSelectionModeItem == 'function') yyTreeController.setupYYTCSelectionModeItem(); }");
                     m_ToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.OptionsPanels = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.OptionsPanels[0] != null) { yyTreeController.OptionsPanels[0].appendChild(yyTreeController.div); if (typeof yyTreeController.setupToolModeButtons == 'function') yyTreeController.setupToolModeButtons(); } }");
                     m_AgeChangingToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.panel = document.getElementById(\"tree-controller-panel\"); if (yyTreeController.panel != null) { yyTreeController.panel.appendChild(yyTreeController.div); if (typeof yyTreeController.setupToolModeButtons == 'function') yyTreeController.setupToolModeButtons(); } }");
+                    m_InjectedCSS = UIFileUtils.ReadCSS(Path.Combine(UIFileUtils.AssemblyPath, "ui.css"));
                 }
 
                 bool[] ages = m_TreeControllerTool.GetSelectedAges();
+
+                // This script injects all the css styles.
+                UIFileUtils.ExecuteScript(m_UiView, m_InjectedCSS);
 
                 // This script sets the ages map variable in JS.
                 UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.selectedAges = new Map([[\"YYTC-child\", {BoolToString(ages[0])}],[\"YYTC-teen\", {BoolToString(ages[1])}],[\"YYTC-adult\", {BoolToString(ages[2])}],[\"YYTC-elderly\", {BoolToString(ages[3])}],[\"YYTC-dead\", {BoolToString(ages[4])}],]);");

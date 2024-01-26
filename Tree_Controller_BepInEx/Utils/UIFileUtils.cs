@@ -175,7 +175,7 @@ namespace Tree_Controller.Utils
         /// </summary>
         /// <param name="fileName">UI file name to read.</param>
         /// <returns>JavaScript text embedding the CSS (<c>null</c> if empty or error).</returns>
-        private static string ReadCSS(string fileName)
+        internal static string ReadCSS(string fileName)
         {
             try
             {
@@ -186,7 +186,7 @@ namespace Tree_Controller.Utils
                 if (!string.IsNullOrEmpty(css))
                 {
                     // Return JavaScript code with CSS embedded.
-                    return $"yyTreeController.style = document.createElement('style'); yyTreeController.style.type = 'text/css'; yyTreeController.style.innerHTML = \"{EscapeToJavaScript(css)}\"; document.head.appendChild(yyTreeController.style);";
+                    return $"yyTreeController.styleType = document.createElement('style'); yyTreeController.styleType.type = 'text/css'; yyTreeController.styleType.innerHTML = \"{EscapeToJavaScript(css)}\"; document.head.appendChild(yyTreeController.styleType);";
                 }
             }
             catch (Exception e)
