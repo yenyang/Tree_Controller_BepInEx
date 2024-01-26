@@ -370,7 +370,7 @@ if (typeof yyTreeController.destroyElementByID !== 'function') {
 
 if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
     yyTreeController.buildPrefabSetButton = function (id, src, buttonsPanel, number) {
-        const button = document.createElement("button");
+        let button = document.createElement("button");
         button.id = id;
         button.className = "button_KVN";
         if (number) {
@@ -400,7 +400,7 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
             engine.trigger('YYTC-Prefab-Set-Changed', yyTreeController.selectedPrefabSet);
         }
         buttonsPanel.appendChild(button);
-        const button = document.getElementById(id);
+        button = document.getElementById(id);
         if (number && button) {
             button.onmouseenter = function (ev) {
                 if (ev.ctrlKey) {
