@@ -332,7 +332,12 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         yyTreeController.buildPrefabSetButton("YYTC-wild-deciduous-trees", "coui://uil/Standard/TreesDeciduous.svg", prefabSetsButtonsPanel);
         yyTreeController.buildPrefabSetButton("YYTC-evergreen-trees", "coui://uil/Standard/TreesNeedle.svg", prefabSetsButtonsPanel);
         yyTreeController.buildPrefabSetButton("YYTC-wild-bushes", "coui://uil/Standard/Bushes.svg", prefabSetsButtonsPanel);
-        yyTreeController.buildPrefabSetButton("YYTC-custom-set-1", "coui://uil/Standard/TreesCustom.svg", prefabSetsButtonsPanel, "1");
+        yyTreeController.buildPrefabSetButton("YYTC-custom-set-1", "", prefabSetsButtonsPanel, "1");
+        yyTreeController.buildPrefabSetButton("YYTC-custom-set-2", "", prefabSetsButtonsPanel, "2");
+        yyTreeController.buildPrefabSetButton("YYTC-custom-set-3", "", prefabSetsButtonsPanel, "3");
+        yyTreeController.buildPrefabSetButton("YYTC-custom-set-4", "", prefabSetsButtonsPanel, "4");
+        yyTreeController.buildPrefabSetButton("YYTC-custom-set-5", "", prefabSetsButtonsPanel, "5");
+
 
         prefabSetsItemContent.appendChild(prefabSetsRowLabel);
         prefabSetsItemContent.appendChild(prefabSetsButtonsPanel);
@@ -368,16 +373,33 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
         const button = document.createElement("button");
         button.id = id;
         button.className = "button_KVN";
-        const img = document.createElement("img");
-        img.className = "icon_Ysc";
-        img.src = src;
         if (number) {
             const div = document.createElement("div");
             div.className = "yy_tc_centered";
             div.innerHTML = number;
-            img.appendChild(div);
+            button.appendChild(div);
+
+            button.onmouseover(ev) = function () {
+                if (ev.ctrlKey) {
+                    const img = document.createElement("img");
+                    img.id = this.id + "_img";
+                    img.className = "icon_Ysc";
+                    img.src = "coui://uil/Standard/DiskSave.svg";
+                    this.appendChild(img);
+                }
+            }
+            button.onmouseleave(ev) = function () {
+                const img = document.getElementById(this.id + "_img")
+                if (img) {
+                    this.removeChild(img);
+                }
+            }
+        } else {
+            const img = document.createElement("img");
+            img.className = "icon_Ysc";
+            img.src = src;
+            button.appendChild(img);
         }
-        button.appendChild(img);
         button.onclick = function () {
             const oldSelectedButton = document.getElementById(yyTreeController.selectedPrefabSet);
             if (oldSelectedButton != null) {
