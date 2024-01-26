@@ -371,13 +371,13 @@ if (typeof yyTreeController.buildPrefabSetButton !== 'function') {
         const img = document.createElement("img");
         img.className = "icon_Ysc";
         img.src = src;
-        button.appendChild(img);
         if (number) {
             const div = document.createElement("div");
             div.className = "yy_tc_centered";
             div.innerHTML = number;
-            button.appendChild(div);
+            img.appendChild(div);
         }
+        button.appendChild(img);
         button.onclick = function () {
             const oldSelectedButton = document.getElementById(yyTreeController.selectedPrefabSet);
             if (oldSelectedButton != null) {

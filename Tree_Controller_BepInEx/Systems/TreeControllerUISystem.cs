@@ -383,6 +383,20 @@ namespace Tree_Controller.Tools
             {
                 bool[] ages = m_TreeControllerTool.GetSelectedAges();
 
+                if (m_InjectedJS == string.Empty)
+                {
+                    m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} m_InjectedJS is empty!!! Did you forget to include the ui.js file in the mod install folder?");
+                    m_InjectedJS = UIFileUtils.ReadJS(Path.Combine(UIFileUtils.AssemblyPath, "ui.js"));
+                    m_TreeControllerPanelScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-selection-mode-item.html"), "if (document.getElementById(\"tree-controller-panel\") == null) { yyTreeController.div.className = \"tool-options-panel_Se6\"; yyTreeController.div.id = \"tree-controller-panel\"; yyTreeController.ToolColumns = document.getElementsByClassName(\"tool-side-column_l9i\"); if (yyTreeController.ToolColumns[0] != null) yyTreeController.ToolColumns[0].appendChild(yyTreeController.div); if (typeof yyTreeController.setupYYTCSelectionModeItem == 'function') yyTreeController.setupYYTCSelectionModeItem(); }");
+                    m_SelectionRowItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-selection-mode-content.html"), "if (document.getElementById(\"YYTC-selection-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id = \"YYTC-selection-mode-item\"; yyTreeController.AgesElement = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.AgesElement != null) yyTreeController.AgesElement.insertAdjacentElement('afterend', yyTreeController.div);if (typeof yyTreeController.setupYYTCSelectionModeItem == 'function') yyTreeController.setupYYTCSelectionModeItem(); }");
+                    m_ToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.OptionsPanels = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.OptionsPanels[0] != null) { yyTreeController.OptionsPanels[0].appendChild(yyTreeController.div); if (typeof yyTreeController.setupToolModeButtons == 'function') yyTreeController.setupToolModeButtons(); } }");
+                    m_AgeChangingToolModeItemScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-tool-mode-content.html"), "if (document.getElementById(\"YYTC-tool-mode-item\") == null) { yyTreeController.div.className = \"item_bZY\"; yyTreeController.div.id =\"YYTC-tool-mode-item\"; yyTreeController.panel = document.getElementById(\"tree-controller-panel\"); if (yyTreeController.panel != null) { yyTreeController.panel.appendChild(yyTreeController.div); if (typeof yyTreeController.setupToolModeButtons == 'function') yyTreeController.setupToolModeButtons(); } }");
+                    m_InjectedCSS = UIFileUtils.ReadCSS(Path.Combine(UIFileUtils.AssemblyPath, "ui.css"));
+                }
+
+                // This script injects all the css styles.
+                UIFileUtils.ExecuteScript(m_UiView, m_InjectedCSS);
+
                 // This script sets the ages map variable in JS.
                 UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.selectedAges = new Map([[\"YYTC-child\", {BoolToString(ages[0])}],[\"YYTC-teen\", {BoolToString(ages[1])}],[\"YYTC-adult\", {BoolToString(ages[2])}],[\"YYTC-elderly\", {BoolToString(ages[3])}],[\"YYTC-dead\", {BoolToString(ages[4])}],]);");
 
@@ -394,6 +408,13 @@ namespace Tree_Controller.Tools
 
                 // This script defines all the JS functions if they do not exist.
                 UIFileUtils.ExecuteScript(m_UiView, m_InjectedJS);
+
+                // If this is the first time injecting the JS, wait a frame to ensure it has time to setup the functions.
+                if (m_FirstTimeInjectingJS)
+                {
+                    m_FirstTimeInjectingJS = false;
+                    return;
+                }
 
                 // This script builds Tree Age item used for brushing trees.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildTreeAgeItem == 'function') { yyTreeController.buildTreeAgeItem(yyTreeController.entities[0].firstChild, 'beforebegin'); } }");
