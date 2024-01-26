@@ -9,6 +9,7 @@ namespace Tree_Controller.Tools
     using System.Collections.Generic;
     using System.IO;
     using cohtml.Net;
+    using Colossal.IO.AssetDatabase.Internal;
     using Colossal.Logging;
     using Game.Prefabs;
     using Game.SceneFlow;
@@ -154,6 +155,11 @@ namespace Tree_Controller.Tools
                 { "YYTC-wild-deciduous-trees", m_VanillaDeciduousPrefabIDs },
                 { "YYTC-evergreen-trees", m_VanillaEvergreenPrefabIDs },
                 { "YYTC-wild-bushes", m_VanillaWildBushPrefabs },
+                { "YYTC-custom-set-1", new List<PrefabID>() },
+                { "YYTC-custom-set-2", new List<PrefabID>() },
+                { "YYTC-custom-set-3", new List<PrefabID>() },
+                { "YYTC-custom-set-4", new List<PrefabID>() },
+                { "YYTC-custom-set-5", new List<PrefabID>() },
             };
 
             m_InjectedJS = UIFileUtils.ReadJS(Path.Combine(UIFileUtils.AssemblyPath, "ui.js"));
@@ -671,7 +677,26 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            if (!m_PrefabSetsLookup[prefabSetID].Contains(m_ObjectToolSystem.prefab.GetPrefabID()))
+            List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+            bool cntrPressed = Keyboard.current[Key.LeftCtrl].isPressed || Keyboard.current[Key.RightCtrl].isPressed;
+            if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && cntrPressed)
+            {
+                foreach (PrefabBase prefab in selectedPrefabs)
+                {
+                    m_PrefabSetsLookup[prefabSetID].Add(prefab.GetPrefabID());
+                }
+            }
+
+            if (m_PrefabSetsLookup[prefabSetID].Count == 0)
+            {
+                m_SelectedPrefabSet = string.Empty;
+                m_TreeControllerTool.SelectTreePrefab(originallySelectedPrefab);
+                UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.prefabSet = document.getElementById({prefabSetID}); if (yyTreeController.prefabSet) yyTreeController.prefabSet.classList.remove(\"selected\");");
+                m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} could not select empty set");
+                return;
+            }
+
+            if (!m_PrefabSetsLookup[prefabSetID].Contains(m_ObjectToolSystem.prefab.GetPrefabID()) && m_ToolSystem.activeTool == m_ObjectToolSystem)
             {
                 // This script searches through all img and adds removes selected if the src of that image contains the name of the prefab and is the active prefab.
                 UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{m_ObjectToolSystem.prefab.name}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.remove(\"selected\");  }} }} ");

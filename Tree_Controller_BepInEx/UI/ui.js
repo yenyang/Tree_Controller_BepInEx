@@ -354,6 +354,11 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         yyTreeController.setTooltip("YYTC-wild-deciduous-trees", "wild-deciduous-trees");
         yyTreeController.setTooltip("YYTC-evergreen-trees", "evergreen-trees");
         yyTreeController.setTooltip("YYTC-wild-bushes", "wild-bushes");
+        yyTreeController.setTooltip("YYTC-custom-set-1", "custom-set-1");
+        yyTreeController.setTooltip("YYTC-custom-set-2", "custom-set-2");
+        yyTreeController.setTooltip("YYTC-custom-set-3", "custom-set-3");
+        yyTreeController.setTooltip("YYTC-custom-set-4", "custom-set-4");
+        yyTreeController.setTooltip("YYTC-custom-set-5", "custom-set-5");
     }
 }
 
