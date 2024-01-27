@@ -954,7 +954,7 @@ namespace Tree_Controller.Tools
 
         private bool TrySaveCustomPrefabSet(string prefabSetID, List<PrefabID> prefabIDs)
         {
-            string fileName = Path.Combine(m_ContentFolder, $"{prefabSetID}.xml");
+            string fileName = Path.Combine(m_ContentFolder, "CustomSets", $"{prefabSetID}.xml");
             CustomSetRepository repository = new (
                 name: LocalizedString.Id($"YY_TREE_CONTROLLER.{prefabSetID}").value,
                 nameLocaleKey: $"YY_TREE_CONTROLLER.{prefabSetID}",
@@ -987,7 +987,7 @@ namespace Tree_Controller.Tools
 
         private bool TryLoadCustomPrefabSet(string prefabSetID)
         {
-            string fileName = Path.Combine(m_ContentFolder, $"{prefabSetID}.xml");
+            string fileName = Path.Combine(m_ContentFolder, "CustomSets", $"{prefabSetID}.xml");
             if (File.Exists(fileName))
             {
                 try
