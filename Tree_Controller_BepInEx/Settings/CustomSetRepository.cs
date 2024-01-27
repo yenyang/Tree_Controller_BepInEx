@@ -2,12 +2,12 @@
 // Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
 // </copyright>
 
-using Game.Prefabs;
-using System.Collections.Generic;
-using Unity.Entities;
-
 namespace Tree_Controller.Settings
 {
+    using System.Collections.Generic;
+    using Game.Prefabs;
+    using Unity.Entities;
+
     /// <summary>
     /// A class to use for XML serialization and deserialization for storing prefabs used in a custom set.
     /// </summary>

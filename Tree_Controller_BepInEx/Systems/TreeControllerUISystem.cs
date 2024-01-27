@@ -16,6 +16,7 @@ namespace Tree_Controller.Tools
     using Game.SceneFlow;
     using Game.Tools;
     using Game.UI;
+    using Game.UI.InGame;
     using Game.UI.Localization;
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
@@ -201,12 +202,9 @@ namespace Tree_Controller.Tools
                 { "YYTC-custom-set-5", m_DefaultCustomSet5Prefabs },
             };
 
-            foreach (KeyValuePair<string, List<PrefabID>> kvp in m_PrefabSetsLookup)
+            for (int i = 3; i < m_PrefabSetsLookup.Count; i++)
             {
-                if (kvp.Key.Contains("custom"))
-                {
-                    TryLoadCustomPrefabSet(kvp.Key);
-                }
+                TryLoadCustomPrefabSet($"YYTC-custom-set-{i}");
             }
 
             m_InjectedJS = UIFileUtils.ReadJS(Path.Combine(UIFileUtils.AssemblyPath, "ui.js"));
@@ -1022,6 +1020,8 @@ namespace Tree_Controller.Tools
                         m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(TryLoadCustomPrefabSet)} Saved {prefabSetID}'s default values because the file didn't exist.");
                     }
                 }
+
+                return false;
             }
 
             return false;
