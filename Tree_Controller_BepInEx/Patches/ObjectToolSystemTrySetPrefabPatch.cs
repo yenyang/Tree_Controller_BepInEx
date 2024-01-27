@@ -44,17 +44,18 @@ namespace Tree_Controller.Patches
             Entity prefabEntity = prefabSystem.GetEntity(prefab);
             if (prefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity) && !prefabSystem.EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
+                TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
                 if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
                 || (toolSystem.activeTool == objectToolSystem && !Keyboard.current[Key.LeftCtrl].isPressed))
                 {
                     treeControllerTool.ClearSelectedTreePrefabs();
+                    treeControllerUISystem.ResetPrefabSets();
                     treeControllerTool.SelectTreePrefab(prefab);
                     return true;
                 }
 
                 if (toolSystem.activeTool == objectToolSystem)
                 {
-                    TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
                     List<PrefabBase> selectedPrefabs = treeControllerTool.GetSelectedPrefabs();
                     if (selectedPrefabs.Contains(prefab) && selectedPrefabs.Count > 1)
                     {

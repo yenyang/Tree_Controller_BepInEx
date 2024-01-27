@@ -184,7 +184,8 @@ namespace Tree_Controller.Tools
             m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_TreeObjectDefinitionSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeObjectDefinitionSystem>();
             m_TreeControllerTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
-            m_ContentFolder = Path.Combine(EnvPath.kUserDataPath, "ModsData", "Mods_Yenyang_Tree_Controller");
+            m_ContentFolder = Path.Combine(EnvPath.kUserDataPath, "ModsData", "Mods_Yenyang_Tree_Controller", "CustomSets");
+            System.IO.Directory.CreateDirectory(m_ContentFolder);
             ToolSystem toolSystem = m_ToolSystem; // I don't know why vanilla game did this.
             m_ToolSystem.EventToolChanged = (Action<ToolBaseSystem>)Delegate.Combine(toolSystem.EventToolChanged, new Action<ToolBaseSystem>(OnToolChanged));
             ToolSystem toolSystem2 = m_ToolSystem;
@@ -202,7 +203,7 @@ namespace Tree_Controller.Tools
                 { "YYTC-custom-set-5", m_DefaultCustomSet5Prefabs },
             };
 
-            for (int i = 3; i < m_PrefabSetsLookup.Count; i++)
+            for (int i = 1; i <= 5; i++)
             {
                 TryLoadCustomPrefabSet($"YYTC-custom-set-{i}");
             }
@@ -954,7 +955,7 @@ namespace Tree_Controller.Tools
 
         private bool TrySaveCustomPrefabSet(string prefabSetID, List<PrefabID> prefabIDs)
         {
-            string fileName = Path.Combine(m_ContentFolder, "CustomSets", $"{prefabSetID}.xml");
+            string fileName = Path.Combine(m_ContentFolder, $"{prefabSetID}.xml");
             CustomSetRepository repository = new (
                 name: LocalizedString.Id($"YY_TREE_CONTROLLER.{prefabSetID}").value,
                 nameLocaleKey: $"YY_TREE_CONTROLLER.{prefabSetID}",
@@ -962,18 +963,18 @@ namespace Tree_Controller.Tools
                 descriptionLocaleKey: $"YY_TREE_CONTROLLER_DESCRIPTION.{prefabSetID}",
                 customSet: prefabIDs);
 
+            m_PrefabSetsLookup[prefabSetID].Clear();
+            foreach (PrefabID prefab in prefabIDs)
+            {
+                m_PrefabSetsLookup[prefabSetID].Add(prefab);
+            }
+
             try
             {
                 XmlSerializer serTool = new XmlSerializer(typeof(CustomSetRepository)); // Create serializer
                 using (System.IO.FileStream file = System.IO.File.Create(fileName)) // Create file
                 {
                     serTool.Serialize(file, repository); // Serialize whole properties
-                }
-
-                m_PrefabSetsLookup[prefabSetID].Clear();
-                foreach (PrefabID prefab in prefabIDs)
-                {
-                    m_PrefabSetsLookup[prefabSetID].Add(prefab);
                 }
 
                 return true;
@@ -987,7 +988,7 @@ namespace Tree_Controller.Tools
 
         private bool TryLoadCustomPrefabSet(string prefabSetID)
         {
-            string fileName = Path.Combine(m_ContentFolder, "CustomSets", $"{prefabSetID}.xml");
+            string fileName = Path.Combine(m_ContentFolder, $"{prefabSetID}.xml");
             if (File.Exists(fileName))
             {
                 try
@@ -1009,19 +1010,6 @@ namespace Tree_Controller.Tools
                     m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(TryLoadCustomPrefabSet)} Could not get default values for Set {prefabSetID}. Encountered exception {ex}");
                     return false;
                 }
-            }
-
-            if (m_PrefabSetsLookup.ContainsKey(prefabSetID))
-            {
-                if (m_PrefabSetsLookup[prefabSetID].Count > 0)
-                {
-                    if (TrySaveCustomPrefabSet(prefabSetID, m_PrefabSetsLookup[prefabSetID]))
-                    {
-                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(TryLoadCustomPrefabSet)} Saved {prefabSetID}'s default values because the file didn't exist.");
-                    }
-                }
-
-                return false;
             }
 
             return false;
