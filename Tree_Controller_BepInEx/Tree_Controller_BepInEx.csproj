@@ -147,6 +147,7 @@
     <Compile Include="Patches\ToolbarUISystemApplyPatch.cs" />
     <Compile Include="Patches\ObjectToolSystemTrySetPrefabPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings\CustomSetRepository.cs" />
     <Compile Include="Settings\LocaleEN.cs" />
     <Compile Include="Settings\TreeControllerSettings.cs" />
     <Compile Include="StyleCop\GlobalSuppressions.cs" />

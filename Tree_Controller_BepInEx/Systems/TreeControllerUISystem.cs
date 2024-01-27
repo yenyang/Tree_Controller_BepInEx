@@ -8,13 +8,16 @@ namespace Tree_Controller.Tools
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Xml.Serialization;
     using cohtml.Net;
-    using Colossal.IO.AssetDatabase.Internal;
     using Colossal.Logging;
+    using Colossal.PSI.Environment;
     using Game.Prefabs;
     using Game.SceneFlow;
     using Game.Tools;
     using Game.UI;
+    using Game.UI.Localization;
+    using Tree_Controller.Settings;
     using Tree_Controller.Systems;
     using Tree_Controller.Utils;
     using Unity.Collections;
@@ -50,6 +53,40 @@ namespace Tree_Controller.Tools
             { new PrefabID("StaticObjectPrefab", "GreenBushWild02") },
             { new PrefabID("StaticObjectPrefab", "FlowerBushWild01") },
             { new PrefabID("StaticObjectPrefab", "FlowerBushWild02") },
+        };
+
+        private readonly List<PrefabID> m_DefaultCustomSet1Prefabs = new ()
+        {
+            { new PrefabID("StaticObjectPrefab", "NA_LondonPlaneTree01") },
+            { new PrefabID("StaticObjectPrefab", "NA_LindenTree01") },
+            { new PrefabID("StaticObjectPrefab", "NA_HickoryTree01") },
+        };
+
+        private readonly List<PrefabID> m_DefaultCustomSet2Prefabs = new ()
+        {
+            { new PrefabID("StaticObjectPrefab", "EU_AlderTree01") },
+            { new PrefabID("StaticObjectPrefab", "EU_ChestnutTree01") },
+            { new PrefabID("StaticObjectPrefab", "EU_PoplarTree01") },
+        };
+
+        private readonly List<PrefabID> m_DefaultCustomSet3Prefabs = new ()
+        {
+            { new PrefabID("StaticObjectPrefab", "BirchTree01") },
+            { new PrefabID("StaticObjectPrefab", "OakTree01") },
+            { new PrefabID("StaticObjectPrefab", "AppleTree01") },
+        };
+
+        private readonly List<PrefabID> m_DefaultCustomSet4Prefabs = new ()
+        {
+            { new PrefabID("StaticObjectPrefab", "BirchTree01") },
+            { new PrefabID("StaticObjectPrefab", "EU_PoplarTree01") },
+        };
+
+        private readonly List<PrefabID> m_DefaultCustomSet5Prefabs = new ()
+        {
+            { new PrefabID("StaticObjectPrefab", "EU_ChestnutTree01") },
+            { new PrefabID("StaticObjectPrefab", "NA_LondonPlaneTree01") },
+            { new PrefabID("StaticObjectPrefab", "NA_LindenTree01") },
         };
 
         private readonly Dictionary<string, TCSelectionMode> ToolModeLookup = new ()
@@ -90,6 +127,7 @@ namespace Tree_Controller.Tools
         private bool m_PreviousPanelsCleared = false;
         private bool m_FirstTimeInjectingJS = true;
         private EntityQuery m_TreePrefabQuery;
+        private string m_ContentFolder;
         private bool m_UpdateSelectionSet = false;
         private int m_FrameCount = 0;
         private bool m_MultiplePrefabsSelected = false;
@@ -99,7 +137,7 @@ namespace Tree_Controller.Tools
         /// </summary>
         public bool UpdateSelectionSet
         {
-            get => m_UpdateSelectionSet; 
+            get => m_UpdateSelectionSet;
             set => m_UpdateSelectionSet = value;
         }
 
@@ -145,6 +183,7 @@ namespace Tree_Controller.Tools
             m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_TreeObjectDefinitionSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeObjectDefinitionSystem>();
             m_TreeControllerTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
+            m_ContentFolder = Path.Combine(EnvPath.kUserDataPath, "ModsData", "Mods_Yenyang_Tree_Controller");
             ToolSystem toolSystem = m_ToolSystem; // I don't know why vanilla game did this.
             m_ToolSystem.EventToolChanged = (Action<ToolBaseSystem>)Delegate.Combine(toolSystem.EventToolChanged, new Action<ToolBaseSystem>(OnToolChanged));
             ToolSystem toolSystem2 = m_ToolSystem;
@@ -155,12 +194,20 @@ namespace Tree_Controller.Tools
                 { "YYTC-wild-deciduous-trees", m_VanillaDeciduousPrefabIDs },
                 { "YYTC-evergreen-trees", m_VanillaEvergreenPrefabIDs },
                 { "YYTC-wild-bushes", m_VanillaWildBushPrefabs },
-                { "YYTC-custom-set-1", new List<PrefabID>() },
-                { "YYTC-custom-set-2", new List<PrefabID>() },
-                { "YYTC-custom-set-3", new List<PrefabID>() },
-                { "YYTC-custom-set-4", new List<PrefabID>() },
-                { "YYTC-custom-set-5", new List<PrefabID>() },
+                { "YYTC-custom-set-1", m_DefaultCustomSet1Prefabs },
+                { "YYTC-custom-set-2", m_DefaultCustomSet2Prefabs },
+                { "YYTC-custom-set-3", m_DefaultCustomSet3Prefabs },
+                { "YYTC-custom-set-4", m_DefaultCustomSet4Prefabs },
+                { "YYTC-custom-set-5", m_DefaultCustomSet5Prefabs },
             };
+
+            foreach (KeyValuePair<string, List<PrefabID>> kvp in m_PrefabSetsLookup)
+            {
+                if (kvp.Key.Contains("custom"))
+                {
+                    TryLoadCustomPrefabSet(kvp.Key);
+                }
+            }
 
             m_InjectedJS = UIFileUtils.ReadJS(Path.Combine(UIFileUtils.AssemblyPath, "ui.js"));
             m_TreeControllerPanelScript = UIFileUtils.ReadHTML(Path.Combine(UIFileUtils.AssemblyPath, "YYTC-selection-mode-item.html"), "if (document.getElementById(\"tree-controller-panel\") == null) { yyTreeController.div.className = \"tool-options-panel_Se6\"; yyTreeController.div.id = \"tree-controller-panel\"; yyTreeController.ToolColumns = document.getElementsByClassName(\"tool-side-column_l9i\"); if (yyTreeController.ToolColumns[0] != null) yyTreeController.ToolColumns[0].appendChild(yyTreeController.div); if (typeof yyTreeController.setupYYTCSelectionModeItem == 'function') yyTreeController.setupYYTCSelectionModeItem(); }");
@@ -185,7 +232,7 @@ namespace Tree_Controller.Tools
             });
             if (m_UiView == null)
             {
-                m_Log.Info($"{nameof(TreeControllerUISystem)}.{nameof(OnCreate)} m_UiView == null");
+                m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(OnCreate)} m_UiView == null");
             }
 
             m_Log.Info($"{nameof(TreeControllerUISystem)}.{nameof(OnCreate)}");
@@ -679,19 +726,11 @@ namespace Tree_Controller.Tools
 
             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
             bool cntrPressed = Keyboard.current[Key.LeftCtrl].isPressed || Keyboard.current[Key.RightCtrl].isPressed;
-            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} prefabSetID = {prefabSetID}");
-
-            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} prefabSetID.Contains(custom) = {prefabSetID.Contains("custom")}");
-            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} selectedPrefabs.Count = {selectedPrefabs.Count}");
-            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} cntrPressed = {cntrPressed}");
 
             if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && cntrPressed)
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
-                foreach (PrefabBase prefab in selectedPrefabs)
-                {
-                    m_PrefabSetsLookup[prefabSetID].Add(prefab.GetPrefabID());
-                }
+                TrySaveCustomPrefabSet(prefabSetID, selectedPrefabs);
             }
 
             if (m_PrefabSetsLookup[prefabSetID].Count == 0)
@@ -902,6 +941,90 @@ namespace Tree_Controller.Tools
             }
 
             m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
+        }
+
+        private bool TrySaveCustomPrefabSet(string prefabSetID, List<PrefabBase> prefabBases)
+        {
+            List<PrefabID> prefabIDs = new List<PrefabID>();
+            foreach (PrefabBase prefab in prefabBases)
+            {
+                prefabIDs.Add(prefab.GetPrefabID());
+            }
+
+            return TrySaveCustomPrefabSet(prefabSetID, prefabIDs);
+        }
+
+        private bool TrySaveCustomPrefabSet(string prefabSetID, List<PrefabID> prefabIDs)
+        {
+            string fileName = Path.Combine(m_ContentFolder, $"{prefabSetID}.xml");
+            CustomSetRepository repository = new (
+                name: LocalizedString.Id($"YY_TREE_CONTROLLER.{prefabSetID}").value,
+                nameLocaleKey: $"YY_TREE_CONTROLLER.{prefabSetID}",
+                description: LocalizedString.Id($"YY_TREE_CONTROLLER_DESCRIPTION.{prefabSetID}").value,
+                descriptionLocaleKey: $"YY_TREE_CONTROLLER_DESCRIPTION.{prefabSetID}",
+                customSet: prefabIDs);
+
+            try
+            {
+                XmlSerializer serTool = new XmlSerializer(typeof(CustomSetRepository)); // Create serializer
+                using (System.IO.FileStream file = System.IO.File.Create(fileName)) // Create file
+                {
+                    serTool.Serialize(file, repository); // Serialize whole properties
+                }
+
+                m_PrefabSetsLookup[prefabSetID].Clear();
+                foreach (PrefabID prefab in prefabIDs)
+                {
+                    m_PrefabSetsLookup[prefabSetID].Add(prefab);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(TrySaveCustomPrefabSet)} Could not save values for {prefabSetID}. Encountered exception {ex}");
+                return false;
+            }
+        }
+
+        private bool TryLoadCustomPrefabSet(string prefabSetID)
+        {
+            string fileName = Path.Combine(m_ContentFolder, $"{prefabSetID}.xml");
+            if (File.Exists(fileName))
+            {
+                try
+                {
+                    XmlSerializer serTool = new XmlSerializer(typeof(CustomSetRepository)); // Create serializer
+                    using System.IO.FileStream readStream = new System.IO.FileStream(fileName, System.IO.FileMode.Open); // Open file
+                    CustomSetRepository result = (CustomSetRepository)serTool.Deserialize(readStream); // Des-serialize to new Properties
+
+                    if (m_PrefabSetsLookup.ContainsKey(prefabSetID) && result.GetPrefabIDs().Count > 0)
+                    {
+                        m_PrefabSetsLookup[prefabSetID] = result.GetPrefabIDs();
+                    }
+
+                    m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(TryLoadCustomPrefabSet)} loaded repository for {prefabSetID}.");
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(TryLoadCustomPrefabSet)} Could not get default values for Set {prefabSetID}. Encountered exception {ex}");
+                    return false;
+                }
+            }
+
+            if (m_PrefabSetsLookup.ContainsKey(prefabSetID))
+            {
+                if (m_PrefabSetsLookup[prefabSetID].Count > 0)
+                {
+                    if (TrySaveCustomPrefabSet(prefabSetID, m_PrefabSetsLookup[prefabSetID]))
+                    {
+                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(TryLoadCustomPrefabSet)} Saved {prefabSetID}'s default values because the file didn't exist.");
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
