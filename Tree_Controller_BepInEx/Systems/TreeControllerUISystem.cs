@@ -851,8 +851,33 @@ namespace Tree_Controller.Tools
             }
             else if (tool.toolID == "Object Tool")
             {
-                Entity prefabEntity = m_PrefabSystem.GetEntity(m_ObjectToolSystem.prefab);
-                if (!EntityManager.HasComponent<TreeData>(prefabEntity) || EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+                if (m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.prefab, out Entity prefabEntity))
+                {
+                    if (!EntityManager.HasComponent<TreeData>(prefabEntity) || EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+                    {
+                        if (m_ObjectToolPlacingTree == true)
+                        {
+                            UnshowObjectToolPanelItems();
+                        }
+
+                        if (m_ToolIsActive == true)
+                        {
+                            UnshowTreeControllerToolPanel();
+                            UnshowObjectToolPanelItems();
+                            UIFileUtils.ExecuteScript(m_UiView, $"{DestroyElementByID("YYTC-tool-mode-item")} {DestroyElementByID("YYTC-selection-mode-item")} {DestroyElementByID("YYTC-radius-row")}");
+                        }
+
+                        Enabled = false;
+                        return;
+                    }
+
+                    m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
+                    m_TreeControllerTool.SelectTreePrefab(m_ObjectToolSystem.prefab);
+                    m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} selected {m_ObjectToolSystem.prefab.name}");
+
+                    Enabled = true;
+                }
+                else
                 {
                     if (m_ObjectToolPlacingTree == true)
                     {
@@ -869,12 +894,6 @@ namespace Tree_Controller.Tools
                     Enabled = false;
                     return;
                 }
-
-                m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
-                m_TreeControllerTool.SelectTreePrefab(m_ObjectToolSystem.prefab);
-                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} selected {m_ObjectToolSystem.prefab.name}");
-
-                Enabled = true;
             }
             else
             {
@@ -905,8 +924,31 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            Entity prefabEntity = m_PrefabSystem.GetEntity(m_ObjectToolSystem.prefab);
-            if (!EntityManager.HasComponent<TreeData>(prefabEntity) || EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+            if (m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.prefab, out Entity prefabEntity))
+            {
+                if (!EntityManager.HasComponent<TreeData>(prefabEntity) || EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+                {
+                    UnselectPrefabs();
+
+                    if (m_ObjectToolPlacingTree == true)
+                    {
+                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} calling UnShowObjectToolPanelItems");
+                        UnshowObjectToolPanelItems();
+                        m_TreeControllerTool.ClearSelectedTreePrefabs();
+                    }
+
+                    if (m_ToolIsActive == true)
+                    {
+                        UnshowTreeControllerToolPanel();
+                        UnshowObjectToolPanelItems();
+                        UIFileUtils.ExecuteScript(m_UiView, $"{DestroyElementByID("YYTC-tool-mode-item")} {DestroyElementByID("YYTC-selection-mode-item")} {DestroyElementByID("YYTC-radius-row")}");
+                    }
+
+                    Enabled = false;
+                    return;
+                }
+            }
+            else
             {
                 UnselectPrefabs();
 

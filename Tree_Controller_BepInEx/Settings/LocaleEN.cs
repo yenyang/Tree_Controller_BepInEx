@@ -101,15 +101,15 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER.random-rotation", "Random Rotation" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION.random-rotation", "Will randomly rotate the tree as the tree is moved to different positions on the map." },
                 { "YY_TREE_CONTROLLER.custom-set-1", "Custom Set 1" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-1", "Hold Cntr to select multiple types of trees using the toolbar menu. Then hold Cntr and click to save a custom set. Once a set has been saved, click this button to select that set." },
+                { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-1", "Hold Ctrl to select multiple types of trees using the toolbar menu. Then hold Ctrl and click to save a custom set. Once a set has been saved, click this button to select that set." },
                 { "YY_TREE_CONTROLLER.custom-set-2", "Custom Set 2" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-2", "Hold Cntr to select multiple types of trees using the toolbar menu. Then hold Cntr and click to save a custom set. Once a set has been saved, click this button to select that set." },
+                { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-2", "Hold Ctrl to select multiple types of trees using the toolbar menu. Then hold Ctrl and click to save a custom set. Once a set has been saved, click this button to select that set." },
                 { "YY_TREE_CONTROLLER.custom-set-3", "Custom Set 3" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-3", "Hold Cntr to select multiple types of trees using the toolbar menu. Then hold Cntr and click to save a custom set. Once a set has been saved, click this button to select that set." },
+                { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-3", "Hold Ctrl to select multiple types of trees using the toolbar menu. Then hold Ctrl and click to save a custom set. Once a set has been saved, click this button to select that set." },
                 { "YY_TREE_CONTROLLER.custom-set-4", "Custom Set 4" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-4", "Hold Cntr to select multiple types of trees using the toolbar menu. Then hold Cntr and click to save a custom set. Once a set has been saved, click this button to select that set." },
+                { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-4", "Hold Ctrl to select multiple types of trees using the toolbar menu. Then hold Ctrl and click to save a custom set. Once a set has been saved, click this button to select that set." },
                 { "YY_TREE_CONTROLLER.custom-set-5", "Custom Set 5" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-5", "Hold Cntr to select multiple types of trees using the toolbar menu. Then hold Cntr and click to save a custom set. Once a set has been saved, click this button to select that set." },
+                { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-5", "Hold Ctrl to select multiple types of trees using the toolbar menu. Then hold Ctrl and click to save a custom set. Once a set has been saved, click this button to select that set." },
             };
         }
 
