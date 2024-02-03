@@ -141,6 +141,7 @@ namespace Tree_Controller.Systems
                 Entity prefabEntity = Entity.Null;
                 if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef))
                 {
+                    m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} PrefabEntity = {prefabRef.m_Prefab.Index}:{prefabRef.m_Prefab.Version}");
                     prefabEntity = prefabRef.m_Prefab;
                 }
 
@@ -156,6 +157,7 @@ namespace Tree_Controller.Systems
 
                 if (!EntityManager.HasComponent(prefabEntity, ComponentType.ReadOnly<TreeData>()))
                 {
+                    m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} Does not have TreeData component.");
                     EntityManager.SetComponentData(entity, currentObjectDefinition);
                     return;
                 }
