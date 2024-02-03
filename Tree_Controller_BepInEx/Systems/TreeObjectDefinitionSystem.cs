@@ -38,8 +38,8 @@ namespace Tree_Controller.Systems
         private ObjectToolSystem m_ObjectToolSystem;
         private PrefabSystem m_PrefabSystem;
         private EntityQuery m_ObjectDefinitionQuery;
-        private EntityQuery m_TreePrefabQuery;
         private TreeControllerTool m_TreeControllerTool;
+        private NativeList<Entity> m_VegetationPrefabEntities;
         private ILog m_Log;
 
         /// <summary>
@@ -77,44 +77,58 @@ namespace Tree_Controller.Systems
                     },
                 },
             });
-            m_TreePrefabQuery = GetEntityQuery(new EntityQueryDesc[]
-            {
-                new EntityQueryDesc
-                {
-                    All = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<TreeData>(),
-                    },
-                    None = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<PlaceholderObjectElement>(),
-                    },
-                },
-            });
-            RequireForUpdate(m_TreePrefabQuery);
+
             RequireForUpdate(m_ObjectDefinitionQuery);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            m_VegetationPrefabEntities = new NativeList<Entity>(Allocator.Persistent);
+
+            PrefabID vegetationPrefabID = new PrefabID("UIAssetCategoryPrefab", "Vegetation");
+            if (!m_PrefabSystem.TryGetPrefab(vegetationPrefabID, out PrefabBase vegetationPrefab))
+            {
+                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab prefab"));
+                return;
+            }
+
+            if (!m_PrefabSystem.TryGetEntity(vegetationPrefab, out Entity vegetationEntity))
+            {
+                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab entity"));
+                return;
+            }
+
+            if (!EntityManager.TryGetBuffer(vegetationEntity, true, out DynamicBuffer<UIGroupElement> buffer))
+            {
+                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab group element buffer."));
+                return;
+            }
+
+            foreach (UIGroupElement element in buffer)
+            {
+                m_VegetationPrefabEntities.Add(element.m_Prefab);
+            }
+
+            base.OnGameLoadingComplete(purpose, mode);
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
             NativeArray<Entity> entities = m_ObjectDefinitionQuery.ToEntityArray(Allocator.Temp);
-            NativeList<Entity> treePrefabs = m_TreePrefabQuery.ToEntityListAsync(Allocator.Temp, out JobHandle treePrefabJobHandle);
-            treePrefabJobHandle.Complete();
 
             foreach (Entity entity in entities)
             {
-                if (!EntityManager.TryGetComponent<Game.Tools.CreationDefinition>(entity, out CreationDefinition currentCreationDefinition))
+                if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))
                 {
                     entities.Dispose();
-                    treePrefabs.Dispose();
                     return;
                 }
 
-                if (!EntityManager.TryGetComponent<Game.Tools.ObjectDefinition>(entity, out ObjectDefinition currentObjectDefinition) || !treePrefabs.Contains(currentCreationDefinition.m_Prefab))
+                if (!EntityManager.TryGetComponent(entity, out ObjectDefinition currentObjectDefinition) || !m_VegetationPrefabEntities.Contains(currentCreationDefinition.m_Prefab))
                 {
                     entities.Dispose();
-                    treePrefabs.Dispose();
                     return;
                 }
 
@@ -124,14 +138,26 @@ namespace Tree_Controller.Systems
                     currentObjectDefinition.m_Rotation = Unity.Mathematics.quaternion.RotateY(random.NextFloat(2f * (float)Math.PI));
                 }
 
+                Entity prefabEntity = Entity.Null;
+                if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef))
+                {
+                    prefabEntity = prefabRef.m_Prefab;
+                }
+
                 if (m_ObjectToolSystem.brushing)
                 {
-                    Entity prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
+                    prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
                     if (prefabEntity != Entity.Null)
                     {
                         currentCreationDefinition.m_Prefab = prefabEntity;
                         EntityManager.SetComponentData(entity, currentCreationDefinition);
                     }
+                }
+
+                if (!EntityManager.HasComponent(prefabEntity, ComponentType.ReadOnly<TreeData>()))
+                {
+                    EntityManager.SetComponentData(entity, currentObjectDefinition);
+                    return;
                 }
 
                 TreeState nextTreeState = m_TreeControllerTool.GetNextTreeState(ref random);
@@ -148,12 +174,12 @@ namespace Tree_Controller.Systems
             }
 
             entities.Dispose();
-            treePrefabs.Dispose();
         }
 
         /// <inheritdoc/>
         protected override void OnDestroy()
         {
+            m_VegetationPrefabEntities.Dispose();
             base.OnDestroy();
         }
     }

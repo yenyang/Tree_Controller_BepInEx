@@ -1,4 +1,4 @@
-﻿// <copyright file="TreeObjectDefinitionUISystem.cs" company="Yenyangs Mods. MIT License">
+﻿// <copyright file="TreeControllerUISystem.cs" company="Yenyangs Mods. MIT License">
 // Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
 // </copyright>
 
@@ -16,7 +16,6 @@ namespace Tree_Controller.Tools
     using Game.SceneFlow;
     using Game.Tools;
     using Game.UI;
-    using Game.UI.InGame;
     using Game.UI.Localization;
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
@@ -924,7 +923,7 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            if (m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.prefab, out Entity prefabEntity))
+            if (m_ObjectToolSystem.prefab != null && m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.prefab, out Entity prefabEntity))
             {
                 if (!EntityManager.HasComponent<TreeData>(prefabEntity) || EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
                 {
@@ -981,7 +980,10 @@ namespace Tree_Controller.Tools
                 }
             }
 
-            m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
+            if (m_ObjectToolSystem.prefab != null)
+            {
+                m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
+            }
         }
 
         private bool TrySaveCustomPrefabSet(string prefabSetID, List<PrefabBase> prefabBases)
