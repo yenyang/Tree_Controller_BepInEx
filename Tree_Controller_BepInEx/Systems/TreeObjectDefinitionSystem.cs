@@ -138,12 +138,7 @@ namespace Tree_Controller.Systems
                     currentObjectDefinition.m_Rotation = Unity.Mathematics.quaternion.RotateY(random.NextFloat(2f * (float)Math.PI));
                 }
 
-                Entity prefabEntity = Entity.Null;
-                if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef))
-                {
-                    m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} PrefabEntity = {prefabRef.m_Prefab.Index}:{prefabRef.m_Prefab.Version}");
-                    prefabEntity = prefabRef.m_Prefab;
-                }
+                Entity prefabEntity = currentCreationDefinition.m_Prefab;
 
                 if (m_ObjectToolSystem.brushing)
                 {
