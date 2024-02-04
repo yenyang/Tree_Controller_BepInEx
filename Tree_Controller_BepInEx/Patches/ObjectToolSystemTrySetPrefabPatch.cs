@@ -10,6 +10,7 @@ namespace Tree_Controller.Patches
     using Game.Tools;
     using HarmonyLib;
     using Tree_Controller.Tools;
+    using Unity.Collections;
     using Unity.Entities;
     using UnityEngine.InputSystem;
 

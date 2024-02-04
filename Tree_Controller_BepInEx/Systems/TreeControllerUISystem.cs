@@ -139,7 +139,7 @@ namespace Tree_Controller.Tools
         /// <summary>
         /// Gets a list of Entities for VegetationPrefabEntities.
         /// </summary>
-        public List<Entity> VegetationPrefabEntities { get => m_VegetationPrefabEntities.ToList(); }
+        public NativeList<Entity> VegetationPrefabEntities { get => m_VegetationPrefabEntities; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
