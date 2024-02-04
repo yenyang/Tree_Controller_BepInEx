@@ -8,8 +8,8 @@ namespace Tree_Controller.Patches
     using Game.Tools;
     using Game.UI.InGame;
     using HarmonyLib;
-    using System.Linq;
     using Tree_Controller.Tools;
+    using Unity.Collections;
     using Unity.Entities;
 
     /// <summary>
@@ -46,12 +46,12 @@ namespace Tree_Controller.Patches
                 if (prefab != null)
                 {
                     PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
+                    TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
                     if (!prefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
                     {
                         return;
                     }
 
-                    TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
                     if (treeControllerUISystem.VegetationPrefabEntities.Contains(prefabEntity))
                     {
                         treeControllerUISystem.UpdateSelectionSet = true;
