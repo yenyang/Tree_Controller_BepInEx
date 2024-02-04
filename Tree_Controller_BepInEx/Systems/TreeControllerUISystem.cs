@@ -446,9 +446,13 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            if (m_ObjectToolPlacingTree)
+            if (m_ObjectToolPlacingTree && !m_ObjectToolSystem.brushing)
             {
                 UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-rotation-row\") == null) engine.trigger('YYTC-rotation-row-missing');");
+            }
+            else if (m_ObjectToolPlacingTree)
+            {
+                UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-prefab-sets-row\") == null) engine.trigger('YYTC-prefab-sets-row-missing');");
             }
 
             // This script creates the Tree Controller object if it doesn't exist.
@@ -521,8 +525,17 @@ namespace Tree_Controller.Tools
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("TClog", (Action<string>)LogFromJS));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-Prefab-Set-Changed", (Action<string>)ChangePrefabSet));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ChangeSelectedAges", (Action<bool[]>)ChangeSelectedAges));
-                m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-rotation-row-missing", (Action)ResetPanel));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-tree-age-item-missing", (Action)ResetPanel));
+
+                if (!m_ObjectToolSystem.brushing)
+                {
+                    m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-rotation-row-missing", (Action)ResetPanel));
+                }
+                else
+                {
+                    m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-prefab-sets-row-missing", (Action)ResetPanel));
+                }
+
                 m_ObjectToolPlacingTree = true;
             }
 

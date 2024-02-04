@@ -169,8 +169,8 @@ namespace Tree_Controller.Tools
         {
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
 
-            if ((EntityManager.HasComponent<TreeData>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity) && !m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_ToolSystem.activeTool == this) 
-                || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_VegetationPrefabEntities.Contains(prefabEntity)))
+            if ((EntityManager.HasComponent<TreeData>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity) && !m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_ToolSystem.activeTool == this)
+                || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_VegetationPrefabEntities.Contains(prefabEntity) && !m_SelectedTreePrefabEntities.Contains(prefabEntity)))
             {
                 m_SelectedTreePrefabEntities.Add(prefabEntity);
                 if (m_OriginallySelectedPrefab == null)
