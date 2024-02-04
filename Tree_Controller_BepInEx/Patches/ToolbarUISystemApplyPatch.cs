@@ -8,6 +8,7 @@ namespace Tree_Controller.Patches
     using Game.Tools;
     using Game.UI.InGame;
     using HarmonyLib;
+    using System.Linq;
     using Tree_Controller.Tools;
     using Unity.Entities;
 
@@ -50,9 +51,9 @@ namespace Tree_Controller.Patches
                         return;
                     }
 
-                    if (prefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity) && !prefabSystem.EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+                    TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
+                    if (treeControllerUISystem.VegetationPrefabEntities.Contains(prefabEntity))
                     {
-                        TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
                         treeControllerUISystem.UpdateSelectionSet = true;
                         TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using object tool and brushing.");
                     }
