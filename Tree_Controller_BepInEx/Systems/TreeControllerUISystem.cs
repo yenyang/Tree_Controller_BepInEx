@@ -1040,7 +1040,7 @@ namespace Tree_Controller.Tools
                     if (EntityManager.HasComponent<TreeData>(currentPrefabEntity))
                     {
                         UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-tree-age-item\") == null) engine.trigger('YYTC-tree-age-item-missing');");
-                        treeSelected = false;
+                        treeSelected = true;
                         break;
                     }
                 }
