@@ -1016,26 +1016,26 @@ namespace Tree_Controller.Tools
                 {
                     UnselectPrefabs();
                 }
+            }
 
-                List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
-                bool treeSelected = false;
-                foreach (PrefabBase prefabBase in selectedPrefabs)
+            List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+            bool treeSelected = false;
+            foreach (PrefabBase prefabBase in selectedPrefabs)
+            {
+                if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity currentPrefabEntity))
                 {
-                    if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity currentPrefabEntity))
+                    if (EntityManager.HasComponent<TreeData>(currentPrefabEntity))
                     {
-                        if (EntityManager.HasComponent<TreeData>(currentPrefabEntity))
-                        {
-                            UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-tree-age-item\") == null) engine.trigger('YYTC-tree-age-item-missing');");
-                            treeSelected = false;
-                            break;
-                        }
+                        UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-tree-age-item\") == null) engine.trigger('YYTC-tree-age-item-missing');");
+                        treeSelected = false;
+                        break;
                     }
                 }
+            }
 
-                if (!treeSelected)
-                {
-                    UIFileUtils.ExecuteScript(m_UiView, DestroyElementByID("YYTC-tree-age-item"));
-                }
+            if (!treeSelected)
+            {
+                UIFileUtils.ExecuteScript(m_UiView, DestroyElementByID("YYTC-tree-age-item"));
             }
 
             if (m_ObjectToolSystem.prefab != null)
