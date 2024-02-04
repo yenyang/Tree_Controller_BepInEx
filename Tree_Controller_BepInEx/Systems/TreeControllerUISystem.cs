@@ -142,6 +142,15 @@ namespace Tree_Controller.Tools
         public NativeList<Entity> VegetationPrefabEntities { get => m_VegetationPrefabEntities; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
+        /// </summary>
+        public bool UpdateSelectionSet
+        {
+            get => m_UpdateSelectionSet;
+            set => m_UpdateSelectionSet = value;
+        }
+
+        /// <summary>
         /// Resets the selected prefab set.
         /// </summary>
         public void ResetPrefabSets()
@@ -276,7 +285,12 @@ namespace Tree_Controller.Tools
                     {
                         UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-selection-mode-item\") == null) engine.trigger('YYTC-selection-mode-item-missing');");
 
-                        if (m_FrameCount >= 10)
+                        if (m_MultiplePrefabsSelected == false && m_TreeControllerTool.GetSelectedPrefabs().Count > 1)
+                        {
+                            m_UpdateSelectionSet = true;
+                        }
+
+                        if (m_UpdateSelectionSet && m_FrameCount > 2)
                         {
                             UnselectPrefabs();
 
@@ -294,9 +308,10 @@ namespace Tree_Controller.Tools
                                 m_MultiplePrefabsSelected = false;
                             }
 
+                            m_UpdateSelectionSet = false;
                             m_FrameCount = 0;
                         }
-                        else
+                        else if (m_UpdateSelectionSet)
                         {
                             m_FrameCount++;
                         }
