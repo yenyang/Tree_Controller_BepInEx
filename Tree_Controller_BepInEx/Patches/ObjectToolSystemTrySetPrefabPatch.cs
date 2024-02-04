@@ -40,11 +40,15 @@ namespace Tree_Controller.Patches
                 return true;
             }
 
+            TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
             PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
-            Entity prefabEntity = prefabSystem.GetEntity(prefab);
-            if (prefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity) && !prefabSystem.EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+            if (!prefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
             {
-                TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
+                return true;
+            }
+
+            if (treeControllerUISystem.VegetationPrefabEntities.Contains(prefabEntity))
+            {
                 if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
                 || (toolSystem.activeTool == objectToolSystem && !Keyboard.current[Key.LeftCtrl].isPressed))
                 {

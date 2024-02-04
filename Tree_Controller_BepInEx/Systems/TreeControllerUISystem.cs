@@ -8,6 +8,7 @@ namespace Tree_Controller.Tools
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Xml.Serialization;
     using cohtml.Net;
     using Colossal.Entities;
@@ -134,6 +135,11 @@ namespace Tree_Controller.Tools
         private int m_FrameCount = 0;
         private bool m_MultiplePrefabsSelected = false;
         private NativeList<Entity> m_VegetationPrefabEntities;
+
+        /// <summary>
+        /// Gets a list of Entities for VegetationPrefabEntities.
+        /// </summary>
+        public List<Entity> VegetationPrefabEntities { get => m_VegetationPrefabEntities.ToList(); }
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
@@ -516,7 +522,7 @@ namespace Tree_Controller.Tools
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-Prefab-Set-Changed", (Action<string>)ChangePrefabSet));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ChangeSelectedAges", (Action<bool[]>)ChangeSelectedAges));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-rotation-row-missing", (Action)ResetPanel));
-
+                m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-tree-age-item-missing", (Action)ResetPanel));
                 m_ObjectToolPlacingTree = true;
             }
 
@@ -526,7 +532,6 @@ namespace Tree_Controller.Tools
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.destroyElementByID(\"YYTC-rotation-row\");");
 
                 // This script buils the prefab Sets row for brushing sets of trees.
-                // Need a new anchor.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.ageRow, 'afterend'); }");
 
                 if (m_MultiplePrefabsSelected == false && selectedPrefabs.Count > 1)
@@ -1005,12 +1010,31 @@ namespace Tree_Controller.Tools
 
             Enabled = true;
             ResetPrefabSets();
-            List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
             if (m_ToolSystem.activeTool == m_TreeControllerTool || m_ObjectToolSystem.brushing)
             {
                 if (!Keyboard.current[Key.LeftCtrl].isPressed)
                 {
                     UnselectPrefabs();
+                }
+
+                List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+                bool treeSelected = false;
+                foreach (PrefabBase prefabBase in selectedPrefabs)
+                {
+                    if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity currentPrefabEntity))
+                    {
+                        if (EntityManager.HasComponent<TreeData>(currentPrefabEntity))
+                        {
+                            UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-tree-age-item\") == null) engine.trigger('YYTC-tree-age-item-missing');");
+                            treeSelected = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (!treeSelected)
+                {
+                    UIFileUtils.ExecuteScript(m_UiView, DestroyElementByID("YYTC-tree-age-item"));
                 }
             }
 
