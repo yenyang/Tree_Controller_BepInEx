@@ -66,7 +66,6 @@ namespace Tree_Controller.Patches
                     {
                         treeControllerTool.UnselectTreePrefab(prefab);
                         selectedPrefabs.Remove(prefab);
-                        treeControllerUISystem.UpdateSelectionSet = true;
                         if (selectedPrefabs.Contains(toolSystem.activePrefab))
                         {
                             log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Set prefab {prefab.name} to active prefab {toolSystem.activePrefab.name}.");
