@@ -28,6 +28,7 @@ namespace Tree_Controller.Tools
     using Unity.Mathematics;
     using UnityEngine;
     using UnityEngine.InputSystem;
+    using UnityEngine.InputSystem.Controls;
 
     /// <summary>
     /// Tool for controlling tree state or prefab.
@@ -287,8 +288,7 @@ namespace Tree_Controller.Tools
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
             if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
-                bool controlPressed = Keyboard.current[Key.LeftCtrl].isPressed || Keyboard.current[Key.RightCtrl].isPressed;
-                if (!controlPressed)
+                if (!new ButtonControl().isPressed)
                 {
                     m_TreeControllerUISystem.ResetPrefabSets();
                     ClearSelectedTreePrefabs();

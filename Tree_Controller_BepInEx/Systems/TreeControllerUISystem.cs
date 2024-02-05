@@ -26,7 +26,9 @@ namespace Tree_Controller.Tools
     using Tree_Controller.Utils;
     using Unity.Collections;
     using Unity.Entities;
+    using Unity.Jobs;
     using UnityEngine.InputSystem;
+    using UnityEngine.InputSystem.Controls;
     using static Tree_Controller.Tools.TreeControllerTool;
 
     /// <summary>
@@ -134,12 +136,7 @@ namespace Tree_Controller.Tools
         private bool m_UpdateSelectionSet = false;
         private int m_FrameCount = 0;
         private bool m_MultiplePrefabsSelected = false;
-        private NativeList<Entity> m_VegetationPrefabEntities;
-
-        /// <summary>
-        /// Gets a list of Entities for VegetationPrefabEntities.
-        /// </summary>
-        public NativeList<Entity> VegetationPrefabEntities { get => m_VegetationPrefabEntities; }
+        private EntityQuery m_VegetationQuery;
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
@@ -228,43 +225,12 @@ namespace Tree_Controller.Tools
                 m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(OnCreate)} m_UiView == null");
             }
 
+            m_VegetationQuery = GetEntityQuery(ComponentType.ReadOnly<Vegetation>());
+
             m_Log.Info($"{nameof(TreeControllerUISystem)}.{nameof(OnCreate)}");
             Enabled = false;
             base.OnCreate();
         }
-
-        /// <inheritdoc/>
-        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
-        {
-            m_VegetationPrefabEntities = new NativeList<Entity>(Allocator.Persistent);
-
-            PrefabID vegetationPrefabID = new PrefabID("UIAssetCategoryPrefab", "Vegetation");
-            if (!m_PrefabSystem.TryGetPrefab(vegetationPrefabID, out PrefabBase vegetationPrefab))
-            {
-                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab prefab"));
-                return;
-            }
-
-            if (!m_PrefabSystem.TryGetEntity(vegetationPrefab, out Entity vegetationEntity))
-            {
-                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab entity"));
-                return;
-            }
-
-            if (!EntityManager.TryGetBuffer(vegetationEntity, true, out DynamicBuffer<UIGroupElement> buffer))
-            {
-                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab group element buffer."));
-                return;
-            }
-
-            foreach (UIGroupElement element in buffer)
-            {
-                m_VegetationPrefabEntities.Add(element.m_Prefab);
-            }
-
-            base.OnGameLoadingComplete(purpose, mode);
-        }
-
 
         /// <inheritdoc/>
         protected override void OnUpdate()
@@ -290,7 +256,7 @@ namespace Tree_Controller.Tools
                             m_UpdateSelectionSet = true;
                         }
 
-                        if (m_UpdateSelectionSet || m_FrameCount > 10)
+                        if (m_UpdateSelectionSet && m_FrameCount > 10)
                         {
                             UnselectPrefabs();
 
@@ -604,13 +570,6 @@ namespace Tree_Controller.Tools
             base.OnUpdate();
         }
 
-        /// <inheritdoc/>
-        protected override void OnDestroy()
-        {
-            m_VegetationPrefabEntities.Dispose();
-            base.OnDestroy();
-        }
-
         /// <summary>
         /// Removes items and unregisters events for Object tool panel.
         /// </summary>
@@ -776,9 +735,7 @@ namespace Tree_Controller.Tools
             }
 
             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
-            bool cntrPressed = Keyboard.current[Key.LeftCtrl].isPressed || Keyboard.current[Key.RightCtrl].isPressed;
-
-            if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && cntrPressed)
+            if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && new ButtonControl().isPressed)
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
                 TrySaveCustomPrefabSet(prefabSetID, selectedPrefabs);
@@ -817,6 +774,8 @@ namespace Tree_Controller.Tools
         {
             // This script creates the Tree Controller object if it doesn't exist.
             UIFileUtils.ExecuteScript(m_UiView, "if (yyTreeController == null) var yyTreeController = {};");
+            NativeList<Entity> m_VegetationPrefabEntities = m_VegetationQuery.ToEntityListAsync(Allocator.Temp, out JobHandle jobHandle);
+            jobHandle.Complete();
             foreach (Entity e in m_VegetationPrefabEntities)
             {
                 if (m_PrefabSystem.TryGetPrefab(e, out PrefabBase prefab))
@@ -829,6 +788,7 @@ namespace Tree_Controller.Tools
                 }
             }
 
+            m_VegetationPrefabEntities.Dispose();
             m_MultiplePrefabsSelected = false;
             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(UnselectPrefabs)}");
         }
@@ -904,7 +864,7 @@ namespace Tree_Controller.Tools
             {
                 if (m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.prefab, out Entity prefabEntity))
                 {
-                    if (!m_VegetationPrefabEntities.Contains(prefabEntity))
+                    if (!EntityManager.HasComponent<Vegetation>(prefabEntity))
                     {
                         if (m_ObjectToolPlacingTree == true)
                         {
@@ -977,7 +937,7 @@ namespace Tree_Controller.Tools
 
             if (m_ObjectToolSystem.prefab != null && m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.prefab, out Entity prefabEntity))
             {
-                if (!m_VegetationPrefabEntities.Contains(prefabEntity))
+                if (!EntityManager.HasComponent<Vegetation>(prefabEntity))
                 {
                     UnselectPrefabs();
 
@@ -1025,8 +985,7 @@ namespace Tree_Controller.Tools
             ResetPrefabSets();
             if (m_ToolSystem.activeTool == m_TreeControllerTool || m_ObjectToolSystem.brushing)
             {
-                bool controlPressed = Keyboard.current[Key.LeftCtrl].isPressed || Keyboard.current[Key.RightCtrl].isPressed;
-                if (!controlPressed)
+                if (!new ButtonControl().isPressed)
                 {
                     UnselectPrefabs();
                 }

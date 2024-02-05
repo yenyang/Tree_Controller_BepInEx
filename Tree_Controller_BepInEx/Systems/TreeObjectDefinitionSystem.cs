@@ -38,7 +38,6 @@ namespace Tree_Controller.Systems
         private PrefabSystem m_PrefabSystem;
         private EntityQuery m_ObjectDefinitionQuery;
         private TreeControllerTool m_TreeControllerTool;
-        private NativeList<Entity> m_VegetationPrefabEntities;
         private ILog m_Log;
 
         /// <summary>
@@ -80,37 +79,6 @@ namespace Tree_Controller.Systems
             RequireForUpdate(m_ObjectDefinitionQuery);
         }
 
-        /// <inheritdoc/>
-        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
-        {
-            m_VegetationPrefabEntities = new NativeList<Entity>(Allocator.Persistent);
-
-            PrefabID vegetationPrefabID = new PrefabID("UIAssetCategoryPrefab", "Vegetation");
-            if (!m_PrefabSystem.TryGetPrefab(vegetationPrefabID, out PrefabBase vegetationPrefab))
-            {
-                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab prefab"));
-                return;
-            }
-
-            if (!m_PrefabSystem.TryGetEntity(vegetationPrefab, out Entity vegetationEntity))
-            {
-                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab entity"));
-                return;
-            }
-
-            if (!EntityManager.TryGetBuffer(vegetationEntity, true, out DynamicBuffer<UIGroupElement> buffer))
-            {
-                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab group element buffer."));
-                return;
-            }
-
-            foreach (UIGroupElement element in buffer)
-            {
-                m_VegetationPrefabEntities.Add(element.m_Prefab);
-            }
-
-            base.OnGameLoadingComplete(purpose, mode);
-        }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
@@ -125,7 +93,7 @@ namespace Tree_Controller.Systems
                     return;
                 }
 
-                if (!EntityManager.TryGetComponent(entity, out ObjectDefinition currentObjectDefinition) || !m_VegetationPrefabEntities.Contains(currentCreationDefinition.m_Prefab))
+                if (!EntityManager.TryGetComponent(entity, out ObjectDefinition currentObjectDefinition) || EntityManager.HasComponent<Vegetation>(currentCreationDefinition.m_Prefab))
                 {
                     entities.Dispose();
                     return;
@@ -151,7 +119,6 @@ namespace Tree_Controller.Systems
 
                 if (!EntityManager.HasComponent(prefabEntity, ComponentType.ReadOnly<TreeData>()))
                 {
-                    m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} Does not have TreeData component.");
                     EntityManager.SetComponentData(entity, currentObjectDefinition);
                     return;
                 }
@@ -172,11 +139,5 @@ namespace Tree_Controller.Systems
             entities.Dispose();
         }
 
-        /// <inheritdoc/>
-        protected override void OnDestroy()
-        {
-            m_VegetationPrefabEntities.Dispose();
-            base.OnDestroy();
-        }
     }
 }

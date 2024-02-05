@@ -52,7 +52,7 @@ namespace Tree_Controller.Patches
                         return;
                     }
 
-                    if (treeControllerUISystem.VegetationPrefabEntities.Contains(prefabEntity))
+                    if (prefabSystem.EntityManager.HasComponent<Vegetation>(prefabEntity))
                     {
                         treeControllerUISystem.UpdateSelectionSet = true;
                         TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using object tool and brushing.");
