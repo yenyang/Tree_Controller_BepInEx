@@ -274,8 +274,10 @@ namespace Tree_Controller.Tools
                                 m_UpdateSelectionSet = false;
                                 m_FrameCount = 6;
                             }
-
-                            m_FrameCount++;
+                            else
+                            {
+                                m_FrameCount++;
+                            }
                         }
                         else if (m_UpdateSelectionSet)
                         {
@@ -555,8 +557,10 @@ namespace Tree_Controller.Tools
                         m_UpdateSelectionSet = false;
                         m_FrameCount = 6;
                     }
-
-                    m_FrameCount++;
+                    else
+                    {
+                        m_FrameCount++;
+                    }
                 }
                 else if (m_UpdateSelectionSet)
                 {
