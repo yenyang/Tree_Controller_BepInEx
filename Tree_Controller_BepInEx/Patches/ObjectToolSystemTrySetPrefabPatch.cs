@@ -50,8 +50,9 @@ namespace Tree_Controller.Patches
 
             if (treeControllerUISystem.VegetationPrefabEntities.Contains(prefabEntity))
             {
+                bool controlPressed = Keyboard.current[Key.LeftCtrl].isPressed || Keyboard.current[Key.RightCtrl].isPressed;
                 if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
-                || (toolSystem.activeTool == objectToolSystem && !Keyboard.current[Key.LeftCtrl].isPressed))
+                || (toolSystem.activeTool == objectToolSystem && !controlPressed))
                 {
                     treeControllerTool.ClearSelectedTreePrefabs();
                     treeControllerUISystem.ResetPrefabSets();

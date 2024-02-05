@@ -1025,7 +1025,8 @@ namespace Tree_Controller.Tools
             ResetPrefabSets();
             if (m_ToolSystem.activeTool == m_TreeControllerTool || m_ObjectToolSystem.brushing)
             {
-                if (!Keyboard.current[Key.LeftCtrl].isPressed)
+                bool controlPressed = Keyboard.current[Key.LeftCtrl].isPressed || Keyboard.current[Key.RightCtrl].isPressed;
+                if (!controlPressed)
                 {
                     UnselectPrefabs();
                 }

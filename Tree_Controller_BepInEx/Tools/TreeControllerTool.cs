@@ -7,7 +7,6 @@ namespace Tree_Controller.Tools
 {
     using System;
     using System.Collections.Generic;
-    using System.Xml;
     using Colossal.Annotations;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -19,7 +18,6 @@ namespace Tree_Controller.Tools
     using Game.Objects;
     using Game.Prefabs;
     using Game.Rendering;
-    using Game.Rendering.Utilities;
     using Game.Tools;
     using Tree_Controller;
     using Tree_Controller.Settings;
@@ -30,7 +28,6 @@ namespace Tree_Controller.Tools
     using Unity.Mathematics;
     using UnityEngine;
     using UnityEngine.InputSystem;
-    using static Game.Prefabs.TriggerPrefabData;
 
     /// <summary>
     /// Tool for controlling tree state or prefab.
@@ -169,8 +166,7 @@ namespace Tree_Controller.Tools
         {
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
 
-            if ((EntityManager.HasComponent<TreeData>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity) && !m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_ToolSystem.activeTool == this)
-                || (m_ToolSystem.activeTool == m_ObjectToolSystem && EntityManager.HasComponent<Vegetation>(prefabEntity) && !m_SelectedTreePrefabEntities.Contains(prefabEntity)))
+            if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !m_SelectedTreePrefabEntities.Contains(prefabEntity))
             {
                 m_SelectedTreePrefabEntities.Add(prefabEntity);
                 if (m_OriginallySelectedPrefab == null)
@@ -289,9 +285,10 @@ namespace Tree_Controller.Tools
             }
 
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
-            if (EntityManager.HasComponent<TreeData>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+            if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
-                if (!Keyboard.current[Key.LeftCtrl].isPressed)
+                bool controlPressed = Keyboard.current[Key.LeftCtrl].isPressed || Keyboard.current[Key.RightCtrl].isPressed;
+                if (!controlPressed)
                 {
                     m_TreeControllerUISystem.ResetPrefabSets();
                     ClearSelectedTreePrefabs();
@@ -628,7 +625,7 @@ namespace Tree_Controller.Tools
                     m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
                 }
             }
-            else if (raycastFlag && hasTreeComponentFlag && hasTransformComponentFlag) // Single Tree Circle
+            else if (raycastFlag && isVegetationPrefabFlag && hasTransformComponentFlag) // Single Tree Circle
             {
                 TreeCircleRenderJob treeCircleRenderJob = new ()
                 {
@@ -645,7 +642,16 @@ namespace Tree_Controller.Tools
                     for (int i = 0; i < buffer.Length; i++)
                     {
                         Entity subObject = buffer[i].m_SubObject;
-                        if (EntityManager.HasComponent<Tree>(subObject) && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
+                        bool isSubobjectVegetationPrefabFlag = false;
+                        if (EntityManager.TryGetComponent(subObject, out PrefabRef subObjectPrefabEntity))
+                        {
+                            if (EntityManager.HasComponent<Vegetation>(subObjectPrefabEntity))
+                            {
+                                isSubobjectVegetationPrefabFlag = true;
+                            }
+                        }
+
+                        if (isSubobjectVegetationPrefabFlag && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
                         {
                             Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
                             float radius = 2f;
@@ -805,7 +811,7 @@ namespace Tree_Controller.Tools
                                     m_SelectedPrefabEntities = m_SelectedTreePrefabEntities,
                                     m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
                                     buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
-                                    m_Ages = m_SelectedTreeStates, 
+                                    m_Ages = m_SelectedTreeStates,
                                     m_TreeDataLookup = __TypeHandle.__TreeData_RO_ComponentLookup,
                                     m_TreeLookup = __TypeHandle.__Tree_RO_ComponentLookup,
                                 };
