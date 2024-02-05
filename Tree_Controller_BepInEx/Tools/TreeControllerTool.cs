@@ -176,6 +176,8 @@ namespace Tree_Controller.Tools
                     m_OriginallySelectedPrefab = prefab;
                 }
 
+                m_TreeControllerUISystem.UpdateSelectionSet = true;
+
                 m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(SelectTreePrefab)} selected {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
             }
         }
