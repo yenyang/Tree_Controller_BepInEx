@@ -683,6 +683,7 @@ namespace Tree_Controller.Tools
                 ChangePrefabSet(m_SelectedPrefabSet);
             }
 
+            m_UpdateSelectionSet = true;
             m_ToolIsActive = false;
             m_ToolSystem.activeTool = m_TreeControllerTool;
         }
@@ -731,6 +732,7 @@ namespace Tree_Controller.Tools
         private void ActivateBrushTrees()
         {
             m_Log.Debug("Enable brushing trees please.");
+            m_UpdateSelectionSet = true;
             m_ToolSystem.selected = Entity.Null;
             m_ObjectToolSystem.mode = ObjectToolSystem.Mode.Brush;
             m_ToolSystem.activeTool = m_ObjectToolSystem;
