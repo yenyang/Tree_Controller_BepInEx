@@ -290,7 +290,7 @@ namespace Tree_Controller.Tools
                             m_UpdateSelectionSet = true;
                         }
 
-                        if (m_UpdateSelectionSet && m_FrameCount > 2)
+                        if (m_UpdateSelectionSet || m_FrameCount > 30)
                         {
                             UnselectPrefabs();
 
@@ -311,7 +311,7 @@ namespace Tree_Controller.Tools
                             m_UpdateSelectionSet = false;
                             m_FrameCount = 0;
                         }
-                        else if (m_UpdateSelectionSet)
+                        else
                         {
                             m_FrameCount++;
                         }
@@ -561,7 +561,7 @@ namespace Tree_Controller.Tools
                     m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} selectionSet Reset due to prefab changing without toggling OnPrefabChanged");
                 }
 
-                if (m_UpdateSelectionSet && m_FrameCount > 2)
+                if (m_UpdateSelectionSet || m_FrameCount > 30)
                 {
                     UnselectPrefabs();
 
@@ -582,7 +582,7 @@ namespace Tree_Controller.Tools
                     m_UpdateSelectionSet = false;
                     m_FrameCount = 0;
                 }
-                else if (m_UpdateSelectionSet)
+                else
                 {
                     m_FrameCount++;
                 }
