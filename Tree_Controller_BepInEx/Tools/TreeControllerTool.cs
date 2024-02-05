@@ -620,6 +620,9 @@ namespace Tree_Controller.Tools
                         m_OverridePrefab = overridePrefab,
                         m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
                         m_PrefabEntities = m_SelectedTreePrefabEntities,
+                        m_TreeDataLookup = __TypeHandle.__TreeData_RO_ComponentLookup,
+                        m_TreeLookup = __TypeHandle.__Tree_RO_ComponentLookup,
+                        m_VegetationLookup = __TypeHandle.__Vegetation_RO_ComponentLookup,
                     };
                     inputDeps = JobChunkExtensions.ScheduleParallel(changeTreeAgeWholeMap, m_VegetationQuery, inputDeps);
                     m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
@@ -1018,6 +1021,9 @@ namespace Tree_Controller.Tools
             public ComponentTypeHandle<Game.Prefabs.PrefabRef> m_PrefabRefType;
             public NativeList<Entity> m_PrefabEntities;
             public Unity.Mathematics.Random m_Random;
+            public ComponentLookup<Tree> m_TreeLookup;
+            public ComponentLookup<TreeData> m_TreeDataLookup;
+            public ComponentLookup<Vegetation> m_VegetationLookup;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
@@ -1027,18 +1033,26 @@ namespace Tree_Controller.Tools
                 for (int i = 0; i < chunk.Count; i++)
                 {
                     Entity currentEntity = entityNativeArray[i];
-                    bool addBatchesUpdated = false;
-                    if (m_OverrideState)
+                    if (m_OverrideState && m_TreeLookup.HasComponent(currentEntity) && m_OverridePrefab == false)
                     {
                         Game.Objects.Tree currentTreeData = treeNativeArray[i];
                         currentTreeData.m_State = GetTreeState(m_Ages, currentTreeData);
                         buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
-                        addBatchesUpdated = true;
+                        buffer.AddComponent<RecentlyChanged>(unfilteredChunkIndex, currentEntity);
+                        buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
+                        continue;
                     }
 
                     if (m_OverridePrefab == true)
                     {
                         PrefabRef currentPrefabRef = prefabRefNativeArray[i];
+
+                        // This checks for plants that are not in the vegetation tab.
+                        if (!m_VegetationLookup.HasComponent(currentPrefabRef.m_Prefab))
+                        {
+                            continue;
+                        }
+
                         if (m_PrefabEntities.Length > 0)
                         {
                             currentPrefabRef.m_Prefab = m_PrefabEntities[m_Random.NextInt(m_PrefabEntities.Length)];
@@ -1048,18 +1062,33 @@ namespace Tree_Controller.Tools
                             continue;
                         }
 
+                        // Convert plant to tree.
+                        if (m_TreeDataLookup.HasComponent(currentPrefabRef.m_Prefab) && !m_TreeLookup.HasComponent(currentEntity))
+                        {
+                            buffer.AddComponent<Tree>(unfilteredChunkIndex, currentEntity);
+                            Tree tree = new () { m_Growth = 0, m_State = GetTreeState(m_Ages, new Tree() { m_Growth = 0, m_State = TreeState.Adult }) };
+                            buffer.SetComponent(unfilteredChunkIndex, currentEntity, tree);
+                        }
 
+                        // Convert tree to Plant.
+                        else if (!m_TreeDataLookup.HasComponent(currentPrefabRef.m_Prefab) && m_TreeLookup.HasComponent(currentEntity))
+                        {
+                            buffer.RemoveComponent<Tree>(unfilteredChunkIndex, currentEntity);
+                        }
 
+                        // Override state of existing tree and prefab.
+                        else if (m_OverrideState && m_TreeDataLookup.HasComponent(currentPrefabRef.m_Prefab) && m_TreeLookup.HasComponent(currentEntity))
+                        {
+                            Game.Objects.Tree currentTreeData = treeNativeArray[i];
+                            currentTreeData.m_State = GetTreeState(m_Ages, currentTreeData);
+                            buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
+                        }
 
                         buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentPrefabRef);
                         buffer.RemoveComponent<Evergreen>(unfilteredChunkIndex, currentEntity);
                         buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
+                        buffer.AddComponent<RecentlyChanged>(unfilteredChunkIndex, currentEntity);
                         buffer.AddComponent<Updated>(unfilteredChunkIndex, currentEntity);
-                        addBatchesUpdated = true;
-                    }
-
-                    if (addBatchesUpdated)
-                    {
                         buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
                     }
                 }
@@ -1131,12 +1160,16 @@ namespace Tree_Controller.Tools
                 if (!m_SelectedPrefabEntities.IsEmpty)
                 {
                     prefabRef = new PrefabRef(m_SelectedPrefabEntities[m_Random.NextInt(m_SelectedPrefabEntities.Length)]);
+
+                    // convert plant to tree.
                     if (m_TreeDataLookup.HasComponent(prefabRef.m_Prefab) && !m_TreeLookup.HasComponent(m_Entity))
                     {
                         buffer.AddComponent<Tree>(m_Entity);
                         Tree tree = new () { m_Growth = 0, m_State = GetTreeState(m_Ages) };
                         buffer.SetComponent(m_Entity, tree);
                     }
+
+                    // convert tree to plant.
                     else if (!m_TreeDataLookup.HasComponent(prefabRef.m_Prefab) && m_TreeLookup.HasComponent(m_Entity))
                     {
                         buffer.RemoveComponent<Tree>(m_Entity);
