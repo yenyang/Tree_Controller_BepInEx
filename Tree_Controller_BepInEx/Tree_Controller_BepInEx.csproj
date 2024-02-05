@@ -141,6 +141,7 @@
   <ItemGroup>
     <Compile Include="BepInEx\TreeControllerPlugin.cs" />
     <Compile Include="Components\DeciduousData.cs" />
+    <Compile Include="Components\Vegetation.cs" />
     <Compile Include="Components\Evergreen.cs" />
     <Compile Include="Components\Lumber.cs" />
     <Compile Include="Components\RecentlyChanged.cs" />

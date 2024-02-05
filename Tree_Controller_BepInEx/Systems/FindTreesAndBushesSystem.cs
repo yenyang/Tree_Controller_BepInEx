@@ -4,13 +4,17 @@
 
 namespace Tree_Controller.Systems
 {
+    using Colossal.Entities;
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Objects;
+    using Game.Prefabs;
     using Game.Rendering;
     using Game.Simulation;
     using Game.Tools;
+    using System;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
     using Unity.Entities;
@@ -32,6 +36,7 @@ namespace Tree_Controller.Systems
         private ILog m_Log;
         private EndFrameBarrier m_EndFrameBarrier;
         private TypeHandle __TypeHandle;
+        private PrefabSystem m_PrefabSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindTreesAndBushesSystem"/> class.
@@ -55,6 +60,7 @@ namespace Tree_Controller.Systems
             m_SimulationSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SimulationSystem>();
             m_EndFrameBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_SafelyRemoveSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SafelyRemoveSystem>();
+            m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
             m_Log.Info($"{nameof(FindTreesAndBushesSystem)} created!");
 
             m_TreeQuery = GetEntityQuery(new EntityQueryDesc[]
@@ -110,6 +116,36 @@ namespace Tree_Controller.Systems
                     m_SafelyRemoveSystem.Enabled = false;
                 }
             }
+        }
+
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            PrefabID vegetationPrefabID = new PrefabID("UIAssetCategoryPrefab", "Vegetation");
+            if (!m_PrefabSystem.TryGetPrefab(vegetationPrefabID, out PrefabBase vegetationPrefab))
+            {
+                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab prefab"));
+                return;
+            }
+
+            if (!m_PrefabSystem.TryGetEntity(vegetationPrefab, out Entity vegetationEntity))
+            {
+                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab entity"));
+                return;
+            }
+
+            if (!EntityManager.TryGetBuffer(vegetationEntity, true, out DynamicBuffer<UIGroupElement> buffer))
+            {
+                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab group element buffer."));
+                return;
+            }
+
+            foreach (UIGroupElement element in buffer)
+            {
+                EntityManager.AddComponent<Vegetation>(element.m_Prefab);
+            }
+
+            base.OnGameLoadingComplete(purpose, mode);
         }
 
         /// <inheritdoc/>
