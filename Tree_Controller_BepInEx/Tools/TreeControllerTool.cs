@@ -177,7 +177,6 @@ namespace Tree_Controller.Tools
                 }
 
                 m_TreeControllerUISystem.UpdateSelectionSet = true;
-
                 m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(SelectTreePrefab)} selected {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
             }
         }
@@ -197,6 +196,7 @@ namespace Tree_Controller.Tools
                     m_OriginallySelectedPrefab = null;
                 }
 
+                m_TreeControllerUISystem.UpdateSelectionSet = true;
                 m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(UnselectTreePrefab)} removed {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
             }
         }
