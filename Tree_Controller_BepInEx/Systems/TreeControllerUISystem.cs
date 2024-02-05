@@ -251,7 +251,7 @@ namespace Tree_Controller.Tools
                             m_UpdateSelectionSet = true;
                         }
 
-                        if (m_UpdateSelectionSet && m_FrameCount > 5)
+                        if (m_UpdateSelectionSet && m_FrameCount <= 5)
                         {
                             UnselectPrefabs();
 
@@ -269,11 +269,19 @@ namespace Tree_Controller.Tools
                                 m_MultiplePrefabsSelected = false;
                             }
 
-                            m_UpdateSelectionSet = false;
-                            m_FrameCount = 0;
+                            if (m_FrameCount == 5)
+                            {
+                                m_UpdateSelectionSet = false;
+                                m_FrameCount = 6;
+                            }
                         }
                         else if (m_UpdateSelectionSet)
                         {
+                            if (m_FrameCount == 6)
+                            {
+                                m_FrameCount = 0;
+                            }
+
                             m_FrameCount++;
                         }
                     }
@@ -522,7 +530,7 @@ namespace Tree_Controller.Tools
                     m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} selectionSet Reset due to prefab changing without toggling OnPrefabChanged");
                 }
 
-                if (m_UpdateSelectionSet && m_FrameCount > 5)
+                if (m_UpdateSelectionSet && m_FrameCount <= 5)
                 {
                     UnselectPrefabs();
 
@@ -540,11 +548,19 @@ namespace Tree_Controller.Tools
                         m_MultiplePrefabsSelected = false;
                     }
 
-                    m_UpdateSelectionSet = false;
-                    m_FrameCount = 0;
+                    if (m_FrameCount == 5)
+                    {
+                        m_UpdateSelectionSet = false;
+                        m_FrameCount = 6;
+                    }
                 }
                 else if (m_UpdateSelectionSet)
                 {
+                    if (m_FrameCount == 6)
+                    {
+                        m_FrameCount = 0;
+                    }
+
                     m_FrameCount++;
                 }
             }

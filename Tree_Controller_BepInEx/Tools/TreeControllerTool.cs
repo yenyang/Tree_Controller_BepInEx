@@ -295,7 +295,7 @@ namespace Tree_Controller.Tools
                     ClearSelectedTreePrefabs();
                     SelectTreePrefab(prefab);
                 }
-                else if (m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_SelectedTreePrefabEntities.Length > 1)
+                else if (m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_SelectedTreePrefabEntities.Length > 1 && !m_TreeControllerUISystem.UpdateSelectionSet)
                 {
                     UnselectTreePrefab(prefab);
                     if (m_OriginallySelectedPrefab == prefab)
@@ -310,12 +310,16 @@ namespace Tree_Controller.Tools
                         }
                     }
                 }
-                else
+                else if (!m_TreeControllerUISystem.UpdateSelectionSet)
                 {
                     SelectTreePrefab(prefab);
                 }
 
-                m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
+                if (!m_TreeControllerUISystem.UpdateSelectionSet)
+                {
+                    m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
+                }
+
                 return true;
             }
 
