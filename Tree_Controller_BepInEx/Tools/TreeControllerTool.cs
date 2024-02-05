@@ -558,7 +558,7 @@ namespace Tree_Controller.Tools
                             }
                         }
 
-                        if (!m_SelectedTreePrefabEntities.IsEmpty && !doNotApplyTreePrefab)
+                        if (!m_SelectedTreePrefabEntities.IsEmpty && !doNotApplyTreePrefab && isVegetationPrefabFlag)
                         {
                             ChangePrefabRefJob changePrefabRefJob = new ()
                             {
@@ -757,14 +757,23 @@ namespace Tree_Controller.Tools
                 for (int i = 0; i < buffer.Length; i++)
                 {
                     Entity subObject = buffer[i].m_SubObject;
-                    if (EntityManager.HasComponent<Tree>(subObject) && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
+                    bool isVegetationPrefabFlag = false;
+                    if (EntityManager.TryGetComponent(subObject, out PrefabRef prefabEntity))
+                    {
+                        if (EntityManager.HasComponent<Vegetation>(prefabEntity))
+                        {
+                            isVegetationPrefabFlag = true;
+                        }
+                    }
+
+                    if (isVegetationPrefabFlag && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
                     {
                         Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
                         if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 2f) || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
                         {
                             if (m_AtLeastOneAgeSelected)
                             {
-                                ChangeTreeStateJob changeTreeStateJob = new()
+                                ChangeTreeStateJob changeTreeStateJob = new ()
                                 {
                                     m_Entity = subObject,
                                     m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
@@ -777,7 +786,7 @@ namespace Tree_Controller.Tools
                             }
 
                             bool doNotApplyTreePrefab = false;
-                            if (EntityManager.TryGetComponent<PrefabRef>(e, out PrefabRef prefabRef))
+                            if (EntityManager.TryGetComponent(e, out PrefabRef prefabRef))
                             {
                                 if (m_PrefabSystem.TryGetPrefab(prefabRef, out PrefabBase prefabBase))
                                 {
