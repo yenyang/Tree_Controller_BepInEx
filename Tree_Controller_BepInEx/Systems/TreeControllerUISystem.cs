@@ -8,15 +8,11 @@ namespace Tree_Controller.Tools
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Windows.Forms;
     using System.Xml.Serialization;
     using cohtml.Net;
-    using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
-    using Colossal.Serialization.Entities;
-    using Game;
     using Game.Prefabs;
     using Game.SceneFlow;
     using Game.Tools;
@@ -28,8 +24,6 @@ namespace Tree_Controller.Tools
     using Unity.Collections;
     using Unity.Entities;
     using Unity.Jobs;
-    using UnityEngine.InputSystem;
-    using UnityEngine.InputSystem.Controls;
     using static Tree_Controller.Tools.TreeControllerTool;
 
     /// <summary>
@@ -112,7 +106,7 @@ namespace Tree_Controller.Tools
             { TCSelectionMode.WholeMap, "YYTC-whole-map" },
         };
 
-        private View m_UiView;
+        private cohtml.Net.View m_UiView;
         private ToolSystem m_ToolSystem;
         private PrefabSystem m_PrefabSystem;
         private ObjectToolSystem m_ObjectToolSystem;
@@ -257,7 +251,7 @@ namespace Tree_Controller.Tools
                             m_UpdateSelectionSet = true;
                         }
 
-                        if (m_UpdateSelectionSet && m_FrameCount > 10)
+                        if (m_UpdateSelectionSet && m_FrameCount > 5)
                         {
                             UnselectPrefabs();
 
@@ -278,7 +272,7 @@ namespace Tree_Controller.Tools
                             m_UpdateSelectionSet = false;
                             m_FrameCount = 0;
                         }
-                        else
+                        else if (m_UpdateSelectionSet)
                         {
                             m_FrameCount++;
                         }
@@ -528,7 +522,7 @@ namespace Tree_Controller.Tools
                     m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} selectionSet Reset due to prefab changing without toggling OnPrefabChanged");
                 }
 
-                if (m_UpdateSelectionSet || m_FrameCount > 10)
+                if (m_UpdateSelectionSet && m_FrameCount > 5)
                 {
                     UnselectPrefabs();
 
@@ -549,7 +543,7 @@ namespace Tree_Controller.Tools
                     m_UpdateSelectionSet = false;
                     m_FrameCount = 0;
                 }
-                else
+                else if (m_UpdateSelectionSet)
                 {
                     m_FrameCount++;
                 }
