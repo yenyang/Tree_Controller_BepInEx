@@ -9,6 +9,7 @@ namespace Tree_Controller.Tools
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Windows.Forms;
     using System.Xml.Serialization;
     using cohtml.Net;
     using Colossal.Entities;
@@ -735,7 +736,7 @@ namespace Tree_Controller.Tools
             }
 
             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
-            if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && new ButtonControl().isPressed)
+            if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && (Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
                 TrySaveCustomPrefabSet(prefabSetID, selectedPrefabs);
@@ -985,7 +986,7 @@ namespace Tree_Controller.Tools
             ResetPrefabSets();
             if (m_ToolSystem.activeTool == m_TreeControllerTool || m_ObjectToolSystem.brushing)
             {
-                if (!new ButtonControl().isPressed)
+                if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
                 {
                     UnselectPrefabs();
                 }

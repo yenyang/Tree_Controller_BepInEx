@@ -7,6 +7,7 @@ namespace Tree_Controller.Tools
 {
     using System;
     using System.Collections.Generic;
+    using System.Windows.Forms;
     using Colossal.Annotations;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -28,7 +29,7 @@ namespace Tree_Controller.Tools
     using Unity.Mathematics;
     using UnityEngine;
     using UnityEngine.InputSystem;
-    using UnityEngine.InputSystem.Controls;
+
 
     /// <summary>
     /// Tool for controlling tree state or prefab.
@@ -288,7 +289,7 @@ namespace Tree_Controller.Tools
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
             if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
-                if (!new ButtonControl().isPressed)
+                if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
                 {
                     m_TreeControllerUISystem.ResetPrefabSets();
                     ClearSelectedTreePrefabs();

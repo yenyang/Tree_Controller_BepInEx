@@ -5,6 +5,7 @@
 namespace Tree_Controller.Patches
 {
     using System.Collections.Generic;
+    using System.Windows.Forms;
     using Colossal.Logging;
     using Game.Prefabs;
     using Game.Tools;
@@ -52,7 +53,7 @@ namespace Tree_Controller.Patches
             if (prefabSystem.EntityManager.HasComponent<Vegetation>(prefabEntity))
             {
                 if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
-                || (toolSystem.activeTool == objectToolSystem && !new ButtonControl().isPressed))
+                || (toolSystem.activeTool == objectToolSystem && (Control.ModifierKeys & Keys.Control) != Keys.Control))
                 {
                     treeControllerTool.ClearSelectedTreePrefabs();
                     treeControllerUISystem.ResetPrefabSets();
