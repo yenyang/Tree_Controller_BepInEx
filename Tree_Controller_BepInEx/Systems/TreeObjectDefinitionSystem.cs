@@ -93,7 +93,7 @@ namespace Tree_Controller.Systems
                     return;
                 }
 
-                if (!EntityManager.TryGetComponent(entity, out ObjectDefinition currentObjectDefinition) || EntityManager.HasComponent<Vegetation>(currentCreationDefinition.m_Prefab))
+                if (!EntityManager.TryGetComponent(entity, out ObjectDefinition currentObjectDefinition) || !EntityManager.HasComponent<Vegetation>(currentCreationDefinition.m_Prefab))
                 {
                     entities.Dispose();
                     return;
