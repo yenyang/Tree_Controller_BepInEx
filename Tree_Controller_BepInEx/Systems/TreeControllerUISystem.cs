@@ -583,6 +583,7 @@ namespace Tree_Controller.Tools
                 if (m_MultiplePrefabsSelected)
                 {
                     UnselectPrefabs();
+                    SelectPrefab(m_ToolSystem.activePrefab);
                 }
             }
 
