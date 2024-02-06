@@ -72,14 +72,16 @@ namespace Tree_Controller.Patches
                         {
                             log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Set prefab {prefab.name} to active prefab {toolSystem.activePrefab.name}.");
                             prefab = toolSystem.activePrefab;
+                            return true;
                         }
                         else
                         {
                             log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Set prefab {prefab.name} to active prefab {selectedPrefabs[0].name}.");
                             prefab = selectedPrefabs[0];
+                            __result = true;
+                            return false;
                         }
 
-                        return true;
                     }
                     else if (!selectedPrefabs.Contains(prefab) && !treeControllerUISystem.UpdateSelectionSet)
                     {
@@ -95,6 +97,8 @@ namespace Tree_Controller.Patches
                     {
                         log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Set prefab {prefab.name} to active prefab {selectedPrefabs[0].name}.");
                         prefab = selectedPrefabs[0];
+                        __result = true;
+                        return false;
                     }
                 }
 
