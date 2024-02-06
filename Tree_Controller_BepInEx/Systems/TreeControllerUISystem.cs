@@ -513,6 +513,10 @@ namespace Tree_Controller.Tools
                 if (!m_ObjectToolSystem.brushing)
                 {
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-rotation-row-missing", (Action)ResetPanel));
+                    if (m_ToolSystem.activePrefab != null)
+                    {
+                        SelectPrefab(m_ToolSystem.activePrefab);
+                    }
                 }
                 else
                 {
