@@ -191,13 +191,19 @@ namespace Tree_Controller.Tools
             if (m_SelectedTreePrefabEntities.Contains(prefabEntity))
             {
                 m_SelectedTreePrefabEntities.RemoveAt(m_SelectedTreePrefabEntities.IndexOf(prefabEntity));
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(UnselectTreePrefab)} removed {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
                 if (m_SelectedTreePrefabEntities.Length == 0)
                 {
                     m_OriginallySelectedPrefab = null;
                 }
+                else if (m_SelectedTreePrefabEntities.Length == 1 && m_ToolSystem.activeTool == m_ObjectToolSystem && m_PrefabSystem.TryGetPrefab(m_SelectedTreePrefabEntities[0], out PrefabBase remainingPrefab))
+                {
+                    m_TreeControllerUISystem.UpdateSelectionSet = true;
+                    m_ToolSystem.ActivatePrefabTool(remainingPrefab);
+                    return;
+                }
 
                 m_TreeControllerUISystem.UpdateSelectionSet = true;
-                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(UnselectTreePrefab)} removed {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
             }
         }
 
