@@ -11,10 +11,7 @@ namespace Tree_Controller.Patches
     using Game.Tools;
     using HarmonyLib;
     using Tree_Controller.Tools;
-    using Unity.Collections;
     using Unity.Entities;
-    using UnityEngine.InputSystem;
-    using UnityEngine.InputSystem.Controls;
 
     /// <summary>
     /// Patches ObjectToolSystem.TrySetPrefab. If not using tree controller tool, original methods acts as normal. Will skip it and return false if Tree Controller tool is active tool and an appropriate prefab is selected.

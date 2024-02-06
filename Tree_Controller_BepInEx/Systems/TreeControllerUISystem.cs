@@ -751,7 +751,16 @@ namespace Tree_Controller.Tools
                 UnselectPrefabs();
                 m_TreeControllerTool.ClearSelectedTreePrefabs();
                 m_SelectedPrefabSet = string.Empty;
-                m_TreeControllerTool.SelectTreePrefab(originallySelectedPrefab);
+                m_UpdateSelectionSet = true;
+                if (m_ToolSystem.activeTool == m_TreeControllerTool)
+                {
+                    m_TreeControllerTool.SelectTreePrefab(originallySelectedPrefab);
+                }
+                else if (m_ObjectToolSystem.GetPrefab() != null)
+                {
+                    m_TreeControllerTool.SelectTreePrefab(m_ObjectToolSystem.GetPrefab());
+                }
+
                 return;
             }
 
