@@ -593,13 +593,23 @@ namespace Tree_Controller.Tools
                 if (m_MultiplePrefabsSelected)
                 {
                     UnselectPrefabs();
+                    foreach (PrefabBase prefab in selectedPrefabs)
+                    {
+                        if (m_ToolSystem.ActivatePrefabTool(prefab))
+                        {
+                            break;
+                        }
+                    }
                 }
 
                 if (!selectedPrefabs.Contains(m_ToolSystem.activePrefab))
                 {
                     foreach (PrefabBase prefab in selectedPrefabs)
                     {
-                        m_ToolSystem.ActivatePrefabTool(prefab);
+                        if (m_ToolSystem.ActivatePrefabTool(prefab))
+                        {
+                            break;
+                        }
                     }
                 }
             }
