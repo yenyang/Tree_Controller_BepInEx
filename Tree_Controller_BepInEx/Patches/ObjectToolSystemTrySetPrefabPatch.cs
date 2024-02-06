@@ -78,7 +78,6 @@ namespace Tree_Controller.Patches
                             __result = true;
                             return false;
                         }
-
                     }
                     else if (!selectedPrefabs.Contains(prefab) && !treeControllerUISystem.UpdateSelectionSet)
                     {
