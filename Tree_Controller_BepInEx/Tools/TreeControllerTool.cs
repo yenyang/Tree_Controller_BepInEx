@@ -196,11 +196,19 @@ namespace Tree_Controller.Tools
                 {
                     m_OriginallySelectedPrefab = null;
                 }
-                else if (m_SelectedTreePrefabEntities.Length == 1 && m_ToolSystem.activeTool == m_ObjectToolSystem && m_PrefabSystem.TryGetPrefab(m_SelectedTreePrefabEntities[0], out PrefabBase remainingPrefab))
+                else if (m_ObjectToolSystem.GetPrefab() == prefab && m_ToolSystem.activeTool == m_ObjectToolSystem)
                 {
-                    m_TreeControllerUISystem.UpdateSelectionSet = true;
-                    m_ToolSystem.ActivatePrefabTool(remainingPrefab);
-                    return;
+                    foreach (Entity entity in m_SelectedTreePrefabEntities)
+                    {
+                        if (m_PrefabSystem.TryGetPrefab(entity, out PrefabBase firstPrefab))
+                        {
+                            m_TreeControllerUISystem.UpdateSelectionSet = true;
+                            if (m_ToolSystem.ActivatePrefabTool(firstPrefab))
+                            {
+                                return;
+                            }
+                        }
+                    }
                 }
 
                 m_TreeControllerUISystem.UpdateSelectionSet = true;
