@@ -40,29 +40,38 @@ namespace Tree_Controller.Patches
                 return;
             }
 
+            TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
             if (toolSystem.activeTool == objectToolSystem)
             {
                 PrefabBase prefab = objectToolSystem.GetPrefab();
                 if (prefab != null)
                 {
                     PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
-                    TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
                     if (!prefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
                     {
                         return;
                     }
 
-                    if (prefabSystem.EntityManager.HasComponent<Vegetation>(prefabEntity))
+                    if (prefabSystem.EntityManager.HasComponent<Vegetation>(prefabEntity) && treeControllerUISystem.ThemeEntity != themeEntity)
                     {
-                        treeControllerUISystem.UpdateSelectionSet = true;
+                        if (treeControllerUISystem.ThemeEntity != Entity.Null)
+                        {
+                            treeControllerUISystem.UpdateSelectionSet = true;
+                        }
+
+                        treeControllerUISystem.ThemeEntity = themeEntity;
                         TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using object tool and brushing.");
                     }
                 }
             }
-            else
+            else if (treeControllerUISystem.ThemeEntity != themeEntity)
             {
-                TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
-                treeControllerUISystem.UpdateSelectionSet = true;
+                if (treeControllerUISystem.ThemeEntity != Entity.Null)
+                {
+                    treeControllerUISystem.UpdateSelectionSet = true;
+                }
+
+                treeControllerUISystem.ThemeEntity = themeEntity;
                 TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using tree controller tool.");
             }
         }

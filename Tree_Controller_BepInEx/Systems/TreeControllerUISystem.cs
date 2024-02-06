@@ -132,6 +132,7 @@ namespace Tree_Controller.Tools
         private int m_FrameCount = 0;
         private bool m_MultiplePrefabsSelected = false;
         private EntityQuery m_VegetationQuery;
+        private Entity m_ThemeEntity = Entity.Null;
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
@@ -140,6 +141,15 @@ namespace Tree_Controller.Tools
         {
             get => m_UpdateSelectionSet;
             set => m_UpdateSelectionSet = value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the theme entity.
+        /// </summary>
+        public Entity ThemeEntity
+        {
+            get => m_ThemeEntity;
+            set => m_ThemeEntity = value;
         }
 
         /// <summary>
