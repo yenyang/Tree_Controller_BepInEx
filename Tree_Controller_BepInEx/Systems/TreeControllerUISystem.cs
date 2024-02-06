@@ -910,8 +910,11 @@ namespace Tree_Controller.Tools
                     }
 
                     m_LastObjectToolPrefab = m_ObjectToolSystem.prefab;
-                    m_TreeControllerTool.SelectTreePrefab(m_ObjectToolSystem.prefab);
-                    m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} selected {m_ObjectToolSystem.prefab.name}");
+                    if (m_TreeControllerTool.GetSelectedPrefabs().Count == 0)
+                    {
+                        m_TreeControllerTool.SelectTreePrefab(m_ObjectToolSystem.prefab);
+                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} selected {m_ObjectToolSystem.prefab.name}");
+                    }
 
                     Enabled = true;
                 }
