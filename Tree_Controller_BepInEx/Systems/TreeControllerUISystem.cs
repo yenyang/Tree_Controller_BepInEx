@@ -520,7 +520,11 @@ namespace Tree_Controller.Tools
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.destroyElementByID(\"YYTC-rotation-row\");");
 
                 // This script buils the prefab Sets row for brushing sets of trees.
-                UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.ageRow, 'afterend'); }");
+                // UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.ageRow, 'afterend'); }");
+
+                // This script buils the prefab Sets row for brushing sets of trees.
+                UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.entities[0].firstChild, 'afterend'); } }");
+
 
                 if (m_MultiplePrefabsSelected == false && selectedPrefabs.Count > 1)
                 {
@@ -576,10 +580,10 @@ namespace Tree_Controller.Tools
             }
             else
             {
-                // This script destroys the tree age item row and prefab sets rows that were used for brushing trees.
+                // This script destroys the prefab-sets-row that were used for brushing trees.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.destroyElementByID(\"YYTC-prefab-sets-row\");");
 
-                // This script builds Tree Age item used for brushing trees.
+                // This script builds rotation item used for plopping trees.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildRotationRow == 'function') { yyTreeController.buildRotationRow(yyTreeController.entities[0].firstChild, 'afterend'); } }");
 
                 if (m_MultiplePrefabsSelected)
