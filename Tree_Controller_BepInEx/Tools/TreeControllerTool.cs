@@ -770,8 +770,10 @@ namespace Tree_Controller.Tools
         /// <param name="jobHandle">So input deps can be passed along.</param>
         private void ProcessBufferForTrees(Entity e, RaycastHit hit, ref JobHandle jobHandle)
         {
+            m_Log.Debug("1");
             if (EntityManager.TryGetBuffer(e, isReadOnly: true, out DynamicBuffer<Game.Objects.SubObject> buffer))
             {
+                m_Log.Debug("2");
                 for (int i = 0; i < buffer.Length; i++)
                 {
                     Entity subObject = buffer[i].m_SubObject;
@@ -781,15 +783,18 @@ namespace Tree_Controller.Tools
                         if (EntityManager.HasComponent<Vegetation>(prefabEntity))
                         {
                             isVegetationPrefabFlag = true;
+                            m_Log.Debug("is vegetation flag");
                         }
                     }
 
                     if (isVegetationPrefabFlag && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
                     {
+                        m_Log.Debug("has subobject");
                         Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
-                        if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 2f) || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
+                        if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 1f) || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
                         {
-                            if (m_AtLeastOneAgeSelected)
+                            m_Log.Debug("hovering");
+                            if (m_AtLeastOneAgeSelected && EntityManager.HasComponent<Tree>(subObject))
                             {
                                 ChangeTreeStateJob changeTreeStateJob = new ()
                                 {
@@ -800,6 +805,7 @@ namespace Tree_Controller.Tools
                                     buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
                                 };
                                 jobHandle = changeTreeStateJob.Schedule(jobHandle);
+                                m_Log.Debug("change age");
                                 m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
                             }
 
@@ -817,6 +823,7 @@ namespace Tree_Controller.Tools
 
                             if (!m_SelectedTreePrefabEntities.IsEmpty && !doNotApplyTreePrefab)
                             {
+                                m_Log.Debug("change prefab");
                                 ChangePrefabRefJob changePrefabRefJob = new ()
                                 {
                                     m_Entity = subObject,
