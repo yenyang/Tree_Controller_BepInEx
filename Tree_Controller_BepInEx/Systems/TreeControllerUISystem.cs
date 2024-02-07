@@ -781,26 +781,25 @@ namespace Tree_Controller.Tools
         private void ChangePrefabSet(string prefabSetID)
         {
             PrefabBase originallySelectedPrefab = m_TreeControllerTool.GetPrefab();
-
+            List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
             if (!m_PrefabSetsLookup.ContainsKey(prefabSetID))
             {
                 UnselectPrefabs();
                 m_TreeControllerTool.ClearSelectedTreePrefabs();
                 m_SelectedPrefabSet = string.Empty;
                 m_UpdateSelectionSet = true;
-                if (m_ToolSystem.activeTool == m_TreeControllerTool)
+                foreach (PrefabBase prefab in selectedPrefabs)
                 {
-                    m_TreeControllerTool.SelectTreePrefab(originallySelectedPrefab);
-                }
-                else if (m_ObjectToolSystem.GetPrefab() != null)
-                {
-                    m_TreeControllerTool.SelectTreePrefab(m_ObjectToolSystem.GetPrefab());
+                    if (m_ToolSystem.ActivatePrefabTool(prefab))
+                    {
+                        SelectPrefab(prefab);
+                        break;
+                    }
                 }
 
                 return;
             }
 
-            List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
             if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && (Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
@@ -822,6 +821,7 @@ namespace Tree_Controller.Tools
                 UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{m_ObjectToolSystem.prefab.name}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.remove(\"selected\");  }} }} ");
             }
 
+            m_RecentlySelectedPrefabSet = true;
             UnselectPrefabs();
             m_TreeControllerTool.ClearSelectedTreePrefabs();
             m_SelectedPrefabSet = prefabSetID;
@@ -840,8 +840,6 @@ namespace Tree_Controller.Tools
             {
                 m_MultiplePrefabsSelected = true;
             }
-
-            m_RecentlySelectedPrefabSet = true;
         }
 
         private void UnselectPrefabs()
