@@ -1047,7 +1047,6 @@ namespace Tree_Controller.Tools
                         Game.Objects.Tree currentTreeData = treeNativeArray[i];
                         currentTreeData.m_State = GetTreeState(m_Ages, currentTreeData);
                         buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
-                        buffer.AddComponent<RecentlyChanged>(unfilteredChunkIndex, currentEntity);
                         buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
                         continue;
                     }
@@ -1096,7 +1095,6 @@ namespace Tree_Controller.Tools
                         buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentPrefabRef);
                         buffer.RemoveComponent<Evergreen>(unfilteredChunkIndex, currentEntity);
                         buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
-                        buffer.AddComponent<RecentlyChanged>(unfilteredChunkIndex, currentEntity);
                         buffer.AddComponent<Updated>(unfilteredChunkIndex, currentEntity);
                         buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
                     }
