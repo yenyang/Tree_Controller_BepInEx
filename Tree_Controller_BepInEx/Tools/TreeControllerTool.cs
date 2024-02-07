@@ -666,7 +666,7 @@ namespace Tree_Controller.Tools
                         if (isSubobjectVegetationPrefabFlag && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
                         {
                             Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
-                            float radius = 2f;
+                            float radius = 1f;
                             if (m_SelectionMode == TCSelectionMode.Radius)
                             {
                                 radius = m_Radius;
