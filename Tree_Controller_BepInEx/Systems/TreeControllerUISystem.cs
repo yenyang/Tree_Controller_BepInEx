@@ -321,7 +321,7 @@ namespace Tree_Controller.Tools
                 }
                 else if (m_PreviousPanelsCleared == false)
                 {
-                    UIFileUtils.ExecuteScript(m_UiView, $"{DestroyElementByID("YYTC-rotation-row")} {DestroyElementByID("YYTC-ActivateAgeChange")} {DestroyElementByID("YYTC-ActivatePrefabChange")}");
+                    UIFileUtils.ExecuteScript(m_UiView, $"{DestroyElementByID("YYTC-rotation-row")} {DestroyElementByID("YYTC-ActivateAgeChange")} {DestroyElementByID("YYTC-ActivatePrefabChange")} {DestroyElementByID("YYTC-tool-mode-item")}");
 
                     // This unregisters the events.
                     foreach (BoundEventHandle boundEvent in m_BoundEvents)
