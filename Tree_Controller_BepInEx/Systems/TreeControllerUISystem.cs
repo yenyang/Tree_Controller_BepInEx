@@ -125,6 +125,7 @@ namespace Tree_Controller.Tools
         private bool m_ToolIsActive;
         private bool m_ObjectToolPlacingTree = false;
         private string m_SelectedPrefabSet = string.Empty;
+        private bool m_RecentlySelectedPrefabSet = false;
         private bool m_PreviousPanelsCleared = false;
         private bool m_FirstTimeInjectingJS = true;
         private string m_ContentFolder;
@@ -157,6 +158,11 @@ namespace Tree_Controller.Tools
         /// </summary>
         public void ResetPrefabSets()
         {
+            if (m_RecentlySelectedPrefabSet)
+            {
+                return;
+            }
+
             m_SelectedPrefabSet = string.Empty;
             UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.selectedPrefabSet = \"\";");
             foreach (KeyValuePair<string, List<PrefabID>> keyValuePair in m_PrefabSetsLookup)
@@ -284,6 +290,7 @@ namespace Tree_Controller.Tools
                             if (m_FrameCount == 5)
                             {
                                 m_UpdateSelectionSet = false;
+                                m_RecentlySelectedPrefabSet = false;
                                 m_FrameCount = 6;
                             }
                             else
@@ -563,6 +570,7 @@ namespace Tree_Controller.Tools
                     if (m_FrameCount == 5)
                     {
                         m_UpdateSelectionSet = false;
+                        m_RecentlySelectedPrefabSet = false;
                         m_FrameCount = 6;
                     }
                     else
@@ -832,6 +840,8 @@ namespace Tree_Controller.Tools
             {
                 m_MultiplePrefabsSelected = true;
             }
+
+            m_RecentlySelectedPrefabSet = true;
         }
 
         private void UnselectPrefabs()
