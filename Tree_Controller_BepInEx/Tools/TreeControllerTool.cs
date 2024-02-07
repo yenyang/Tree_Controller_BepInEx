@@ -666,7 +666,7 @@ namespace Tree_Controller.Tools
                         if (isSubobjectVegetationPrefabFlag && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
                         {
                             Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
-                            float radius = 1f;
+                            float radius = 2f;
                             if (m_SelectionMode == TCSelectionMode.Radius)
                             {
                                 radius = m_Radius;
@@ -787,7 +787,7 @@ namespace Tree_Controller.Tools
                     if (isVegetationPrefabFlag && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
                     {
                         Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
-                        if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 1f) || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
+                        if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 2f) || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
                         {
                             if (m_AtLeastOneAgeSelected && EntityManager.HasComponent<Tree>(subObject))
                             {
