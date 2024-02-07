@@ -415,6 +415,7 @@ namespace Tree_Controller.Tools
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-AdjustRadius", (Action<int>)ChangeRadius));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-brush-trees", (Action)ActivateBrushTrees));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-plop-tree", (Action)ActivatePlopTrees));
+                m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-tree-age-item-missing", (Action)ResetPanel));
 
                 m_ToolIsActive = true;
                 m_ObjectToolPlacingTree = false;
@@ -528,10 +529,7 @@ namespace Tree_Controller.Tools
                 // This script destroys rotation and plop age row while not plopping single tree.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.destroyElementByID(\"YYTC-rotation-row\");");
 
-                // This script buils the prefab Sets row for brushing sets of trees.
-                // UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.ageRow = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageRow != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.ageRow, 'afterend'); }");
-
-                // This script buils the prefab Sets row for brushing sets of trees.
+                 // This script buils the prefab Sets row for brushing sets of trees.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.entities[0].firstChild, 'afterend'); } }");
 
 
