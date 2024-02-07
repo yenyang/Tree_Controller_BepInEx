@@ -904,6 +904,10 @@ namespace Tree_Controller.Tools
             if (tool.toolID != "Object Tool" && tool.toolID != "Tree Controller Tool")
             {
                 UnselectPrefabs();
+                if (m_ToolSystem.activePrefab != null)
+                {
+                    SelectPrefab(m_ToolSystem.activePrefab);
+                }
 
                 if (m_ObjectToolPlacingTree == true)
                 {
@@ -921,8 +925,6 @@ namespace Tree_Controller.Tools
                 {
                     m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} new tool is line tool");
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ChangeSelectedAges", (Action<bool[]>)ChangeSelectedAges));
-                    Enabled = true;
-                    return;
                 }
 
                 Enabled = false;
