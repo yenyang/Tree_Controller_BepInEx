@@ -164,6 +164,8 @@ namespace Tree_Controller.Tools
                 // This script removes selected from any previously selected prefab sets if they are found.
                 UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.element = document.getElementById(\"{keyValuePair.Key}\"); if (yyTreeController.element != null) {{  yyTreeController.element.classList.remove(\"selected\"); }}");
             }
+
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ResetPrefabSets)} Resetting prefab sets.");
         }
 
         /// <summary>
@@ -815,14 +817,20 @@ namespace Tree_Controller.Tools
             UnselectPrefabs();
             m_TreeControllerTool.ClearSelectedTreePrefabs();
             m_SelectedPrefabSet = prefabSetID;
+            int i = 0;
             foreach (PrefabID id in m_PrefabSetsLookup[prefabSetID])
             {
                 if (m_PrefabSystem.TryGetPrefab(id, out PrefabBase prefab))
                 {
                     m_TreeControllerTool.SelectTreePrefab(prefab);
                     SelectPrefab(prefab);
-                    m_MultiplePrefabsSelected = true;
+                    i++;
                 }
+            }
+
+            if (i > 1)
+            {
+                m_MultiplePrefabsSelected = true;
             }
         }
 
