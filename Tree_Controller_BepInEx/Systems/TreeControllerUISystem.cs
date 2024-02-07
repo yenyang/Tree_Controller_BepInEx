@@ -508,15 +508,8 @@ namespace Tree_Controller.Tools
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-Prefab-Set-Changed", (Action<string>)ChangePrefabSet));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ChangeSelectedAges", (Action<bool[]>)ChangeSelectedAges));
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-tree-age-item-missing", (Action)ResetPanel));
-
-                if (!m_ObjectToolSystem.brushing)
-                {
-                    m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-rotation-row-missing", (Action)ResetPanel));
-                }
-                else
-                {
-                    m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-prefab-sets-row-missing", (Action)ResetPanel));
-                }
+                m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-prefab-sets-row-missing", (Action)ResetPanel));
+                m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-rotation-row-missing", (Action)ResetPanel));
 
                 m_ObjectToolPlacingTree = true;
             }
