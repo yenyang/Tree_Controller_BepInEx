@@ -381,8 +381,6 @@ namespace Tree_Controller.Tools
                 }
                 else // Prefab Changing
                 {
-                    m_ObjectToolPlacingTree = false;
-
                     // This script builds Tree Age item.
                     UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildTreeAgeItem == 'function') { yyTreeController.buildTreeAgeItem(yyTreeController.entities[0].firstChild, 'beforebegin'); } }");
 
@@ -410,6 +408,7 @@ namespace Tree_Controller.Tools
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-plop-tree", (Action)ActivatePlopTrees));
 
                 m_ToolIsActive = true;
+                m_ObjectToolPlacingTree = false;
                 m_PreviousPanelsCleared = false;
                 return;
             }
@@ -597,6 +596,7 @@ namespace Tree_Controller.Tools
                     {
                         if (m_ToolSystem.ActivatePrefabTool(prefab))
                         {
+                            SelectPrefab(prefab);
                             break;
                         }
                     }
@@ -608,6 +608,7 @@ namespace Tree_Controller.Tools
                     {
                         if (m_ToolSystem.ActivatePrefabTool(prefab))
                         {
+                            SelectPrefab(prefab);
                             break;
                         }
                     }
@@ -966,6 +967,7 @@ namespace Tree_Controller.Tools
             }
             else
             {
+                m_ObjectToolPlacingTree = false;
                 Enabled = true;
             }
         }
