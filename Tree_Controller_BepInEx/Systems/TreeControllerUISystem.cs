@@ -929,9 +929,9 @@ namespace Tree_Controller.Tools
 
                 Enabled = false;
             }
-            else if (tool.toolID == "Object Tool")
+            else if (tool.toolID == "Object Tool" && m_ObjectToolSystem.GetPrefab() != null)
             {
-                if (m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.prefab, out Entity prefabEntity))
+                if (m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.GetPrefab(), out Entity prefabEntity))
                 {
                     if (!EntityManager.HasComponent<Vegetation>(prefabEntity))
                     {
