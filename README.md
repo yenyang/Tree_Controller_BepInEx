@@ -11,6 +11,9 @@ Video Demo available on [YouTube](https://www.youtube.com/watch?v=YoyMliyWJQU)
 
 [BepInExPack](https://thunderstore.io/c/cities-skylines-ii/p/BepInEx/BepInExPack/)
 
+## Change Log
+[Available on Github](https://github.com/yenyang/Tree_Controller_BepInEx/blob/master/CHANGELOG.md)
+
 ## Detailed Description:
 Includes a tree controller tool that lets you change the age or types of existing trees and/or bushes on the following selections:
 * Single Tree
