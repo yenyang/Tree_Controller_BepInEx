@@ -1,6 +1,6 @@
 {
   "name": "Tree_Controller",
-  "description": "Plop selected age tree. Change Age and Type of trees. Optional custom seasonal colors, dead model in winter, and disable tree growth.",
+  "description": "Plop selected age tree. Change Age and Type of trees and bushes. Forest brushes. Optional custom seasonal colors, dead model in winter, and disable tree growth.",
   "version_number": "1.1.0",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100",
