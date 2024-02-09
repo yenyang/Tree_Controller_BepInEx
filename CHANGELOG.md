@@ -2,6 +2,7 @@
 ## Update V1.1.0
 * While brushing and changing types you can selecte multiple types of trees to make a custom set.
 * You can save custom sets to 5 buttons that you can use or override later.
+* Tooltips thanks to Algernon.
 * Everything in the vegetation tab is now included in type changing and random rotation.
 * Random rotation toggle gets saved.
 * Increased randomness when choosing what type to use within a set.
