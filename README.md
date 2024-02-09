@@ -14,6 +14,9 @@ Video Demo available on [YouTube](https://www.youtube.com/watch?v=YoyMliyWJQU)
 ## Change Log
 [Available on Github](https://github.com/yenyang/Tree_Controller_BepInEx/blob/master/CHANGELOG.md)
 
+## Donations
+If you want to say thank you with a donation you can do so on [Buy Me A Coffee](https://www.buymeacoffee.com/yenyang_mods).
+
 ## Detailed Description:
 Includes a tree controller tool that lets you change the age or types of existing trees and/or bushes on the following selections:
 * Single Tree
