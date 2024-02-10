@@ -488,6 +488,8 @@ if (typeof yyTreeController.buildRotationRow !== 'function') {
 if (typeof yyTreeController.setupToolModeButtons !== 'function') {
     yyTreeController.setupToolModeButtons = function () {
         const ids = ["YYTC-plop-tree", "YYTC-brush-trees", "YYTC-ActivateAgeChange", "YYTC-ActivatePrefabChange"];
+        const tooltipLabels = ["Create", "Brush", "change-age-tool", "change-prefab-tool"];
+        const prefixes = ["ToolOptions.TOOLTIP_TITLE", "ToolOptions.TOOLTIP_TITLE", "YY_TREE_CONTROLLER", "YY_TREE_CONTROLLER"];
         for (let i = 0; i < ids.length; i++) {
             let button = document.getElementById(ids[i]);
             if (button != null) {
@@ -495,11 +497,13 @@ if (typeof yyTreeController.setupToolModeButtons !== 'function') {
                     engine.trigger(this.id);
                 }
             }
+            yyTreeController.setTooltip(button.id, tooltipLabels[i], prefixes[i] );
         }
         yyTreeController.toolModeItem = document.getElementById("YYTC-tool-mode-item");
         if (yyTreeController.toolModeItem) {
             yyTreeController.applyLocalization(yyTreeController.toolModeItem);
         }
+        
     }
 }
 
@@ -528,7 +532,7 @@ if (typeof yyTreeController.setTooltip !== 'function') {
 
 // Function to show a tooltip, creating if necessary.
 if (typeof yyTreeController.showTooltip !== 'function') {
-    yyTreeController.showTooltip = function (parent, tooltipKey) {
+    yyTreeController.showTooltip = function (parent, tooltipKey, prefix) {
 
         if (!document.getElementById("yytc-tooltip")) {
             yyTreeController.tooltip = document.createElement("div");
@@ -571,8 +575,9 @@ if (typeof yyTreeController.showTooltip !== 'function') {
         }
 
         // Set text and position.
-        yyTreeController.tooltipTitle.innerHTML = engine.translate("YY_TREE_CONTROLLER." + tooltipKey);
-        yyTreeController.tooltipPara.innerHTML = engine.translate("YY_TREE_CONTROLLER_DESCRIPTION." + tooltipKey);
+        if (!prefix) prefix = "YY_TREE_CONTROLLER"
+        yyTreeController.tooltipTitle.innerHTML = engine.translate(prefix + "[" + tooltipKey + "]");
+        yyTreeController.tooltipPara.innerHTML = engine.translate(prefix + "_DESCRIPTION[" + tooltipKey +"]");
 
         // Set visibility tracking to prevent race conditions with popup delay.
         yyTreeController.tooltipVisibility = "visible";
