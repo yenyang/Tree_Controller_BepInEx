@@ -99,7 +99,7 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER.brush-trees", "Place Multiple" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION.brush-trees", "Place several items at once. Brush size determines the area, and brush strength the density of items." },
                 { "YY_TREE_CONTROLLER.random-rotation", "Random Rotation" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION.random-rotation", "Will randomly rotate the tree as the tree is moved to different positions on the map." },
+                { "YY_TREE_CONTROLLER_DESCRIPTION.random-rotation", "Will randomly rotate the tree or bush as the tree or bush is moved to different positions on the map." },
                 { "YY_TREE_CONTROLLER.custom-set-1", "Custom Set 1" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION.custom-set-1", "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set." },
                 { "YY_TREE_CONTROLLER.custom-set-2", "Custom Set 2" },
