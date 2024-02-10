@@ -406,8 +406,26 @@ namespace Tree_Controller.Tools
 
                     // This script builds and sets up the Tool Mode item row.
                     UIFileUtils.ExecuteScript(m_UiView, $"{m_ToolModeItemScript} yyTreeController.selectedToolMode = document.getElementById(\"YYTC-ActivatePrefabChange\"); if (yyTreeController.selectedToolMode != null) yyTreeController.selectedToolMode.classList.add(\"selected\");");
-                }
 
+                    // This was easier than redefining all the js code to have a new anchor instead of age item row.
+                    bool removeAgeItem = true;
+                    foreach (PrefabBase prefabBase in selectedPrefabs)
+                    {
+                        if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity))
+                        {
+                            if (EntityManager.HasComponent<TreeData>(prefabEntity))
+                            {
+                                removeAgeItem = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (removeAgeItem)
+                    {
+                        UIFileUtils.ExecuteScript(m_UiView, $"{DestroyElementByID("YYTC-tree-age-item")}");
+                    }
+                }
 
                 // Register event callbacks from UI JavaScript.
                 m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ChangeSelectedAges", (Action<bool[]>)ChangeSelectedAges));
