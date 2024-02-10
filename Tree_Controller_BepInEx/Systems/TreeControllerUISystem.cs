@@ -1122,12 +1122,7 @@ namespace Tree_Controller.Tools
         private bool TrySaveCustomPrefabSet(string prefabSetID, List<PrefabID> prefabIDs)
         {
             string fileName = Path.Combine(m_ContentFolder, $"{prefabSetID}.xml");
-            CustomSetRepository repository = new (
-                name: LocalizedString.Id($"YY_TREE_CONTROLLER.{prefabSetID}").value,
-                nameLocaleKey: $"YY_TREE_CONTROLLER.{prefabSetID}",
-                description: LocalizedString.Id($"YY_TREE_CONTROLLER_DESCRIPTION.{prefabSetID}").value,
-                descriptionLocaleKey: $"YY_TREE_CONTROLLER_DESCRIPTION.{prefabSetID}",
-                customSet: prefabIDs);
+            CustomSetRepository repository = new (prefabIDs);
 
             m_PrefabSetsLookup[prefabSetID].Clear();
             foreach (PrefabID prefab in prefabIDs)

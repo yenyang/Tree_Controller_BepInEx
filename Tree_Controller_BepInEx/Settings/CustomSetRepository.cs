@@ -13,10 +13,6 @@ namespace Tree_Controller.Settings
     /// </summary>
     public class CustomSetRepository
     {
-        private string m_NameLocaleKey;
-        private string m_Name;
-        private string m_DescriptionLocaleKey;
-        private string m_Description;
         private string[] m_PrefabNames;
 
 
@@ -35,12 +31,8 @@ namespace Tree_Controller.Settings
         /// <param name="description">the description that corresponds with the description locale key.</param>
         /// <param name="descriptionLocaleKey">key code for the localization of the custom set description.</param>
         /// <param name="customSet">list of prefabBases for the custom set.</param>
-        public CustomSetRepository(string name, string nameLocaleKey, string description, string descriptionLocaleKey, List<PrefabBase> customSet)
+        public CustomSetRepository(List<PrefabBase> customSet)
         {
-            m_NameLocaleKey = nameLocaleKey;
-            m_Name = name;
-            m_DescriptionLocaleKey = descriptionLocaleKey;
-            m_Description = description;
             m_PrefabNames = ConvertToArray(customSet);
         }
 
@@ -52,31 +44,9 @@ namespace Tree_Controller.Settings
         /// <param name="description">the description that corresponds with the description locale key.</param>
         /// <param name="descriptionLocaleKey">key code for the localization of the custom set description.</param>
         /// <param name="customSet">list of prefab IDs for the custom set.</param>
-        public CustomSetRepository(string name, string nameLocaleKey, string description, string descriptionLocaleKey, List<PrefabID> customSet)
+        public CustomSetRepository(List<PrefabID> customSet)
         {
-            m_NameLocaleKey = nameLocaleKey;
-            m_Name = name;
-            m_DescriptionLocaleKey = descriptionLocaleKey;
-            m_Description = description;
             m_PrefabNames = ConvertToArray(customSet);
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating the local key for the custom set.
-        /// </summary>
-        public string NameLocaleKey
-        {
-            get { return m_NameLocaleKey; }
-            set { m_NameLocaleKey = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating the local key for description of the custom set.
-        /// </summary>
-        public string DescriptionLocaleKey
-        {
-            get { return m_DescriptionLocaleKey; }
-            set { m_DescriptionLocaleKey = value; }
         }
 
         /// <summary>
@@ -86,24 +56,6 @@ namespace Tree_Controller.Settings
         {
             get { return m_PrefabNames; }
             set { m_PrefabNames = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating the local key for the custom set.
-        /// </summary>
-        public string Name
-        {
-            get { return m_Name; }
-            set { m_Name = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating the local key for the custom set.
-        /// </summary>
-        public string Description
-        {
-            get { return m_Description; }
-            set { m_Description = value; }
         }
 
         /// <summary>

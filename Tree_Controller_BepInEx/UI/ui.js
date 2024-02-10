@@ -209,7 +209,7 @@ if (typeof yyTreeController.buildRadiusChanger !== 'function') {
         var radiusRowLabel = document.createElement("div");
         radiusRowLabel.id = "YYTC-radius-row-label";
         radiusRowLabel.className = "label_RZX";
-        radiusRowLabel.innerHTML = engine.translate("YY_TREE_CONTROLLER.Radius");
+        radiusRowLabel.innerHTML = engine.translate("YY_TREE_CONTROLLER[Radius]");
         const radiusButtonsPanel = document.createElement("div");
         radiusButtonsPanel.className = "content_ZIz";
         radiusButtonsPanel.id = "YYTC-radius-buttons-panel";
@@ -323,7 +323,7 @@ if (typeof yyTreeController.buildPrefabSetsRow !== 'function') {
         var prefabSetsRowLabel = document.createElement("div");
         prefabSetsRowLabel.id = "YYTC-prefab-label";
         prefabSetsRowLabel.className = "label_RZX";
-        prefabSetsRowLabel.innerHTML = engine.translate("YY_TREE_CONTROLLER.Sets");
+        prefabSetsRowLabel.innerHTML = engine.translate("YY_TREE_CONTROLLER[Sets]");
         const prefabSetsButtonsPanel = document.createElement("div");
         prefabSetsButtonsPanel.className = "content_ZIz";
         prefabSetsButtonsPanel.id = "YYTC-prefab-sets-buttons-panel";
@@ -442,7 +442,7 @@ if (typeof yyTreeController.buildRotationRow !== 'function') {
         var rotationRowLabel = document.createElement("div");
         rotationRowLabel.id = "YYTC-rotation-label";
         rotationRowLabel.className = "label_RZX";
-        rotationRowLabel.innerHTML = engine.translate("YY_TREE_CONTROLLER.Rotation");
+        rotationRowLabel.innerHTML = engine.translate("YY_TREE_CONTROLLER[Rotation]");
         const rotationButtonsPanel = document.createElement("div");
         rotationButtonsPanel.className = "content_ZIz";
         rotationButtonsPanel.id = "YYTC-rotation-buttons-panel";
@@ -575,7 +575,7 @@ if (typeof yyTreeController.showTooltip !== 'function') {
         }
 
         // Set text and position.
-        if (!prefix) prefix = "YY_TREE_CONTROLLER"
+        if (!prefix) prefix = "YY_TREE_CONTROLLER";
         yyTreeController.tooltipTitle.innerHTML = engine.translate(prefix + "[" + tooltipKey + "]");
         yyTreeController.tooltipPara.innerHTML = engine.translate(prefix + "_DESCRIPTION[" + tooltipKey +"]");
 
