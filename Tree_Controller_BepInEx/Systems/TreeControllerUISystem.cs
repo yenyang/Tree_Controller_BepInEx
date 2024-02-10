@@ -396,7 +396,7 @@ namespace Tree_Controller.Tools
                         {
                             if (EntityManager.HasComponent<TreeData>(prefabEntity))
                             {
-                                // This script builds Tree Age item used for brushing trees.
+                                // This script builds Tree Age item.
                                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildTreeAgeItem == 'function') { yyTreeController.buildTreeAgeItem(yyTreeController.entities[0].firstChild, 'beforebegin'); } }");
                                 break;
                             }
@@ -406,8 +406,8 @@ namespace Tree_Controller.Tools
                     // This script builds the Tool mode item row, tree age item row. And checks if radius row needs to be added.
                     UIFileUtils.ExecuteScript(m_UiView, $"{m_SelectionRowItemScript} if (typeof yyTreeController.checkIfNeedToBuildRadius == 'function') yyTreeController.checkIfNeedToBuildRadius();");
 
-                    // This scripts builds the prefab sets row.
-                    UIFileUtils.ExecuteScript(m_UiView, $"yyTreeController.ageItem = document.getElementById(\"YYTC-tree-age-item\"); if (yyTreeController.ageItem != null && typeof yyTreeController.buildPrefabSetsRow == 'function') yyTreeController.buildPrefabSetsRow(yyTreeController.ageItem,'afterend');");
+                    // This script buils the prefab Sets row for brushing sets of trees.
+                    UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildPrefabSetsRow == 'function') { yyTreeController.buildPrefabSetsRow(yyTreeController.entities[0].firstChild, 'afterend'); } }");
 
                     // Register event callbacks from UI JavaScript.
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-Prefab-Set-Changed", (Action<string>)ChangePrefabSet));
