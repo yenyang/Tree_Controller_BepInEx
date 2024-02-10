@@ -489,7 +489,6 @@ if (typeof yyTreeController.setupToolModeButtons !== 'function') {
     yyTreeController.setupToolModeButtons = function () {
         const ids = ["YYTC-plop-tree", "YYTC-brush-trees", "YYTC-ActivateAgeChange", "YYTC-ActivatePrefabChange"];
         const tooltipLabels = ["Create", "Brush", "change-age-tool", "change-prefab-tool"];
-        const prefixes = ["ToolOptions.TOOLTIP_TITLE", "ToolOptions.TOOLTIP_TITLE", "YY_TREE_CONTROLLER", "YY_TREE_CONTROLLER"];
         for (let i = 0; i < ids.length; i++) {
             let button = document.getElementById(ids[i]);
             if (button != null) {
@@ -497,7 +496,7 @@ if (typeof yyTreeController.setupToolModeButtons !== 'function') {
                     engine.trigger(this.id);
                 }
             }
-            yyTreeController.setTooltip(button.id, tooltipLabels[i], prefixes[i] );
+            yyTreeController.setTooltip(button.id, tooltipLabels[i]);
         }
         yyTreeController.toolModeItem = document.getElementById("YYTC-tool-mode-item");
         if (yyTreeController.toolModeItem) {
@@ -532,7 +531,7 @@ if (typeof yyTreeController.setTooltip !== 'function') {
 
 // Function to show a tooltip, creating if necessary.
 if (typeof yyTreeController.showTooltip !== 'function') {
-    yyTreeController.showTooltip = function (parent, tooltipKey, prefix) {
+    yyTreeController.showTooltip = function (parent, tooltipKey) {
 
         if (!document.getElementById("yytc-tooltip")) {
             yyTreeController.tooltip = document.createElement("div");
@@ -575,7 +574,8 @@ if (typeof yyTreeController.showTooltip !== 'function') {
         }
 
         // Set text and position.
-        if (!prefix) prefix = "YY_TREE_CONTROLLER";
+        let prefix = "YY_TREE_CONTROLLER";
+        if (tooltipKey == "Create" || tooltipKey == "Brush") prefix = "ToolOptions.TOOLTIP_TITLE";
         yyTreeController.tooltipTitle.innerHTML = engine.translate(prefix + "[" + tooltipKey + "]");
         yyTreeController.tooltipPara.innerHTML = engine.translate(prefix + "_DESCRIPTION[" + tooltipKey +"]");
 

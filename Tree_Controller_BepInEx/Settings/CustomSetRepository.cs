@@ -61,6 +61,15 @@ namespace Tree_Controller.Settings
         }
 
         /// <summary>
+        /// Gets or sets a value indicating the names of the prefabs in the set.
+        /// </summary>
+        public int Version
+        {
+            get { return m_Version; }
+            set { m_Version = value; }
+        }
+
+        /// <summary>
         /// Gets a list of PrefabBases from the array of prefab names.
         /// </summary>
         /// <returns>List of PrefabBases.</returns>
