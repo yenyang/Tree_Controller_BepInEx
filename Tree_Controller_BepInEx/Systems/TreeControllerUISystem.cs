@@ -390,18 +390,8 @@ namespace Tree_Controller.Tools
                 }
                 else // Prefab Changing
                 {
-                    foreach (PrefabBase prefabBase in selectedPrefabs)
-                    {
-                        if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity))
-                        {
-                            if (EntityManager.HasComponent<TreeData>(prefabEntity))
-                            {
-                                // This script builds Tree Age item used for brushing trees.
-                                UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildTreeAgeItem == 'function') { yyTreeController.buildTreeAgeItem(yyTreeController.entities[0].firstChild, 'beforebegin'); } }");
-                                break;
-                            }
-                        }
-                    }
+                    // This script builds Tree Age item.
+                    UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.entities = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (yyTreeController.entities[0] != null) { if (yyTreeController.entities[0].firstChild != null && typeof yyTreeController.buildTreeAgeItem == 'function') { yyTreeController.buildTreeAgeItem(yyTreeController.entities[0].firstChild, 'beforebegin'); } }");
 
                     // This script builds the Tool mode item row, tree age item row. And checks if radius row needs to be added.
                     UIFileUtils.ExecuteScript(m_UiView, $"{m_SelectionRowItemScript} if (typeof yyTreeController.checkIfNeedToBuildRadius == 'function') yyTreeController.checkIfNeedToBuildRadius();");
