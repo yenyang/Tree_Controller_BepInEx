@@ -577,6 +577,7 @@ if (typeof yyTreeController.showTooltip !== 'function') {
         let prefix = "YY_TREE_CONTROLLER";
         if (tooltipKey == "Create" || tooltipKey == "Brush") prefix = "ToolOptions.TOOLTIP_TITLE";
         yyTreeController.tooltipTitle.innerHTML = engine.translate(prefix + "[" + tooltipKey + "]");
+        if (tooltipKey == "Create" || tooltipKey == "Brush") prefix = "ToolOptions.TOOLTIP";
         yyTreeController.tooltipPara.innerHTML = engine.translate(prefix + "_DESCRIPTION[" + tooltipKey +"]");
 
         // Set visibility tracking to prevent race conditions with popup delay.
