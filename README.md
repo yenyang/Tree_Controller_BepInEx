@@ -37,6 +37,7 @@ For brushing vegetation this mod adds choice of age(s) for trees and wild bushes
 ### Custom sets
 Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click the custom set button to save a custom set. Once a set has been saved, click the custom set button to select that set. Hold Ctrl while switching themes to maintain the custom set.
 
+If you have "Remove Only Matching Type" enabled that may not work the way you anticipate while having a set selection. If you want to remove only a matching type make it your only selection.
 ### Tree Growth
 Includes the option to disable tree growth over the whole map but it excludes any trees within specialized lumber industry areas.
 
