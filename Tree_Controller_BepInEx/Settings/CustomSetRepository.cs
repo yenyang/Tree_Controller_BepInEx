@@ -14,7 +14,7 @@ namespace Tree_Controller.Settings
     public class CustomSetRepository
     {
         private string[] m_PrefabNames;
-
+        private int m_Version;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomSetRepository"/> class.
@@ -34,6 +34,7 @@ namespace Tree_Controller.Settings
         public CustomSetRepository(List<PrefabBase> customSet)
         {
             m_PrefabNames = ConvertToArray(customSet);
+            m_Version = 1;
         }
 
         /// <summary>
@@ -47,6 +48,7 @@ namespace Tree_Controller.Settings
         public CustomSetRepository(List<PrefabID> customSet)
         {
             m_PrefabNames = ConvertToArray(customSet);
+            m_Version = 1;
         }
 
         /// <summary>
