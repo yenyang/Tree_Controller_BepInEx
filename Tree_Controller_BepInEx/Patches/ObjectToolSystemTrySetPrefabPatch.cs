@@ -89,7 +89,7 @@ namespace Tree_Controller.Patches
                         log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Selecting {prefab.name}.");
                         return true;
                     }
-                    else if (selectedPrefabs.Contains(toolSystem.activePrefab))
+                    else if (selectedPrefabs.Contains(toolSystem.activePrefab) || treeControllerUISystem.RecentlySelectedPrefabSet)
                     {
                         return true;
                     }
