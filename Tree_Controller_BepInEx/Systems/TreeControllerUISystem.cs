@@ -154,6 +154,14 @@ namespace Tree_Controller.Tools
         }
 
         /// <summary>
+        /// Gets a value indicating whether a prefab set was recently selected.
+        /// </summary>
+        public bool RecentlySelectedPrefabSet
+        {
+            get => m_RecentlySelectedPrefabSet;
+        }
+
+        /// <summary>
         /// Resets the selected prefab set.
         /// </summary>
         public void ResetPrefabSets()

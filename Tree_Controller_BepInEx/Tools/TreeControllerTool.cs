@@ -294,13 +294,13 @@ namespace Tree_Controller.Tools
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
             if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
-                if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
+                if ((Control.ModifierKeys & Keys.Control) != Keys.Control && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
                     m_TreeControllerUISystem.ResetPrefabSets();
                     ClearSelectedTreePrefabs();
                     SelectTreePrefab(prefab);
                 }
-                else if (m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_SelectedTreePrefabEntities.Length > 1 && !m_TreeControllerUISystem.UpdateSelectionSet)
+                else if (m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_SelectedTreePrefabEntities.Length > 1 && !m_TreeControllerUISystem.UpdateSelectionSet && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
                     UnselectTreePrefab(prefab);
                     if (m_OriginallySelectedPrefab == prefab)

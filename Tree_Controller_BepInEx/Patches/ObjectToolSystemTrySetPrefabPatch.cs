@@ -50,7 +50,7 @@ namespace Tree_Controller.Patches
             if (prefabSystem.EntityManager.HasComponent<Vegetation>(prefabEntity))
             {
                 if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
-                || (toolSystem.activeTool == objectToolSystem && (Control.ModifierKeys & Keys.Control) != Keys.Control))
+                || (toolSystem.activeTool == objectToolSystem && (Control.ModifierKeys & Keys.Control) != Keys.Control && !treeControllerUISystem.RecentlySelectedPrefabSet))
                 {
                     treeControllerTool.ClearSelectedTreePrefabs();
                     treeControllerUISystem.ResetPrefabSets();
@@ -61,7 +61,7 @@ namespace Tree_Controller.Patches
                 if (toolSystem.activeTool == objectToolSystem)
                 {
                     List<PrefabBase> selectedPrefabs = treeControllerTool.GetSelectedPrefabs();
-                    if (selectedPrefabs.Contains(prefab) && selectedPrefabs.Count > 1 && !treeControllerUISystem.UpdateSelectionSet)
+                    if (selectedPrefabs.Contains(prefab) && selectedPrefabs.Count > 1 && !treeControllerUISystem.UpdateSelectionSet && !treeControllerUISystem.RecentlySelectedPrefabSet)
                     {
                         treeControllerTool.UnselectTreePrefab(prefab);
                         selectedPrefabs.Remove(prefab);
