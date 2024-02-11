@@ -1,10 +1,10 @@
 {
   "name": "Tree_Controller",
-  "description": "Tools and systems for controlling trees.",
-  "version_number": "1.0.0",
+  "description": "Plop selected age tree. Change Age and Type of trees and bushes. Forest brushes. Optional custom seasonal colors, dead model in winter, and disable tree growth.",
+  "version_number": "1.1.0",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100",
-    "algernon-Unified_Icon_Library-1.0.6"
+    "algernon-Unified_Icon_Library-1.0.7"
   ],
   "website_url": "https://github.com/yenyang/Tree_Controller_BepInEx"
 }

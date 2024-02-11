@@ -7,6 +7,7 @@ namespace Tree_Controller.Tools
 {
     using System;
     using System.Collections.Generic;
+    using System.Windows.Forms;
     using Colossal.Annotations;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -28,6 +29,8 @@ namespace Tree_Controller.Tools
     using Unity.Mathematics;
     using UnityEngine;
     using UnityEngine.InputSystem;
+    using static Colossal.AssetPipeline.Diagnostic.Report;
+
 
     /// <summary>
     /// Tool for controlling tree state or prefab.
@@ -47,11 +50,9 @@ namespace Tree_Controller.Tools
         private ProxyAction m_SecondaryApplyAction;
         private OverlayRenderSystem m_OverlayRenderSystem;
         private ToolOutputBarrier m_ToolOutputBarrier;
-        private EntityQuery m_TreeQuery;
-        private EntityQuery m_TreePrefabQuery;
-        private JobHandle treePrefabJobHandle;
-        private NativeList<Entity> m_TreePrefabEntities;
+        private EntityQuery m_VegetationQuery;
         private NativeList<TreeState> m_SelectedTreeStates;
+        private ObjectToolSystem m_ObjectToolSystem;
         private NativeList<Entity> m_SelectedTreePrefabEntities;
         [CanBeNull]
         private PrefabBase m_OriginallySelectedPrefab;
@@ -167,7 +168,8 @@ namespace Tree_Controller.Tools
         public void SelectTreePrefab(PrefabBase prefab)
         {
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
-            if (EntityManager.HasComponent<TreeData>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+
+            if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !m_SelectedTreePrefabEntities.Contains(prefabEntity))
             {
                 m_SelectedTreePrefabEntities.Add(prefabEntity);
                 if (m_OriginallySelectedPrefab == null)
@@ -175,9 +177,33 @@ namespace Tree_Controller.Tools
                     m_OriginallySelectedPrefab = prefab;
                 }
 
-                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(SelectTreePrefab)} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
+                m_TreeControllerUISystem.UpdateSelectionSet = true;
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(SelectTreePrefab)} selected {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
+                m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
             }
         }
+
+        /// <summary>
+        /// Removes the selected Prefab from the list by prefab entity.
+        /// </summary>
+        /// <param name="prefab">PrefabBase from object tool.</param>
+        public void UnselectTreePrefab(PrefabBase prefab)
+        {
+            Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
+            if (m_SelectedTreePrefabEntities.Contains(prefabEntity))
+            {
+                m_SelectedTreePrefabEntities.RemoveAt(m_SelectedTreePrefabEntities.IndexOf(prefabEntity));
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(UnselectTreePrefab)} removed {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
+                if (m_SelectedTreePrefabEntities.Length == 0)
+                {
+                    m_OriginallySelectedPrefab = null;
+                }
+
+                m_TreeControllerUISystem.UpdateSelectionSet = true;
+                m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
+            }
+        }
+
 
         /// <summary>
         /// Resets the selected Tree Prefabs.
@@ -228,6 +254,24 @@ namespace Tree_Controller.Tools
             return ages;
         }
 
+        /// <summary>
+        /// Gets a list of the PrefabBases of the prefabs that have been selected.
+        /// </summary>
+        /// <returns>List of PrefabBases.</returns>
+        public List<PrefabBase> GetSelectedPrefabs()
+        {
+            List<PrefabBase> names = new List<PrefabBase>();
+            foreach (Entity entity in m_SelectedTreePrefabEntities)
+            {
+                if (m_PrefabSystem.TryGetPrefab(entity, out PrefabBase prefab))
+                {
+                    names.Add(prefab);
+                }
+            }
+
+            return names;
+        }
+
         /// <inheritdoc/>
         public override PrefabBase GetPrefab()
         {
@@ -248,11 +292,39 @@ namespace Tree_Controller.Tools
             }
 
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
-            if (EntityManager.HasComponent<TreeData>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
+            if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
-                ClearSelectedTreePrefabs(); // When custom sets becomes a thing there will need to be a way to add multiple prefabs.
-                m_TreeControllerUISystem.ResetPrefabSets();
-                SelectTreePrefab(prefab);
+                if ((Control.ModifierKeys & Keys.Control) != Keys.Control && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
+                {
+                    m_TreeControllerUISystem.ResetPrefabSets();
+                    ClearSelectedTreePrefabs();
+                    SelectTreePrefab(prefab);
+                }
+                else if (m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_SelectedTreePrefabEntities.Length > 1 && !m_TreeControllerUISystem.UpdateSelectionSet && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
+                {
+                    UnselectTreePrefab(prefab);
+                    if (m_OriginallySelectedPrefab == prefab)
+                    {
+                        foreach (Entity e in m_SelectedTreePrefabEntities)
+                        {
+                            if (m_PrefabSystem.TryGetPrefab(e, out PrefabBase nextPrefab))
+                            {
+                                m_OriginallySelectedPrefab = nextPrefab;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (!m_TreeControllerUISystem.UpdateSelectionSet)
+                {
+                    SelectTreePrefab(prefab);
+                }
+
+                if (!m_TreeControllerUISystem.UpdateSelectionSet)
+                {
+                    m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
+                }
+
                 return true;
             }
 
@@ -348,6 +420,11 @@ namespace Tree_Controller.Tools
         {
             if (m_SelectedTreePrefabEntities.Length > 0)
             {
+                for (int i = 0; i < random.NextInt(5); i++)
+                {
+                    random.NextInt();
+                }
+
                 return m_SelectedTreePrefabEntities[random.NextInt(m_SelectedTreePrefabEntities.Length)];
             }
 
@@ -364,6 +441,7 @@ namespace Tree_Controller.Tools
             m_Log.Info($"[{nameof(TreeControllerTool)}] {nameof(OnCreate)}");
             m_ToolOutputBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolOutputBarrier>();
             m_OverlayRenderSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<OverlayRenderSystem>();
+            m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_TreeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
             m_SelectedTreeStates = new NativeList<TreeState>(1, Allocator.Persistent)
             {
@@ -376,28 +454,18 @@ namespace Tree_Controller.Tools
             hotKey.Enable();
             base.OnCreate();
 
-            m_TreePrefabQuery = GetEntityQuery(new EntityQueryDesc[]
+            m_VegetationQuery = GetEntityQuery(new EntityQueryDesc[]
             {
                 new EntityQueryDesc
                 {
                     All = new ComponentType[]
                     {
-                        ComponentType.ReadOnly<TreeData>(),
+                        ComponentType.ReadOnly<Game.Objects.Transform>(),
                     },
-                    None = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<PlaceholderObjectElement>(),
-                    },
-                },
-            });
-            m_TreeQuery = GetEntityQuery(new EntityQueryDesc[]
-            {
-                new EntityQueryDesc
-                {
-                    All = new ComponentType[]
+                    Any = new ComponentType[]
                     {
                         ComponentType.ReadWrite<Tree>(),
-                        ComponentType.ReadOnly<Game.Objects.Transform>(),
+                        ComponentType.ReadOnly<Plant>(),
                     },
                     None = new ComponentType[]
                     {
@@ -408,8 +476,8 @@ namespace Tree_Controller.Tools
                     },
                 },
             });
-            RequireForUpdate(m_TreeQuery);
-            RequireForUpdate(m_TreePrefabQuery);
+
+            RequireForUpdate(m_VegetationQuery);
         }
 
         /// <inheritdoc/>
@@ -430,20 +498,25 @@ namespace Tree_Controller.Tools
         /// <inheritdoc/>
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
-            m_TreePrefabEntities = new (0, Allocator.Temp);
-
             __TypeHandle.__Game_Objects_Transform_RO_ComponentTypeHandle.Update(ref CheckedStateRef);
             __TypeHandle.__Game_Object_Tree_RW_ComponentTypeHandle.Update(ref CheckedStateRef);
             __TypeHandle.__Unity_Entities_Entity_TypeHandle.Update(ref CheckedStateRef);
             __TypeHandle.__PrefabRef_RW_ComponentTypeHandle.Update(ref CheckedStateRef);
-
-            if (!m_TreePrefabQuery.IsEmptyIgnoreFilter)
-            {
-                m_TreePrefabEntities = m_TreePrefabQuery.ToEntityListAsync(Allocator.Persistent, out treePrefabJobHandle);
-            }
+            __TypeHandle.__TreeData_RO_ComponentLookup.Update(ref CheckedStateRef);
+            __TypeHandle.__Vegetation_RO_ComponentLookup.Update(ref CheckedStateRef);
+            __TypeHandle.__Tree_RO_ComponentLookup.Update(ref CheckedStateRef);
 
             inputDeps = Dependency;
             bool raycastFlag = GetRaycastResult(out Entity e, out RaycastHit hit);
+            bool isVegetationPrefabFlag = false;
+            if (EntityManager.TryGetComponent(e, out PrefabRef prefabEntity))
+            {
+                if (EntityManager.HasComponent<Vegetation>(prefabEntity))
+                {
+                    isVegetationPrefabFlag = true;
+                }
+            }
+
             bool hasTreeComponentFlag = EntityManager.HasComponent<Game.Objects.Tree>(e);
             bool hasTransformComponentFlag = EntityManager.HasComponent<Game.Objects.Transform>(e);
             bool hasBufferFlag = EntityManager.HasBuffer<Game.Objects.SubObject>(e);
@@ -464,9 +537,9 @@ namespace Tree_Controller.Tools
             {
                 if (m_SelectionMode == TCSelectionMode.SingleTree || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
                 {
-                    if (raycastFlag && hasTreeComponentFlag)
+                    if (raycastFlag && isVegetationPrefabFlag)
                     {
-                        if (m_AtLeastOneAgeSelected)
+                        if (m_AtLeastOneAgeSelected && hasTreeComponentFlag)
                         {
                             ChangeTreeStateJob changeTreeStateJob = new ()
                             {
@@ -481,7 +554,7 @@ namespace Tree_Controller.Tools
                         }
 
                         bool doNotApplyTreePrefab = false;
-                        if (EntityManager.TryGetComponent<PrefabRef>(e, out PrefabRef prefabRef))
+                        if (EntityManager.TryGetComponent(e, out PrefabRef prefabRef))
                         {
                             if (m_PrefabSystem.TryGetPrefab(prefabRef, out PrefabBase prefabBase))
                             {
@@ -492,7 +565,7 @@ namespace Tree_Controller.Tools
                             }
                         }
 
-                        if (!m_SelectedTreePrefabEntities.IsEmpty && !doNotApplyTreePrefab)
+                        if (!m_SelectedTreePrefabEntities.IsEmpty && !doNotApplyTreePrefab && isVegetationPrefabFlag)
                         {
                             ChangePrefabRefJob changePrefabRefJob = new ()
                             {
@@ -500,8 +573,11 @@ namespace Tree_Controller.Tools
                                 m_SelectedPrefabEntities = m_SelectedTreePrefabEntities,
                                 m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
                                 buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
+                                m_Ages = m_SelectedTreeStates,
+                                m_TreeDataLookup = __TypeHandle.__TreeData_RO_ComponentLookup,
+                                m_TreeLookup = __TypeHandle.__Tree_RO_ComponentLookup,
                             };
-                            inputDeps = changePrefabRefJob.Schedule(JobHandle.CombineDependencies(inputDeps, treePrefabJobHandle));
+                            inputDeps = changePrefabRefJob.Schedule(inputDeps);
                             m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
                         }
                     }
@@ -530,8 +606,11 @@ namespace Tree_Controller.Tools
                         m_OverridePrefab = overridePrefab,
                         m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
                         m_PrefabEntities = m_SelectedTreePrefabEntities,
+                        m_TreeDataLookup = __TypeHandle.__TreeData_RO_ComponentLookup,
+                        m_TreeLookup = __TypeHandle.__Tree_RO_ComponentLookup,
+                        m_VegetationLookup = __TypeHandle.__Vegetation_RO_ComponentLookup,
                     };
-                    inputDeps = JobChunkExtensions.ScheduleParallel(changeTreeAgeWithinRadiusJob, m_TreeQuery, JobHandle.CombineDependencies(inputDeps, treePrefabJobHandle));
+                    inputDeps = JobChunkExtensions.ScheduleParallel(changeTreeAgeWithinRadiusJob, m_VegetationQuery, inputDeps);
                     m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
                 }
             }
@@ -551,12 +630,15 @@ namespace Tree_Controller.Tools
                         m_OverridePrefab = overridePrefab,
                         m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
                         m_PrefabEntities = m_SelectedTreePrefabEntities,
+                        m_TreeDataLookup = __TypeHandle.__TreeData_RO_ComponentLookup,
+                        m_TreeLookup = __TypeHandle.__Tree_RO_ComponentLookup,
+                        m_VegetationLookup = __TypeHandle.__Vegetation_RO_ComponentLookup,
                     };
-                    inputDeps = JobChunkExtensions.ScheduleParallel(changeTreeAgeWholeMap, m_TreeQuery, JobHandle.CombineDependencies(inputDeps, treePrefabJobHandle));
+                    inputDeps = JobChunkExtensions.ScheduleParallel(changeTreeAgeWholeMap, m_VegetationQuery, inputDeps);
                     m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
                 }
             }
-            else if (raycastFlag && hasTreeComponentFlag && hasTransformComponentFlag) // Single Tree Circle
+            else if (raycastFlag && isVegetationPrefabFlag && hasTransformComponentFlag) // Single Tree Circle
             {
                 TreeCircleRenderJob treeCircleRenderJob = new ()
                 {
@@ -573,7 +655,16 @@ namespace Tree_Controller.Tools
                     for (int i = 0; i < buffer.Length; i++)
                     {
                         Entity subObject = buffer[i].m_SubObject;
-                        if (EntityManager.HasComponent<Tree>(subObject) && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
+                        bool isSubobjectVegetationPrefabFlag = false;
+                        if (EntityManager.TryGetComponent(subObject, out PrefabRef subObjectPrefabEntity))
+                        {
+                            if (EntityManager.HasComponent<Vegetation>(subObjectPrefabEntity))
+                            {
+                                isSubobjectVegetationPrefabFlag = true;
+                            }
+                        }
+
+                        if (isSubobjectVegetationPrefabFlag && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
                         {
                             Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
                             float radius = 2f;
@@ -606,7 +697,6 @@ namespace Tree_Controller.Tools
                 applyMode = ApplyMode.None;
             }
 
-            m_TreePrefabEntities.Dispose(inputDeps);
             return inputDeps;
         }
 
@@ -633,24 +723,6 @@ namespace Tree_Controller.Tools
         {
             base.OnCreateForCompiler();
             __TypeHandle.__AssignHandles(ref CheckedStateRef);
-        }
-
-        private struct TypeHandle
-        {
-            [ReadOnly]
-            public EntityTypeHandle __Unity_Entities_Entity_TypeHandle;
-            public ComponentTypeHandle<Tree> __Game_Object_Tree_RW_ComponentTypeHandle;
-            [ReadOnly]
-            public ComponentTypeHandle<Game.Objects.Transform> __Game_Objects_Transform_RO_ComponentTypeHandle;
-            public ComponentTypeHandle<PrefabRef> __PrefabRef_RW_ComponentTypeHandle;
-
-            public void __AssignHandles(ref SystemState state)
-            {
-                __Unity_Entities_Entity_TypeHandle = state.GetEntityTypeHandle();
-                __Game_Objects_Transform_RO_ComponentTypeHandle = state.GetComponentTypeHandle<Game.Objects.Transform>();
-                __Game_Object_Tree_RW_ComponentTypeHandle = state.GetComponentTypeHandle<Tree>();
-                __PrefabRef_RW_ComponentTypeHandle = state.GetComponentTypeHandle<PrefabRef>();
-            }
         }
 
         /// <summary>
@@ -704,14 +776,23 @@ namespace Tree_Controller.Tools
                 for (int i = 0; i < buffer.Length; i++)
                 {
                     Entity subObject = buffer[i].m_SubObject;
-                    if (EntityManager.HasComponent<Tree>(subObject) && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
+                    bool isVegetationPrefabFlag = false;
+                    if (EntityManager.TryGetComponent(subObject, out PrefabRef prefabEntity))
+                    {
+                        if (EntityManager.HasComponent<Vegetation>(prefabEntity))
+                        {
+                            isVegetationPrefabFlag = true;
+                        }
+                    }
+
+                    if (isVegetationPrefabFlag && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
                     {
                         Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
                         if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 2f) || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
                         {
-                            if (m_AtLeastOneAgeSelected)
+                            if (m_AtLeastOneAgeSelected && EntityManager.HasComponent<Tree>(subObject))
                             {
-                                ChangeTreeStateJob changeTreeStateJob = new()
+                                ChangeTreeStateJob changeTreeStateJob = new ()
                                 {
                                     m_Entity = subObject,
                                     m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
@@ -719,12 +800,12 @@ namespace Tree_Controller.Tools
                                     m_Tree = EntityManager.GetComponentData<Tree>(subObject),
                                     buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
                                 };
-                                jobHandle = changeTreeStateJob.Schedule(JobHandle.CombineDependencies(jobHandle, treePrefabJobHandle));
+                                jobHandle = changeTreeStateJob.Schedule(jobHandle);
                                 m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
                             }
 
                             bool doNotApplyTreePrefab = false;
-                            if (EntityManager.TryGetComponent<PrefabRef>(e, out PrefabRef prefabRef))
+                            if (EntityManager.TryGetComponent(e, out PrefabRef prefabRef))
                             {
                                 if (m_PrefabSystem.TryGetPrefab(prefabRef, out PrefabBase prefabBase))
                                 {
@@ -737,14 +818,17 @@ namespace Tree_Controller.Tools
 
                             if (!m_SelectedTreePrefabEntities.IsEmpty && !doNotApplyTreePrefab)
                             {
-                                ChangePrefabRefJob changePrefabRefJob = new()
+                                ChangePrefabRefJob changePrefabRefJob = new ()
                                 {
                                     m_Entity = subObject,
                                     m_SelectedPrefabEntities = m_SelectedTreePrefabEntities,
-                                    m_Random = new((uint)UnityEngine.Random.Range(1, 100000)),
+                                    m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
                                     buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
+                                    m_Ages = m_SelectedTreeStates,
+                                    m_TreeDataLookup = __TypeHandle.__TreeData_RO_ComponentLookup,
+                                    m_TreeLookup = __TypeHandle.__Tree_RO_ComponentLookup,
                                 };
-                                jobHandle = changePrefabRefJob.Schedule(JobHandle.CombineDependencies(jobHandle, treePrefabJobHandle));
+                                jobHandle = changePrefabRefJob.Schedule(jobHandle);
                                 m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
                             }
                         }
@@ -774,6 +858,33 @@ namespace Tree_Controller.Tools
             return false;
         }
 
+        private struct TypeHandle
+        {
+            [ReadOnly]
+            public EntityTypeHandle __Unity_Entities_Entity_TypeHandle;
+            public ComponentTypeHandle<Tree> __Game_Object_Tree_RW_ComponentTypeHandle;
+            [ReadOnly]
+            public ComponentTypeHandle<Game.Objects.Transform> __Game_Objects_Transform_RO_ComponentTypeHandle;
+            public ComponentTypeHandle<PrefabRef> __PrefabRef_RW_ComponentTypeHandle;
+            [ReadOnly]
+            public ComponentLookup<TreeData> __TreeData_RO_ComponentLookup;
+            [ReadOnly]
+            public ComponentLookup<Vegetation> __Vegetation_RO_ComponentLookup;
+            [ReadOnly]
+            public ComponentLookup<Tree> __Tree_RO_ComponentLookup;
+
+            public void __AssignHandles(ref SystemState state)
+            {
+                __Unity_Entities_Entity_TypeHandle = state.GetEntityTypeHandle();
+                __Game_Objects_Transform_RO_ComponentTypeHandle = state.GetComponentTypeHandle<Game.Objects.Transform>();
+                __Game_Object_Tree_RW_ComponentTypeHandle = state.GetComponentTypeHandle<Tree>();
+                __PrefabRef_RW_ComponentTypeHandle = state.GetComponentTypeHandle<PrefabRef>();
+                __TreeData_RO_ComponentLookup = state.GetComponentLookup<TreeData>();
+                __Vegetation_RO_ComponentLookup = state.GetComponentLookup<Vegetation>();
+                __Tree_RO_ComponentLookup = state.GetComponentLookup<Tree>();
+            }
+        }
+
         private struct TreeChangerWithinRadius : IJobChunk
         {
             public EntityTypeHandle m_EntityType;
@@ -788,6 +899,9 @@ namespace Tree_Controller.Tools
             public Unity.Mathematics.Random m_Random;
             public float m_Radius;
             public float3 m_Position;
+            public ComponentLookup<Tree> m_TreeLookup;
+            public ComponentLookup<TreeData> m_TreeDataLookup;
+            public ComponentLookup<Vegetation> m_VegetationLookup;
 
             /// <summary>
             /// Executes job which will change state or prefab for trees within a radius.
@@ -807,19 +921,25 @@ namespace Tree_Controller.Tools
                     if (CheckForHoveringOverTree(m_Position, transformNativeArray[i].m_Position, m_Radius))
                     {
                         Entity currentEntity = entityNativeArray[i];
-                        bool addBatchesUpdated = false;
-                        if (m_OverrideState)
+                        if (m_OverrideState && m_TreeLookup.HasComponent(currentEntity) && m_OverridePrefab == false)
                         {
                             Game.Objects.Tree currentTreeData = treeNativeArray[i];
                             currentTreeData.m_State = GetTreeState(m_Ages, currentTreeData);
                             buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
                             buffer.AddComponent<RecentlyChanged>(unfilteredChunkIndex, currentEntity);
-                            addBatchesUpdated = true;
+                            buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
+                            continue;
                         }
 
                         if (m_OverridePrefab == true)
                         {
                             PrefabRef currentPrefabRef = prefabRefNativeArray[i];
+
+                            // This checks for plants that are not in the vegetation tab.
+                            if (!m_VegetationLookup.HasComponent(currentPrefabRef.m_Prefab))
+                            {
+                                continue;
+                            }
 
                             if (m_PrefabEntities.Length > 0)
                             {
@@ -830,16 +950,33 @@ namespace Tree_Controller.Tools
                                 continue;
                             }
 
+                            // Convert plant to tree.
+                            if (m_TreeDataLookup.HasComponent(currentPrefabRef.m_Prefab) && !m_TreeLookup.HasComponent(currentEntity))
+                            {
+                                buffer.AddComponent<Tree>(unfilteredChunkIndex, currentEntity);
+                                Tree tree = new () { m_Growth = 0, m_State = GetTreeState(m_Ages, new Tree() { m_Growth = 0, m_State = TreeState.Adult }) };
+                                buffer.SetComponent(unfilteredChunkIndex, currentEntity, tree);
+                            }
+
+                            // Convert tree to Plant.
+                            else if (!m_TreeDataLookup.HasComponent(currentPrefabRef.m_Prefab) && m_TreeLookup.HasComponent(currentEntity))
+                            {
+                                buffer.RemoveComponent<Tree>(unfilteredChunkIndex, currentEntity);
+                            }
+
+                            // Override state of existing tree and prefab.
+                            else if (m_OverrideState && m_TreeDataLookup.HasComponent(currentPrefabRef.m_Prefab) && m_TreeLookup.HasComponent(currentEntity))
+                            {
+                                Game.Objects.Tree currentTreeData = treeNativeArray[i];
+                                currentTreeData.m_State = GetTreeState(m_Ages, currentTreeData);
+                                buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
+                            }
+
                             buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentPrefabRef);
                             buffer.RemoveComponent<Evergreen>(unfilteredChunkIndex, currentEntity);
                             buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
                             buffer.AddComponent<RecentlyChanged>(unfilteredChunkIndex, currentEntity);
                             buffer.AddComponent<Updated>(unfilteredChunkIndex, currentEntity);
-                            addBatchesUpdated = true;
-                        }
-
-                        if (addBatchesUpdated)
-                        {
                             buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
                         }
                     }
@@ -894,6 +1031,9 @@ namespace Tree_Controller.Tools
             public ComponentTypeHandle<Game.Prefabs.PrefabRef> m_PrefabRefType;
             public NativeList<Entity> m_PrefabEntities;
             public Unity.Mathematics.Random m_Random;
+            public ComponentLookup<Tree> m_TreeLookup;
+            public ComponentLookup<TreeData> m_TreeDataLookup;
+            public ComponentLookup<Vegetation> m_VegetationLookup;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
@@ -903,18 +1043,25 @@ namespace Tree_Controller.Tools
                 for (int i = 0; i < chunk.Count; i++)
                 {
                     Entity currentEntity = entityNativeArray[i];
-                    bool addBatchesUpdated = false;
-                    if (m_OverrideState)
+                    if (m_OverrideState && m_TreeLookup.HasComponent(currentEntity) && m_OverridePrefab == false)
                     {
                         Game.Objects.Tree currentTreeData = treeNativeArray[i];
                         currentTreeData.m_State = GetTreeState(m_Ages, currentTreeData);
                         buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
-                        addBatchesUpdated = true;
+                        buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
+                        continue;
                     }
 
                     if (m_OverridePrefab == true)
                     {
                         PrefabRef currentPrefabRef = prefabRefNativeArray[i];
+
+                        // This checks for plants that are not in the vegetation tab.
+                        if (!m_VegetationLookup.HasComponent(currentPrefabRef.m_Prefab))
+                        {
+                            continue;
+                        }
+
                         if (m_PrefabEntities.Length > 0)
                         {
                             currentPrefabRef.m_Prefab = m_PrefabEntities[m_Random.NextInt(m_PrefabEntities.Length)];
@@ -924,15 +1071,32 @@ namespace Tree_Controller.Tools
                             continue;
                         }
 
+                        // Convert plant to tree.
+                        if (m_TreeDataLookup.HasComponent(currentPrefabRef.m_Prefab) && !m_TreeLookup.HasComponent(currentEntity))
+                        {
+                            buffer.AddComponent<Tree>(unfilteredChunkIndex, currentEntity);
+                            Tree tree = new () { m_Growth = 0, m_State = GetTreeState(m_Ages, new Tree() { m_Growth = 0, m_State = TreeState.Adult }) };
+                            buffer.SetComponent(unfilteredChunkIndex, currentEntity, tree);
+                        }
+
+                        // Convert tree to Plant.
+                        else if (!m_TreeDataLookup.HasComponent(currentPrefabRef.m_Prefab) && m_TreeLookup.HasComponent(currentEntity))
+                        {
+                            buffer.RemoveComponent<Tree>(unfilteredChunkIndex, currentEntity);
+                        }
+
+                        // Override state of existing tree and prefab.
+                        else if (m_OverrideState && m_TreeDataLookup.HasComponent(currentPrefabRef.m_Prefab) && m_TreeLookup.HasComponent(currentEntity))
+                        {
+                            Game.Objects.Tree currentTreeData = treeNativeArray[i];
+                            currentTreeData.m_State = GetTreeState(m_Ages, currentTreeData);
+                            buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
+                        }
+
                         buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentPrefabRef);
                         buffer.RemoveComponent<Evergreen>(unfilteredChunkIndex, currentEntity);
                         buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
                         buffer.AddComponent<Updated>(unfilteredChunkIndex, currentEntity);
-                        addBatchesUpdated = true;
-                    }
-
-                    if (addBatchesUpdated)
-                    {
                         buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
                     }
                 }
@@ -991,6 +1155,9 @@ namespace Tree_Controller.Tools
             public NativeList<Entity> m_SelectedPrefabEntities;
             public EntityCommandBuffer buffer;
             public Unity.Mathematics.Random m_Random;
+            public NativeList<TreeState> m_Ages;
+            public ComponentLookup<TreeData> m_TreeDataLookup;
+            public ComponentLookup<Tree> m_TreeLookup;
 
             /// <summary>
             /// Changes prefab ref for specified entity.
@@ -1001,11 +1168,42 @@ namespace Tree_Controller.Tools
                 if (!m_SelectedPrefabEntities.IsEmpty)
                 {
                     prefabRef = new PrefabRef(m_SelectedPrefabEntities[m_Random.NextInt(m_SelectedPrefabEntities.Length)]);
-                    buffer.SetComponent(m_Entity, prefabRef);
-                    buffer.RemoveComponent<Evergreen>(m_Entity);
+
+                    // convert plant to tree.
+                    if (m_TreeDataLookup.HasComponent(prefabRef.m_Prefab) && !m_TreeLookup.HasComponent(m_Entity))
+                    {
+                        buffer.AddComponent<Tree>(m_Entity);
+                        Tree tree = new () { m_Growth = 0, m_State = GetTreeState(m_Ages) };
+                        buffer.SetComponent(m_Entity, tree);
+                    }
+
+                    // convert tree to plant.
+                    else if (!m_TreeDataLookup.HasComponent(prefabRef.m_Prefab) && m_TreeLookup.HasComponent(m_Entity))
+                    {
+                        buffer.RemoveComponent<Tree>(m_Entity);
+                    }
+
                     buffer.RemoveComponent<DeciduousData>(m_Entity);
+                    buffer.RemoveComponent<Evergreen>(m_Entity);
+                    buffer.SetComponent(m_Entity, prefabRef);
                     buffer.AddComponent<Updated>(m_Entity);
                 }
+            }
+
+            /// <summary>
+            /// Gets a specified tree state or random tree state from Ages array.
+            /// </summary>
+            /// <param name="ages">Selected ages.</param>
+            /// <returns>TreeState.</returns>
+            private TreeState GetTreeState(NativeList<TreeState> ages)
+            {
+                if (ages.Length > 0)
+                {
+                    TreeState returnState = ages[m_Random.NextInt(ages.Length)];
+                    return returnState;
+                }
+
+                return TreeState.Adult;
             }
         }
 

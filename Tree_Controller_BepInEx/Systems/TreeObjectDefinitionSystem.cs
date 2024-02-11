@@ -8,6 +8,7 @@ namespace Tree_Controller.Systems
     using System.Collections.Generic;
     using Colossal.Entities;
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Objects;
@@ -16,7 +17,6 @@ namespace Tree_Controller.Systems
     using Tree_Controller.Tools;
     using Unity.Collections;
     using Unity.Entities;
-    using Unity.Jobs;
     using UnityEngine;
 
     /// <summary>
@@ -37,9 +37,7 @@ namespace Tree_Controller.Systems
         private ObjectToolSystem m_ObjectToolSystem;
         private PrefabSystem m_PrefabSystem;
         private EntityQuery m_ObjectDefinitionQuery;
-        private EntityQuery m_TreePrefabQuery;
         private TreeControllerTool m_TreeControllerTool;
-        private bool m_RandomRotation = true;
         private ILog m_Log;
 
         /// <summary>
@@ -47,15 +45,6 @@ namespace Tree_Controller.Systems
         /// </summary>
         public TreeObjectDefinitionSystem()
         {
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the random is enabled.
-        /// </summary>
-        public bool RandomRotation
-        {
-            get { return m_RandomRotation; }
-            set { m_RandomRotation = value; }
         }
 
         /// <inheritdoc/>
@@ -86,61 +75,52 @@ namespace Tree_Controller.Systems
                     },
                 },
             });
-            m_TreePrefabQuery = GetEntityQuery(new EntityQueryDesc[]
-            {
-                new EntityQueryDesc
-                {
-                    All = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<TreeData>(),
-                    },
-                    None = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<PlaceholderObjectElement>(),
-                    },
-                },
-            });
-            RequireForUpdate(m_TreePrefabQuery);
+
             RequireForUpdate(m_ObjectDefinitionQuery);
         }
+
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
             NativeArray<Entity> entities = m_ObjectDefinitionQuery.ToEntityArray(Allocator.Temp);
-            NativeList<Entity> treePrefabs = m_TreePrefabQuery.ToEntityListAsync(Allocator.Temp, out JobHandle treePrefabJobHandle);
-            treePrefabJobHandle.Complete();
 
             foreach (Entity entity in entities)
             {
-                if (!EntityManager.TryGetComponent<Game.Tools.CreationDefinition>(entity, out CreationDefinition currentCreationDefinition))
+                if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))
                 {
                     entities.Dispose();
-                    treePrefabs.Dispose();
                     return;
                 }
 
-                if (!EntityManager.TryGetComponent<Game.Tools.ObjectDefinition>(entity, out ObjectDefinition currentObjectDefinition) || !treePrefabs.Contains(currentCreationDefinition.m_Prefab))
+                if (!EntityManager.TryGetComponent(entity, out ObjectDefinition currentObjectDefinition) || !EntityManager.HasComponent<Vegetation>(currentCreationDefinition.m_Prefab))
                 {
                     entities.Dispose();
-                    treePrefabs.Dispose();
                     return;
                 }
 
                 Unity.Mathematics.Random random = new ((uint)(Mathf.Abs(currentObjectDefinition.m_Position.x) + Mathf.Abs(currentObjectDefinition.m_Position.z)) * 1000);
-                if (m_RandomRotation && !m_ObjectToolSystem.brushing)
+                if (TreeControllerMod.Settings.RandomRotation && !m_ObjectToolSystem.brushing)
                 {
                     currentObjectDefinition.m_Rotation = Unity.Mathematics.quaternion.RotateY(random.NextFloat(2f * (float)Math.PI));
                 }
 
+                Entity prefabEntity = currentCreationDefinition.m_Prefab;
+
                 if (m_ObjectToolSystem.brushing)
                 {
-                    Entity prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
+                    prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
                     if (prefabEntity != Entity.Null)
                     {
                         currentCreationDefinition.m_Prefab = prefabEntity;
                         EntityManager.SetComponentData(entity, currentCreationDefinition);
                     }
+                }
+
+                if (!EntityManager.HasComponent(prefabEntity, ComponentType.ReadOnly<TreeData>()))
+                {
+                    EntityManager.SetComponentData(entity, currentObjectDefinition);
+                    return;
                 }
 
                 TreeState nextTreeState = m_TreeControllerTool.GetNextTreeState(ref random);
@@ -157,13 +137,7 @@ namespace Tree_Controller.Systems
             }
 
             entities.Dispose();
-            treePrefabs.Dispose();
         }
 
-        /// <inheritdoc/>
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-        }
     }
 }

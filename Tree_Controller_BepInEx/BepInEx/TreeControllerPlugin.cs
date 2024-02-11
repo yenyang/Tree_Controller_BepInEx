@@ -14,7 +14,7 @@ namespace Tree_Controller
     /// <summary>
     /// Mod entry point for BepInEx configuaration.
     /// </summary>
-    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, "Tree Controller", "1.1.0")]
     [HarmonyPatch]
     public class TreeControllerPlugin : BaseUnityPlugin
     {

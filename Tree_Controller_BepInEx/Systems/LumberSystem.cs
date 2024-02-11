@@ -140,6 +140,7 @@ namespace Tree_Controller.Systems
         private struct FindLumberJob : IJobChunk
         {
             public EntityCommandBuffer.ParallelWriter buffer;
+            [ReadOnly]
             public BufferTypeHandle<WoodResource> m_WoodResouceType;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
@@ -161,6 +162,7 @@ namespace Tree_Controller.Systems
         private struct RemoveLumberJob : IJobChunk
         {
             public EntityCommandBuffer.ParallelWriter buffer;
+            [ReadOnly]
             public EntityTypeHandle m_EntityType;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
