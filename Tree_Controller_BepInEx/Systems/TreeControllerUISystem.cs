@@ -857,6 +857,7 @@ namespace Tree_Controller.Tools
                 m_MultiplePrefabsSelected = true;
             }
 
+            selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
             m_UpdateSelectionSet = true;
             if (!selectedPrefabs.Contains(m_ToolSystem.activePrefab))
             {
