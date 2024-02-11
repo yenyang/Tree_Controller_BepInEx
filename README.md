@@ -56,7 +56,7 @@ The folder is located at %AppData%...\LocalLow\Colossal Order\Cities Skylines II
 Don't bother altering with the Alpha value at this time. Cultivated city bushes are not included in seasonal foliage colors, but I am interested in modding this aspect.
 
 ### Collaboration
-Algernon and I have collaborated to allow for age selction using Line Tool Lite.
+Algernon and I have collaborated to allow for age selection using Line Tool Lite.
 
 ## Support
 I will respond on the code modding channels on Cities: Skylines Modding Discord.
