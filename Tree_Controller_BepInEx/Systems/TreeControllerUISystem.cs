@@ -856,6 +856,18 @@ namespace Tree_Controller.Tools
             {
                 m_MultiplePrefabsSelected = true;
             }
+
+            m_UpdateSelectionSet = true;
+            if (!selectedPrefabs.Contains(m_ToolSystem.activePrefab))
+            {
+                foreach (PrefabBase prefab in selectedPrefabs)
+                {
+                    if (m_ToolSystem.ActivatePrefabTool(prefab))
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
         private void UnselectPrefabs()
