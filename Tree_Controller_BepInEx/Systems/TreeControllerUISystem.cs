@@ -8,7 +8,6 @@ namespace Tree_Controller.Tools
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Windows.Forms;
     using System.Xml.Serialization;
     using cohtml.Net;
     using Colossal.Logging;
@@ -24,6 +23,7 @@ namespace Tree_Controller.Tools
     using Unity.Collections;
     using Unity.Entities;
     using Unity.Jobs;
+    using UnityEngine.InputSystem;
     using static Tree_Controller.Tools.TreeControllerTool;
 
     /// <summary>
@@ -824,7 +824,8 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && (Control.ModifierKeys & Keys.Control) == Keys.Control)
+            bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
+            if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && ctrlKeyPressed)
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
                 TrySaveCustomPrefabSet(prefabSetID, selectedPrefabs);
@@ -1097,7 +1098,8 @@ namespace Tree_Controller.Tools
             ResetPrefabSets();
             if (m_ToolSystem.activeTool == m_TreeControllerTool || m_ObjectToolSystem.brushing)
             {
-                if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
+                bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
+                if (!ctrlKeyPressed)
                 {
                     UnselectPrefabs();
                 }

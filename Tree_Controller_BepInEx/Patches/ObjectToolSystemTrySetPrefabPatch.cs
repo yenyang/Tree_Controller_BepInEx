@@ -5,13 +5,13 @@
 namespace Tree_Controller.Patches
 {
     using System.Collections.Generic;
-    using System.Windows.Forms;
     using Colossal.Logging;
     using Game.Prefabs;
     using Game.Tools;
     using HarmonyLib;
     using Tree_Controller.Tools;
     using Unity.Entities;
+    using UnityEngine.InputSystem;
 
     /// <summary>
     /// Patches ObjectToolSystem.TrySetPrefab. If not using tree controller tool, original methods acts as normal. Will skip it and return false if Tree Controller tool is active tool and an appropriate prefab is selected.
@@ -49,8 +49,9 @@ namespace Tree_Controller.Patches
 
             if (prefabSystem.EntityManager.HasComponent<Vegetation>(prefabEntity))
             {
+                bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
                 if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
-                || (toolSystem.activeTool == objectToolSystem && (Control.ModifierKeys & Keys.Control) != Keys.Control && !treeControllerUISystem.RecentlySelectedPrefabSet))
+                || (toolSystem.activeTool == objectToolSystem && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet))
                 {
                     treeControllerTool.ClearSelectedTreePrefabs();
                     treeControllerUISystem.ResetPrefabSets();
