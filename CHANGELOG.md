@@ -1,6 +1,6 @@
 # Tree Controller Change Log
 ## Patch V1.1.1
-* Fixed Ctrl Key issue: exception related to unsupported Culture Info.
+* Fixed Ctrl Key culture info issue that affected some users.
 * Improved collaboration with Line Tool Lite.
 
 ## Update V1.1.0
