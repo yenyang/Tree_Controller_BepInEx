@@ -7,7 +7,6 @@ namespace Tree_Controller.Tools
 {
     using System;
     using System.Collections.Generic;
-    using System.Windows.Forms;
     using Colossal.Annotations;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -294,7 +293,8 @@ namespace Tree_Controller.Tools
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
             if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
-                if ((Control.ModifierKeys & Keys.Control) != Keys.Control && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
+                bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
+                if (!ctrlKeyPressed && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
                     m_TreeControllerUISystem.ResetPrefabSets();
                     ClearSelectedTreePrefabs();
