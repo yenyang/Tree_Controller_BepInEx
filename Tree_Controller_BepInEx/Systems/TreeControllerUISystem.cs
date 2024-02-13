@@ -1075,13 +1075,6 @@ namespace Tree_Controller.Tools
                             m_UiView.ExecuteScript(DestroyElementByID("YYTC-tree-age-item"));
                             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} Tree Controller removed Tree Age Item from Line Tool.");
                         }
-
-                        if (EntityManager.HasComponent<Vegetation>(entity))
-                        {
-                            m_TreeControllerTool.ClearSelectedTreePrefabs();
-                            ResetPrefabSets();
-                            m_TreeControllerTool.SelectTreePrefab(prefab);
-                        }
                     }
                 }
 
