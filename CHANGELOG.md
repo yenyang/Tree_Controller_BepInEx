@@ -1,4 +1,8 @@
 # Tree Controller Change Log
+## Patch V1.1.1
+* Fixed Ctrl Key issue: exception related to unsupported Culture Info.
+* Improved collaboration with Line Tool Lite.
+
 ## Update V1.1.0
 * While brushing and changing types you can select multiple types of trees to make a custom set.
 * You can save custom sets to 5 buttons that you can use or override later.
