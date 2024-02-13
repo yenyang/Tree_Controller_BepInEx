@@ -12,6 +12,7 @@ namespace Tree_Controller.Tools
     using cohtml.Net;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
+    using Game.Objects;
     using Game.Prefabs;
     using Game.SceneFlow;
     using Game.Tools;
@@ -939,14 +940,20 @@ namespace Tree_Controller.Tools
         {
             // This script creates the Tree Controller object if it doesn't exist.
             UIFileUtils.ExecuteScript(m_UiView, "if (yyTreeController == null) var yyTreeController = {};");
-            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} {tool.toolID}");
+            if (tool != null)
+            {
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} {tool.toolID}");
+            }
 
             if (tool.toolID != "Object Tool" && tool.toolID != "Tree Controller Tool")
             {
-                UnselectPrefabs();
-                if (m_ToolSystem.activePrefab != null)
+                if (m_ObjectToolPlacingTree || m_ToolIsActive)
                 {
-                    SelectPrefab(m_ToolSystem.activePrefab);
+                    UnselectPrefabs();
+                    if (m_ToolSystem.activePrefab != null)
+                    {
+                        SelectPrefab(m_ToolSystem.activePrefab);
+                    }
                 }
 
                 if (m_ObjectToolPlacingTree == true)
@@ -964,6 +971,12 @@ namespace Tree_Controller.Tools
                 if (tool.toolID == "Line Tool")
                 {
                     m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} new tool is line tool");
+                    foreach (BoundEventHandle boundEvent in m_BoundEvents)
+                    {
+                        m_UiView.UnregisterFromEvent(boundEvent);
+                    }
+
+                    m_BoundEvents.Clear();
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ChangeSelectedAges", (Action<bool[]>)ChangeSelectedAges));
                 }
 
@@ -1040,11 +1053,31 @@ namespace Tree_Controller.Tools
         /// <param name="prefab">The new prefab.</param>
         private void OnPrefabChanged(PrefabBase prefab)
         {
-            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} {prefab.name} {prefab.uiTag}");
+            if (prefab != null)
+            {
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} {prefab.name} {prefab.uiTag}");
+            }
 
             if (m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool != m_TreeControllerTool)
             {
                 Enabled = false;
+                if (m_ToolSystem.activeTool.toolID == "Line Tool" && prefab != null)
+                {
+                    if (m_PrefabSystem.TryGetEntity(prefab, out Entity entity))
+                    {
+                        if (EntityManager.HasComponent<TreeData>(entity))
+                        {
+                            m_UiView.ExecuteScript($"if (typeof lineTool == 'object') {{ if (typeof lineTool.addTreeControl == 'function' && document.getElementById(\"line-tool-mode\") != null)  {{ lineTool.addTreeControl(); }} }}");
+                            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} Tree Controller added Tree Age Item to Line Tool.");
+                        }
+                        else
+                        {
+                            m_UiView.ExecuteScript(DestroyElementByID("YYTC-tree-age-item"));
+                            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} Tree Controller removed Tree Age Item from Line Tool.");
+                        }
+                    }
+                }
+
                 return;
             }
 
