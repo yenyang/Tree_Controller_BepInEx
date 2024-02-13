@@ -1060,13 +1060,13 @@ namespace Tree_Controller.Tools
             if (m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool != m_TreeControllerTool)
             {
                 Enabled = false;
-                if (m_ToolSystem.activeTool.toolID == "Line Tool" || prefab != null)
+                if (m_ToolSystem.activeTool.toolID == "Line Tool" && prefab != null)
                 {
                     if (m_PrefabSystem.TryGetEntity(prefab, out Entity entity))
                     {
                         if (EntityManager.HasComponent<TreeData>(entity))
                         {
-                            m_UiView.ExecuteScript($"if (lineTool != null) if (typeof lineTool.addTreeControl == 'function' && document.getElementById(\"YYTC-tree-age-item\") == null) lineTool.addTreeControl();");
+                            m_UiView.ExecuteScript($"if (typeof lineTool == 'object') {{ if (typeof lineTool.addTreeControl == 'function' && document.getElementById(\"line-tool-mode\") != null)  {{ lineTool.addTreeControl(); }} }}");
                             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} Tree Controller added Tree Age Item to Line Tool.");
                         }
                         else
