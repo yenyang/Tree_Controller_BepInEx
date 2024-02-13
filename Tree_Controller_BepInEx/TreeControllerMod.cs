@@ -88,7 +88,7 @@ namespace Tree_Controller
         public void OnCreateWorld(UpdateSystem updateSystem)
         {
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnCreateWorld)}");
-            Logger.effectivenessLevel = Level.Debug;  // Remember to change this before release.
+            Logger.effectivenessLevel = Level.Info;  // Remember to change this before release.
             Settings = new (this);
             Settings.RegisterInOptionsUI();
             AssetDatabase.global.LoadSettings(nameof(TreeControllerMod), Settings, new TreeControllerSettings(this));
