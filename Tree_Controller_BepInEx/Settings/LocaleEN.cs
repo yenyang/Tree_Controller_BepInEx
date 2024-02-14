@@ -54,7 +54,7 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomEqualWeight), "Random: Equal Weight" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomWeighted), "Random: Weighted" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "Age Selection Technique" },
-                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "When multiple Tree Ages are selected, one will be selected using this option. Random: Equal Weight is just a random selection. Random: Weighted randomly selected using game's editor weights. Sequential: does selected ages in order." },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "When multiple Tree Ages are selected, one will be selected using this option. Random: Equal Weight is just a random selection. Random: Weighted randomly selected using game's editor weights." },
                 { "Options.TOOLTIPYYTC[WholeMapApply]", "Right Click to Apply." },
                 { "YY_TREE_CONTROLLER[ToolMode]", "Tool Mode" },
                 { "YY_TREE_CONTROLLER[Selection]", "Selection" },
