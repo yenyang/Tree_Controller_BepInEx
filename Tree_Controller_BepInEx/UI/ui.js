@@ -524,8 +524,10 @@ if (typeof yyTreeController.applyLocalization !== 'function') {
 if (typeof yyTreeController.setTooltip !== 'function') {
     yyTreeController.setTooltip = function (id, toolTipKey) {
         let target = document.getElementById(id);
-        target.onmouseenter = () => yyTreeController.showTooltip(document.getElementById(id), toolTipKey);
-        target.onmouseleave = yyTreeController.hideTooltip;
+        if (target) {
+            target.onmouseenter = () => yyTreeController.showTooltip(document.getElementById(id), toolTipKey);
+            target.onmouseleave = yyTreeController.hideTooltip;
+        }
     }
 }
 
