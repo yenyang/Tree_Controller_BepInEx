@@ -17,6 +17,9 @@ Video Demo available on [YouTube](https://www.youtube.com/watch?v=YoyMliyWJQU)
 ## Donations
 If you want to say thank you with a donation you can do so on [Buy Me A Coffee](https://www.buymeacoffee.com/yenyang_mods).
 
+## Translations
+I am looking for volunteers to help translate the mod into the official languages. For those interested please go to [CrowdIn](https://crowdin.com/project/csl2-mod-tree-controller).
+
 ## Detailed Description:
 Includes a tree controller tool that lets you change the age or types of existing trees and/or bushes on the following selections:
 * Single Tree
