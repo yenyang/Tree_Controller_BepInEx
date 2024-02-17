@@ -126,7 +126,8 @@ namespace Tree_Controller
         private void LoadLocales()
         {
             LocaleEN defaultLocale = new LocaleEN(Settings);
-            defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
+
+            // defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
             var file = Path.Combine(ModInstallFolder, $"l10n.csv");
             if (File.Exists(file))
             {
