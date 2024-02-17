@@ -58,6 +58,7 @@ namespace Tree_Controller.Settings
                 { "Options.TOOLTIPYYTC[WholeMapApply]", "Right Click to Apply." },
                 { "YY_TREE_CONTROLLER[ToolMode]", "Tool Mode" },
                 { "YY_TREE_CONTROLLER[Selection]", "Selection" },
+                { "YY_TREE_CONTROLLER[Age]", "Age" },
                 { "YY_TREE_CONTROLLER[Radius]", "Radius" },
                 { "YY_TREE_CONTROLLER[Sets]", "Sets" },
                 { "YY_TREE_CONTROLLER[Rotation]", "Rotation" },

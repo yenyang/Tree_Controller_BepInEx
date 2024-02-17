@@ -33,7 +33,7 @@ if (typeof yyTreeController.buildTreeAgeItem !== 'function') {
         const changeAgeRowLabel = document.createElement("div");
         changeAgeRowLabel.id = "YYTC-change-age-label";
         changeAgeRowLabel.className = "label_RZX";
-        changeAgeRowLabel.innerHTML = "Age";
+        changeAgeRowLabel.innerHTML = engine.translate("YY_TREE_CONTROLLER[Age]");
         const changeAgeButtonsPanel = document.createElement("div");
         changeAgeButtonsPanel.className = "content_ZIz";
         changeAgeButtonsPanel.id = "YYTC-change-age-buttons-panel";

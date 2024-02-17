@@ -1,6 +1,6 @@
 # Tree Controller Change Log
 ## Patch V1.1.3
-* Localization Support: German by Hendrix
+* Localization Support: Spanish by Nyoko and German by Hendrix
 
 ## Patch V1.1.2
 * Fixed game locking up by clicking Menu Button while using Tree Controller Tool.
