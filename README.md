@@ -18,7 +18,9 @@ Video Demo available on [YouTube](https://www.youtube.com/watch?v=YoyMliyWJQU)
 If you want to say thank you with a donation you can do so on [Buy Me A Coffee](https://www.buymeacoffee.com/yenyang_mods).
 
 ## Translations
-I am looking for volunteers to help translate the mod into the official languages. For those interested please go to [CrowdIn](https://crowdin.com/project/csl2-mod-tree-controller).
+I am looking for volunteers to help translate the mod into the official languages. For those interested please go to [CrowdIn](https://crowdin.com/project/csl2-mod-water-features).
+Sorry the link says water features, I accidently uploaded the wrong file to one of the projects so the URLs are swapped.
+Current Localization Support: German by Hendrix.
 
 ## Detailed Description:
 Includes a tree controller tool that lets you change the age or types of existing trees and/or bushes on the following selections:
@@ -70,3 +72,4 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * Algernon - Help with UI, Cooperative Development and Code Sharing, Collaboration regarding line tool.
 * T.D.W., Klyte45, krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Tigon Ologdring - Testing, Feedback
+* Localization: Hendrix (German)
