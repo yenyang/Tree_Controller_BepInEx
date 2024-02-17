@@ -1,9 +1,9 @@
 # Tree Controller Change Log
-## Patch V1.1.2
-* Fixed game locking up by clicking Menu Button while using Tree Controller Tool.
+## Patch V1.1.3
+* Localization Support: German by Hendrix
 
 ## Patch V1.1.2
-* Localization Support: German by Hendrix
+* Fixed game locking up by clicking Menu Button while using Tree Controller Tool.
 
 ## Patch V1.1.1
 * Fixed Ctrl Key culture info issue that affected some users.
