@@ -4,7 +4,10 @@
 
 namespace Tree_Controller.Settings
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
     using Colossal;
     using Colossal.IO.AssetDatabase.Internal;
     using Game.Objects;
@@ -17,6 +20,8 @@ namespace Tree_Controller.Settings
     {
         private readonly TreeControllerSettings m_Setting;
 
+        private Dictionary<string, string> m_Localization;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LocaleEN"/> class.
         /// </summary>
@@ -24,12 +29,8 @@ namespace Tree_Controller.Settings
         public LocaleEN(TreeControllerSettings setting)
         {
             m_Setting = setting;
-        }
 
-        /// <inheritdoc/>
-        public IEnumerable<KeyValuePair<string, string>> ReadEntries(IList<IDictionaryEntryError> errors, Dictionary<string, int> indexCounts)
-        {
-            return new Dictionary<string, string>
+            m_Localization = new Dictionary<string, string>()
             {
                 { m_Setting.GetSettingsLocaleID(), "Tree Controller" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.UseDeadModelDuringWinter)), "Deciduous trees use Dead Model during Winter" },
@@ -53,10 +54,11 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomEqualWeight), "Random: Equal Weight" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomWeighted), "Random: Weighted" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "Age Selection Technique" },
-                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "When multiple Tree Ages are selected, one will be selected using this option. Random: Equal Weight is just a random selection. Random: Weighted randomly selected using game's editor weights. Sequential: does selected ages in order." },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "When multiple Tree Ages are selected, one will be selected using this option. Random: Equal Weight is just a random selection. Random: Weighted randomly selected using game's editor weights." },
                 { "Options.TOOLTIPYYTC[WholeMapApply]", "Right Click to Apply." },
                 { "YY_TREE_CONTROLLER[ToolMode]", "Tool Mode" },
                 { "YY_TREE_CONTROLLER[Selection]", "Selection" },
+                { "YY_TREE_CONTROLLER[Age]", "Age" },
                 { "YY_TREE_CONTROLLER[Radius]", "Radius" },
                 { "YY_TREE_CONTROLLER[Sets]", "Sets" },
                 { "YY_TREE_CONTROLLER[Rotation]", "Rotation" },
@@ -114,8 +116,67 @@ namespace Tree_Controller.Settings
         }
 
         /// <inheritdoc/>
+        public IEnumerable<KeyValuePair<string, string>> ReadEntries(IList<IDictionaryEntryError> errors, Dictionary<string, int> indexCounts)
+        {
+            return m_Localization;
+        }
+
+        /// <inheritdoc/>
         public void Unload()
         {
+        }
+
+        /// <summary>
+        /// Exports a localization CSV template with this files dictionary as default entries.
+        /// </summary>
+        /// <param name="folderPath">the path of where the file should be created.</param>
+        /// <param name="langCodes">the language codes to be included in the template file.</param>
+        /// <returns>True if the file is created. False if not.</returns>
+        public bool ExportLocalizationCSV(string folderPath, string[] langCodes)
+        {
+            System.IO.Directory.CreateDirectory(folderPath);
+            string localizationFilePath = Path.Combine(folderPath, $"l10n.csv");
+            if (!File.Exists(localizationFilePath))
+            {
+                try
+                {
+                    using (StreamWriter streamWriter = new(File.Create(localizationFilePath)))
+                    {
+                        StringBuilder topLine = new StringBuilder();
+                        topLine.Append("key\t");
+                        foreach (string langCode in langCodes)
+                        {
+                            topLine.Append(langCode);
+                            topLine.Append("\t");
+                        }
+
+                        streamWriter.WriteLine(topLine.ToString());
+
+                        foreach (KeyValuePair<string, string> kvp in m_Localization)
+                        {
+                            StringBuilder currentLine = new StringBuilder();
+                            currentLine.Append(kvp.Key);
+                            currentLine.Append("\t");
+                            foreach (string langCode in langCodes)
+                            {
+                                currentLine.Append(kvp.Value);
+                                currentLine.Append("\t");
+                            }
+
+                            streamWriter.WriteLine(currentLine.ToString());
+                        }
+
+                        return true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    TreeControllerMod.Instance.Logger.Warn($"{typeof(LocaleEN)}.{nameof(ExportLocalizationCSV)} Encountered Exception {e} while trying to export localization csv.");
+                    return false;
+                }
+            }
+
+            return false;
         }
     }
 }

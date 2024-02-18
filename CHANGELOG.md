@@ -1,4 +1,8 @@
 # Tree Controller Change Log
+## Patch V1.1.3
+* Localization Support: Spanish by Nyoko and German by Hendrix
+* Fixed another issue while switching between Line Tool Lite and Object Tool.
+
 ## Patch V1.1.2
 * Fixed game locking up by clicking Menu Button while using Tree Controller Tool.
 

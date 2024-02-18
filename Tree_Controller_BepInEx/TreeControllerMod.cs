@@ -125,9 +125,43 @@ namespace Tree_Controller
         /// </summary>
         private void LoadLocales()
         {
-            foreach (var lang in GameManager.instance.localizationManager.GetSupportedLocales())
+            LocaleEN defaultLocale = new LocaleEN(Settings);
+
+            // defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
+            var file = Path.Combine(ModInstallFolder, $"l10n.csv");
+            if (File.Exists(file))
             {
-                GameManager.instance.localizationManager.AddSource(lang, new LocaleEN(Settings));
+                var fileLines = File.ReadAllLines(file).Select(x => x.Split('\t'));
+                var enColumn = Array.IndexOf(fileLines.First(), "en-US");
+                var enMemoryFile = new MemorySource(fileLines.Skip(1).ToDictionary(x => x[0], x => x.ElementAtOrDefault(enColumn)));
+                foreach (var lang in GameManager.instance.localizationManager.GetSupportedLocales())
+                {
+                    try
+                    {
+                        GameManager.instance.localizationManager.AddSource(lang, enMemoryFile);
+                        if (lang != "en-US")
+                        {
+                            var valueColumn = Array.IndexOf(fileLines.First(), lang);
+                            if (valueColumn > 0)
+                            {
+                                var i18nFile = new MemorySource(fileLines.Skip(1).ToDictionary(x => x[0], x => x.ElementAtOrDefault(valueColumn)));
+                                GameManager.instance.localizationManager.AddSource(lang, i18nFile);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Warn($"{nameof(TreeControllerMod)}.{nameof(LoadLocales)} Encountered exception {ex} while trying to localize {lang}.");
+                    }
+                }
+            }
+            else
+            {
+                Logger.Warn($"{nameof(TreeControllerMod)}.{nameof(LoadLocales)} couldn't find localization file and loaded default for every language.");
+                foreach (var lang in GameManager.instance.localizationManager.GetSupportedLocales())
+                {
+                    GameManager.instance.localizationManager.AddSource(lang, defaultLocale);
+                }
             }
         }
     }

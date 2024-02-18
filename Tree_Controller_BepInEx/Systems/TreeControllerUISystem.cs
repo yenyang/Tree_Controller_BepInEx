@@ -135,6 +135,7 @@ namespace Tree_Controller.Tools
         private bool m_MultiplePrefabsSelected = false;
         private EntityQuery m_VegetationQuery;
         private Entity m_ThemeEntity = Entity.Null;
+        private bool m_LastToolWasLineTool = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
@@ -465,6 +466,13 @@ namespace Tree_Controller.Tools
                 return;
             }
 
+            // This gives a frame to ensure line tool Age item is removed.
+            if (m_LastToolWasLineTool)
+            {
+                m_LastToolWasLineTool = false;
+                return;
+            }
+
             if (m_ObjectToolPlacingTree && !m_ObjectToolSystem.brushing)
             {
                 UIFileUtils.ExecuteScript(m_UiView, $"if (document.getElementById(\"YYTC-rotation-row\") == null) engine.trigger('YYTC-rotation-row-missing');");
@@ -517,6 +525,7 @@ namespace Tree_Controller.Tools
                     return;
                 }
 
+                m_Log.Debug(selectedPrefabs.Count);
                 foreach (PrefabBase prefabBase in selectedPrefabs)
                 {
                     if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity))
@@ -978,6 +987,12 @@ namespace Tree_Controller.Tools
 
                     m_BoundEvents.Clear();
                     m_BoundEvents.Add(m_UiView.RegisterForEvent("YYTC-ChangeSelectedAges", (Action<bool[]>)ChangeSelectedAges));
+
+                    m_LastToolWasLineTool = true;
+                }
+                else
+                {
+                    m_LastToolWasLineTool = false;
                 }
 
                 Enabled = false;
