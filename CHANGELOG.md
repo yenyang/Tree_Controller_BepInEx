@@ -1,4 +1,8 @@
 # Tree Controller Change Log
+## Patch V1.1.4
+* Localization Support: Italian by Mazi, Brazilian Portuguese by Luiz Fernando de Paula, Partial Chinese Simplified by RilkeXS
+* Fixed building relocation issue where it would switch to placing vegetation.
+
 ## Patch V1.1.3
 * Localization Support: Spanish by Nyoko and German by Hendrix
 * Fixed another issue while switching between Line Tool Lite and Object Tool.

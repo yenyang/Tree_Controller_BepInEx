@@ -460,7 +460,7 @@ namespace Tree_Controller.Tools
                 return;  // Wait a frame for panel changes to occur;
             }
 
-            if (m_ToolSystem.activeTool != m_ObjectToolSystem || m_UiView == null)
+            if (m_ToolSystem.activeTool != m_ObjectToolSystem || m_UiView == null || (m_ObjectToolSystem.mode != ObjectToolSystem.Mode.Create && m_ObjectToolSystem.mode != ObjectToolSystem.Mode.Brush))
             {
                 Enabled = false;
                 return;
@@ -560,7 +560,7 @@ namespace Tree_Controller.Tools
                 m_ObjectToolPlacingTree = true;
             }
 
-            if (m_ObjectToolSystem.brushing)
+            if (m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)
             {
                 // This script destroys rotation and plop age row while not plopping single tree.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.destroyElementByID(\"YYTC-rotation-row\");");
@@ -622,7 +622,7 @@ namespace Tree_Controller.Tools
                     m_FrameCount++;
                 }
             }
-            else
+            else if (m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create)
             {
                 // This script destroys the prefab-sets-row that were used for brushing trees.
                 UIFileUtils.ExecuteScript(m_UiView, "yyTreeController.destroyElementByID(\"YYTC-prefab-sets-row\");");
@@ -997,7 +997,7 @@ namespace Tree_Controller.Tools
 
                 Enabled = false;
             }
-            else if (tool.toolID == "Object Tool" && m_ObjectToolSystem.GetPrefab() != null)
+            else if (tool.toolID == "Object Tool" && m_ObjectToolSystem.GetPrefab() != null && (m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush))
             {
                 if (m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.GetPrefab(), out Entity prefabEntity))
                 {
@@ -1073,7 +1073,7 @@ namespace Tree_Controller.Tools
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} {prefab.name} {prefab.uiTag}");
             }
 
-            if (m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool != m_TreeControllerTool)
+            if ((m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool != m_TreeControllerTool) || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode != ObjectToolSystem.Mode.Create && m_ObjectToolSystem.mode != ObjectToolSystem.Mode.Brush))
             {
                 Enabled = false;
                 if (m_ToolSystem.activeTool.toolID == "Line Tool" && prefab != null)
@@ -1095,6 +1095,8 @@ namespace Tree_Controller.Tools
 
                 return;
             }
+
+
 
             if (m_ObjectToolSystem.prefab != null && m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.prefab, out Entity prefabEntity))
             {
