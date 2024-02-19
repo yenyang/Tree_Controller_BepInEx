@@ -37,23 +37,35 @@ namespace Tree_Controller.Patches
             ObjectToolSystem objectToolSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>();
             if (toolSystem.activeTool != treeControllerTool && toolSystem.activeTool != objectToolSystem && toolSystem.activeTool.toolID != "Line Tool")
             {
+                log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} returned because active tool.");
                 return true;
             }
 
+            if (toolSystem.selected != Entity.Null || (toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush && objectToolSystem.mode != ObjectToolSystem.Mode.Create))
+            {
+                log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} returned because something is selected or object tool mode is neither brush nor create.");
+                return true;
+            }
+
+            log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} toolSystem.selected = {toolSystem.selected.Index}.{toolSystem.selected.Version}.");
+            log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} objectToolSystem.mode = {objectToolSystem.mode}");
             TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
             PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
             if (!prefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
             {
+                log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} returned because could not find prefab entity.");
                 return true;
             }
 
             if (prefabSystem.EntityManager.HasComponent<Vegetation>(prefabEntity))
             {
+                log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} has vegetation component");
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
                 if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
                 || (toolSystem.activeTool == objectToolSystem && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet)
                 || toolSystem.activeTool.toolID == "Line Tool")
                 {
+                    log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} resetting selecting and returning.");
                     treeControllerTool.ClearSelectedTreePrefabs();
                     treeControllerUISystem.ResetPrefabSets();
                     treeControllerTool.SelectTreePrefab(prefab);
@@ -71,6 +83,7 @@ namespace Tree_Controller.Patches
                         {
                             log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Set prefab {prefab.name} to active prefab {toolSystem.activePrefab.name}.");
                             prefab = toolSystem.activePrefab;
+                            log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} selected prefabs contains active prefab returning.");
                             return true;
                         }
                         else
@@ -81,6 +94,7 @@ namespace Tree_Controller.Patches
                                 objectToolSystem.prefab = selectedPrefabs[0] as ObjectPrefab;
                             }
 
+                            log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} selected prefabs does not contain active prefab returning false.");
                             __result = true;
                             return false;
                         }
@@ -93,6 +107,7 @@ namespace Tree_Controller.Patches
                     }
                     else if (selectedPrefabs.Contains(toolSystem.activePrefab) || treeControllerUISystem.RecentlySelectedPrefabSet)
                     {
+                        log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} recently selected prefab set.");
                         return true;
                     }
                     else
