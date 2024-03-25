@@ -1,5 +1,7 @@
 # Tree Controller
 
+Deprecated. No Longer supported please see https://github.com/yenyang/Tree_Controller.
+
 Tools and systems for changing ages, types, colors, growth and seasonal behaviors for trees and wild bushes.
 
 Improvements to plopping and brushing trees and wild bushes including: age choices (Plop fully grown trees), random rotation, and forest brushes.
